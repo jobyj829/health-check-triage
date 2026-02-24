@@ -159,6 +159,52 @@
         </div>
         {% endif %}
 
+        <!-- Differential Diagnosis -->
+        {% if t.differential %}
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+            <h2 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Differential Diagnosis
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-2 pr-3 font-semibold text-gray-600">Diagnosis</th>
+                            <th class="text-left py-2 pr-3 font-semibold text-gray-600">Likelihood</th>
+                            <th class="text-left py-2 font-semibold text-gray-600">Clinical Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        {% for dx in t.differential %}
+                        <tr>
+                            <td class="py-2 pr-3 font-medium text-gray-800">{{ dx.diagnosis }}</td>
+                            <td class="py-2 pr-3">
+                                {% set lk = dx.likelihood %}
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                    {% if lk == 'Very common' %}bg-green-100 text-green-800
+                                    {% elif lk == 'Common' %}bg-blue-100 text-blue-800
+                                    {% elif lk == 'Less common' %}bg-yellow-100 text-yellow-800
+                                    {% elif lk == 'Uncommon' %}bg-orange-100 text-orange-800
+                                    {% else %}bg-red-100 text-red-800{% endif %}">
+                                    {{ lk }}
+                                </span>
+                            </td>
+                            <td class="py-2 text-gray-600 text-xs">{{ dx.notes }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-xs text-gray-400 mt-3 italic">
+                Generated from published ED discharge diagnosis data (Arvig et al. WestJEM 2022)
+                and standard clinical teaching. Adjusted for patient demographics and history.
+            </p>
+        </div>
+        {% endif %}
+
         <!-- Red Flag -->
         {% if t.red_flag %}
         <div class="bg-red-50 border border-red-200 rounded-xl p-5">

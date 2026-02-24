@@ -307,7 +307,8 @@ def admin_detail(transcript_id):
         return "Transcript not found", 404
     for key in ("selected_symptoms", "pmh", "interview_history",
                 "risk_pcts", "specialist_info", "escalation",
-                "triage_summary", "red_flag", "risk_factors"):
+                "triage_summary", "red_flag", "risk_factors",
+                "differential"):
         if t.get(key):
             try:
                 t[key] = json.loads(t[key])

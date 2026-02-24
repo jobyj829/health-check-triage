@@ -152,6 +152,11 @@ def get_evidence(patient_state, prediction):
     if specialist_info:
         result["specialist"] = specialist_info
 
+    # Differential diagnosis based on symptoms, PMH, demographics
+    result["differential"] = _build_differential(
+        patient_state.selected_symptoms, patient_state, level
+    )
+
     return result
 
 
@@ -629,3 +634,211 @@ def _build_reassurance(level, symptom_names, patient_state, p_serious,
             f"\u2014 if something feels wrong or your symptoms change, don't "
             f"hesitate to seek medical care. Trust your instincts."
         )
+
+
+# ── Differential Diagnosis Builder ────────────────────────────────────
+# Maps symptoms to specific plain-language diagnoses with approximate
+# likelihood based on Arvig et al. WestJEM 2022 discharge diagnosis data
+# and standard clinical teaching.
+
+SYMPTOM_DIFFERENTIALS = {
+    "chest_pain": [
+        {"diagnosis": "Musculoskeletal chest wall pain", "likelihood": "Common", "notes": "Reproducible with palpation; often positional"},
+        {"diagnosis": "Gastroesophageal reflux (GERD)", "likelihood": "Common", "notes": "Burning quality; worse after eating or lying down"},
+        {"diagnosis": "Anxiety / Panic attack", "likelihood": "Common", "notes": "Palpitations, tingling, sense of doom; often in younger patients"},
+        {"diagnosis": "Acute coronary syndrome (heart attack)", "likelihood": "Less common", "notes": "Pressure/squeezing; radiates to arm/jaw; sweating; risk increases with age, diabetes, smoking"},
+        {"diagnosis": "Pulmonary embolism", "likelihood": "Less common", "notes": "Sudden onset with shortness of breath; pleuritic; risk with immobility, birth control, recent surgery"},
+        {"diagnosis": "Pneumonia / Pleuritis", "likelihood": "Less common", "notes": "Sharp pain with breathing; cough; fever"},
+        {"diagnosis": "Pericarditis", "likelihood": "Uncommon", "notes": "Sharp pain worse with lying flat, better leaning forward; recent viral illness"},
+        {"diagnosis": "Aortic dissection", "likelihood": "Rare", "notes": "Tearing pain radiating to back; hypertension; medical emergency"},
+    ],
+    "shortness_of_breath": [
+        {"diagnosis": "Asthma / Reactive airway", "likelihood": "Common", "notes": "Wheezing; triggered by allergens, exercise, or cold air"},
+        {"diagnosis": "COPD exacerbation", "likelihood": "Common", "notes": "Chronic smoker; worsening baseline dyspnea; productive cough"},
+        {"diagnosis": "Pneumonia", "likelihood": "Common", "notes": "Cough, fever, abnormal breath sounds"},
+        {"diagnosis": "Heart failure exacerbation", "likelihood": "Less common", "notes": "Leg swelling, orthopnea, history of heart disease"},
+        {"diagnosis": "Anxiety / Hyperventilation", "likelihood": "Common", "notes": "Tingling, lightheadedness; often younger patients"},
+        {"diagnosis": "Pulmonary embolism", "likelihood": "Less common", "notes": "Sudden onset; pleuritic chest pain; tachycardia"},
+        {"diagnosis": "Anemia", "likelihood": "Less common", "notes": "Gradual onset; fatigue; pallor"},
+    ],
+    "headache": [
+        {"diagnosis": "Tension headache", "likelihood": "Very common", "notes": "Band-like pressure; bilateral; associated with stress"},
+        {"diagnosis": "Migraine", "likelihood": "Common", "notes": "Unilateral, throbbing; nausea; light/sound sensitivity; aura possible"},
+        {"diagnosis": "Sinusitis", "likelihood": "Common", "notes": "Facial pressure; nasal congestion; worse leaning forward"},
+        {"diagnosis": "Medication overuse headache", "likelihood": "Less common", "notes": "Chronic daily headache in someone using analgesics >15 days/month"},
+        {"diagnosis": "Hypertensive headache", "likelihood": "Less common", "notes": "Severe headache with very high blood pressure"},
+        {"diagnosis": "Subarachnoid hemorrhage", "likelihood": "Rare", "notes": "Sudden thunderclap worst-ever headache; medical emergency"},
+        {"diagnosis": "Meningitis", "likelihood": "Rare", "notes": "Headache with fever, stiff neck, photophobia"},
+        {"diagnosis": "Intracranial mass", "likelihood": "Rare", "notes": "Progressive headache; worse in morning; neurologic deficits"},
+    ],
+    "abdominal_pain": [
+        {"diagnosis": "Gastritis / Dyspepsia", "likelihood": "Very common", "notes": "Epigastric burning; related to meals, NSAID use, or stress"},
+        {"diagnosis": "Gastroenteritis", "likelihood": "Common", "notes": "Crampy pain with nausea, vomiting, or diarrhea; often viral"},
+        {"diagnosis": "Constipation", "likelihood": "Common", "notes": "Diffuse cramping; infrequent or hard stools"},
+        {"diagnosis": "Urinary tract infection", "likelihood": "Common", "notes": "Lower abdominal pain with urinary frequency, burning"},
+        {"diagnosis": "Appendicitis", "likelihood": "Less common", "notes": "Starts around navel, migrates to right lower quadrant; fever"},
+        {"diagnosis": "Cholecystitis (gallbladder)", "likelihood": "Less common", "notes": "Right upper quadrant pain after fatty meals; nausea"},
+        {"diagnosis": "Kidney stones", "likelihood": "Less common", "notes": "Severe flank pain radiating to groin; comes in waves"},
+        {"diagnosis": "Small bowel obstruction", "likelihood": "Uncommon", "notes": "Crampy pain, vomiting, distension; history of prior surgery"},
+        {"diagnosis": "Ectopic pregnancy", "likelihood": "Uncommon", "notes": "Lower abdominal pain in reproductive-age female; missed period"},
+    ],
+    "fever": [
+        {"diagnosis": "Viral upper respiratory infection", "likelihood": "Very common", "notes": "Cough, congestion, sore throat; self-limited"},
+        {"diagnosis": "Urinary tract infection", "likelihood": "Common", "notes": "Fever with urinary symptoms; flank pain if pyelonephritis"},
+        {"diagnosis": "Influenza", "likelihood": "Common", "notes": "High fever, body aches, fatigue; seasonal"},
+        {"diagnosis": "Pneumonia", "likelihood": "Less common", "notes": "Fever with productive cough, shortness of breath"},
+        {"diagnosis": "Cellulitis / Skin infection", "likelihood": "Less common", "notes": "Fever with localized redness, swelling, warmth"},
+        {"diagnosis": "COVID-19", "likelihood": "Less common", "notes": "Fever with cough, loss of taste/smell, fatigue"},
+        {"diagnosis": "Sepsis", "likelihood": "Uncommon", "notes": "High fever with confusion, rapid breathing, tachycardia; emergency"},
+    ],
+    "dizziness": [
+        {"diagnosis": "Benign positional vertigo (BPPV)", "likelihood": "Very common", "notes": "Brief spinning triggered by head position changes"},
+        {"diagnosis": "Orthostatic hypotension", "likelihood": "Common", "notes": "Lightheadedness on standing; dehydration or medication side effect"},
+        {"diagnosis": "Vestibular neuritis / Labyrinthitis", "likelihood": "Common", "notes": "Prolonged vertigo after viral illness; may have hearing changes"},
+        {"diagnosis": "Anemia", "likelihood": "Less common", "notes": "Gradual onset; fatigue, pallor, shortness of breath"},
+        {"diagnosis": "Cardiac arrhythmia", "likelihood": "Less common", "notes": "Intermittent lightheadedness with palpitations"},
+        {"diagnosis": "Stroke / TIA", "likelihood": "Uncommon", "notes": "Dizziness with focal weakness, speech difficulty, vision changes; emergency"},
+    ],
+    "back_pain": [
+        {"diagnosis": "Muscle strain / Mechanical back pain", "likelihood": "Very common", "notes": "Related to lifting, activity, or posture; improves with rest"},
+        {"diagnosis": "Degenerative disc disease", "likelihood": "Common", "notes": "Chronic; worsens with activity; common in older adults"},
+        {"diagnosis": "Herniated disc / Sciatica", "likelihood": "Less common", "notes": "Pain radiating down the leg; numbness or tingling"},
+        {"diagnosis": "Spinal stenosis", "likelihood": "Less common", "notes": "Pain with walking, relieved by sitting; older adults"},
+        {"diagnosis": "Kidney stones / Pyelonephritis", "likelihood": "Less common", "notes": "Flank pain; may have urinary symptoms or fever"},
+        {"diagnosis": "Vertebral compression fracture", "likelihood": "Uncommon", "notes": "Sudden pain after minor trauma; osteoporosis risk"},
+        {"diagnosis": "Cauda equina syndrome", "likelihood": "Rare", "notes": "Saddle numbness, bladder/bowel changes, bilateral leg weakness; emergency"},
+    ],
+    "nausea_vomiting": [
+        {"diagnosis": "Gastroenteritis (stomach bug)", "likelihood": "Very common", "notes": "Viral or food-related; diarrhea often accompanies"},
+        {"diagnosis": "Food poisoning", "likelihood": "Common", "notes": "Acute onset hours after eating; shared with others who ate same food"},
+        {"diagnosis": "Medication side effect", "likelihood": "Common", "notes": "New medication or change in dosage"},
+        {"diagnosis": "Gastritis / Peptic ulcer", "likelihood": "Less common", "notes": "Epigastric pain; NSAID or alcohol use"},
+        {"diagnosis": "Pregnancy", "likelihood": "Less common", "notes": "Morning nausea in reproductive-age female; missed period"},
+        {"diagnosis": "Bowel obstruction", "likelihood": "Uncommon", "notes": "Severe vomiting with abdominal distension and no bowel movements"},
+        {"diagnosis": "Pancreatitis", "likelihood": "Uncommon", "notes": "Severe epigastric pain radiating to back; alcohol or gallstone history"},
+    ],
+    "sore_throat": [
+        {"diagnosis": "Viral pharyngitis", "likelihood": "Very common", "notes": "Cough, congestion, runny nose; gradual onset"},
+        {"diagnosis": "Streptococcal pharyngitis (strep)", "likelihood": "Common", "notes": "Sudden onset; fever, swollen tonsils, no cough; rapid test available"},
+        {"diagnosis": "Infectious mononucleosis", "likelihood": "Less common", "notes": "Fatigue, swollen lymph nodes, possible splenomegaly; young adults"},
+        {"diagnosis": "Peritonsillar abscess", "likelihood": "Uncommon", "notes": "Severe unilateral pain, trismus, muffled voice; requires drainage"},
+    ],
+    "cough": [
+        {"diagnosis": "Viral upper respiratory infection", "likelihood": "Very common", "notes": "Self-limited; congestion, sore throat"},
+        {"diagnosis": "Acute bronchitis", "likelihood": "Common", "notes": "Persistent cough 1-3 weeks; may produce sputum"},
+        {"diagnosis": "Asthma", "likelihood": "Common", "notes": "Cough worse at night or with exercise; wheezing"},
+        {"diagnosis": "Post-nasal drip", "likelihood": "Common", "notes": "Throat clearing; sensation of drainage; allergies or sinusitis"},
+        {"diagnosis": "Pneumonia", "likelihood": "Less common", "notes": "Cough with fever, shortness of breath, and abnormal breath sounds"},
+        {"diagnosis": "GERD-related cough", "likelihood": "Less common", "notes": "Chronic cough; heartburn; worse lying down"},
+    ],
+    "rash": [
+        {"diagnosis": "Contact dermatitis", "likelihood": "Common", "notes": "Itchy rash after exposure to irritant or allergen"},
+        {"diagnosis": "Eczema (atopic dermatitis)", "likelihood": "Common", "notes": "Dry, itchy patches; often in skin folds; chronic/recurring"},
+        {"diagnosis": "Urticaria (hives)", "likelihood": "Common", "notes": "Raised, itchy welts; allergic trigger; comes and goes"},
+        {"diagnosis": "Cellulitis", "likelihood": "Less common", "notes": "Expanding redness, warmth, pain; may have fever; bacterial infection"},
+        {"diagnosis": "Shingles (herpes zoster)", "likelihood": "Less common", "notes": "Painful, blistering rash in a band/stripe; one side only"},
+        {"diagnosis": "Drug reaction", "likelihood": "Less common", "notes": "Rash after starting new medication"},
+    ],
+    "urinary": [
+        {"diagnosis": "Urinary tract infection (UTI)", "likelihood": "Very common", "notes": "Burning, frequency, urgency; more common in women"},
+        {"diagnosis": "Kidney stones", "likelihood": "Less common", "notes": "Severe flank pain with blood in urine"},
+        {"diagnosis": "Pyelonephritis (kidney infection)", "likelihood": "Less common", "notes": "UTI symptoms plus fever, flank pain, nausea"},
+        {"diagnosis": "Benign prostatic hyperplasia", "likelihood": "Less common", "notes": "Weak stream, frequency, nocturia; older males"},
+        {"diagnosis": "Sexually transmitted infection", "likelihood": "Less common", "notes": "Dysuria with discharge; recent sexual exposure"},
+    ],
+    "extremity_pain": [
+        {"diagnosis": "Musculoskeletal strain / Sprain", "likelihood": "Very common", "notes": "Related to activity or injury; localized pain and swelling"},
+        {"diagnosis": "Osteoarthritis", "likelihood": "Common", "notes": "Joint pain worse with use; stiffness in morning; older adults"},
+        {"diagnosis": "Tendinitis / Bursitis", "likelihood": "Common", "notes": "Pain around a joint with repetitive use"},
+        {"diagnosis": "Gout", "likelihood": "Less common", "notes": "Sudden severe joint pain (often big toe); redness, swelling"},
+        {"diagnosis": "Fracture", "likelihood": "Less common", "notes": "Pain after trauma; swelling, deformity, inability to bear weight"},
+        {"diagnosis": "Deep vein thrombosis (DVT)", "likelihood": "Uncommon", "notes": "Calf pain and swelling; risk with immobility, travel, birth control"},
+    ],
+    "swelling": [
+        {"diagnosis": "Dependent edema", "likelihood": "Common", "notes": "Ankle/leg swelling worse at end of day; improves with elevation"},
+        {"diagnosis": "Venous insufficiency", "likelihood": "Common", "notes": "Chronic leg swelling with skin changes; varicose veins"},
+        {"diagnosis": "Heart failure", "likelihood": "Less common", "notes": "Bilateral leg swelling with shortness of breath; cardiac history"},
+        {"diagnosis": "Deep vein thrombosis", "likelihood": "Less common", "notes": "Unilateral leg swelling with calf pain; acute onset"},
+        {"diagnosis": "Cellulitis", "likelihood": "Less common", "notes": "Swelling with redness, warmth, and pain; may have fever"},
+    ],
+    "eye_problem": [
+        {"diagnosis": "Conjunctivitis (pink eye)", "likelihood": "Common", "notes": "Red eye with discharge; itching (allergic) or crusting (infectious)"},
+        {"diagnosis": "Dry eye syndrome", "likelihood": "Common", "notes": "Gritty sensation; burning; worse with screen use"},
+        {"diagnosis": "Corneal abrasion", "likelihood": "Less common", "notes": "Sharp pain, tearing, light sensitivity after trauma or contact lens"},
+        {"diagnosis": "Migraine with visual aura", "likelihood": "Less common", "notes": "Visual changes (zigzag lines, spots) followed by headache"},
+        {"diagnosis": "Acute glaucoma", "likelihood": "Rare", "notes": "Severe eye pain, blurred vision, halos; nausea; emergency"},
+        {"diagnosis": "Retinal detachment", "likelihood": "Rare", "notes": "Flashes, floaters, curtain over vision; emergency"},
+    ],
+    "injury_fall": [
+        {"diagnosis": "Soft tissue contusion / Bruise", "likelihood": "Very common", "notes": "Pain and bruising at impact site; no fracture"},
+        {"diagnosis": "Fracture", "likelihood": "Common", "notes": "Severe pain, swelling, deformity; inability to bear weight or use limb"},
+        {"diagnosis": "Sprain / Ligament injury", "likelihood": "Common", "notes": "Joint pain and instability; swelling around joint"},
+        {"diagnosis": "Concussion", "likelihood": "Less common", "notes": "Head injury with headache, dizziness, confusion; may have brief LOC"},
+        {"diagnosis": "Intracranial hemorrhage", "likelihood": "Rare", "notes": "Head injury with worsening headache, vomiting, altered consciousness; emergency"},
+    ],
+    "fracture": [
+        {"diagnosis": "Simple fracture", "likelihood": "Common", "notes": "Localized pain, swelling, deformity after trauma"},
+        {"diagnosis": "Stress fracture", "likelihood": "Less common", "notes": "Gradual onset pain with repetitive activity; common in runners"},
+        {"diagnosis": "Pathologic fracture", "likelihood": "Uncommon", "notes": "Fracture from minimal trauma; may indicate osteoporosis or underlying disease"},
+    ],
+    "pelvic_pain": [
+        {"diagnosis": "Menstrual cramps (dysmenorrhea)", "likelihood": "Common", "notes": "Cyclic lower abdominal pain; related to period"},
+        {"diagnosis": "Urinary tract infection", "likelihood": "Common", "notes": "Suprapubic pain with urinary symptoms"},
+        {"diagnosis": "Ovarian cyst", "likelihood": "Less common", "notes": "Unilateral pelvic pain; may be sudden if ruptured"},
+        {"diagnosis": "Pelvic inflammatory disease", "likelihood": "Less common", "notes": "Lower abdominal pain, discharge, fever; sexually active females"},
+        {"diagnosis": "Ectopic pregnancy", "likelihood": "Uncommon", "notes": "Pelvic pain with missed period; vaginal bleeding; emergency if ruptured"},
+        {"diagnosis": "Kidney stones", "likelihood": "Less common", "notes": "Flank-to-groin pain; hematuria; comes in waves"},
+    ],
+}
+
+LIKELIHOOD_ORDER = {"Very common": 1, "Common": 2, "Less common": 3, "Uncommon": 4, "Rare": 5}
+
+
+def _build_differential(selected_symptoms, patient_state, level):
+    """Build a differential diagnosis list based on patient symptoms and demographics."""
+    differentials = []
+    seen_dx = set()
+
+    for sym_id in selected_symptoms:
+        for dx in SYMPTOM_DIFFERENTIALS.get(sym_id, []):
+            if dx["diagnosis"] not in seen_dx:
+                entry = dict(dx)
+                entry["source_symptom"] = sym_id
+
+                # Adjust notes based on demographics
+                age = patient_state.age or 40
+                sex = patient_state.sex or "unknown"
+                pmh = set(patient_state.pmh) if patient_state.pmh else set()
+
+                if "older adults" in dx["notes"].lower() and age < 40:
+                    entry["likelihood"] = _demote(dx["likelihood"])
+                if "younger patients" in dx["notes"].lower() and age >= 60:
+                    entry["likelihood"] = _demote(dx["likelihood"])
+                if "reproductive-age female" in dx["notes"].lower() and sex == "male":
+                    continue
+                if "older males" in dx["notes"].lower() and sex == "female":
+                    continue
+                if "diabetes" in dx["notes"].lower() and "Diabetes" in pmh:
+                    entry["likelihood"] = _promote(dx["likelihood"])
+                if "cardiac" in dx["notes"].lower() and "Heart Problems" in pmh:
+                    entry["likelihood"] = _promote(dx["likelihood"])
+                if "osteoporosis" in dx["notes"].lower() and age >= 65:
+                    entry["likelihood"] = _promote(dx["likelihood"])
+
+                differentials.append(entry)
+                seen_dx.add(dx["diagnosis"])
+
+    differentials.sort(key=lambda d: LIKELIHOOD_ORDER.get(d["likelihood"], 3))
+    return differentials[:12]
+
+
+def _promote(likelihood):
+    order = ["Rare", "Uncommon", "Less common", "Common", "Very common"]
+    idx = order.index(likelihood) if likelihood in order else 2
+    return order[min(idx + 1, len(order) - 1)]
+
+
+def _demote(likelihood):
+    order = ["Rare", "Uncommon", "Less common", "Common", "Very common"]
+    idx = order.index(likelihood) if likelihood in order else 2
+    return order[max(idx - 1, 0)]

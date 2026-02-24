@@ -49,7 +49,8 @@ def init_db():
             escalation      TEXT,
             triage_summary  TEXT,
             red_flag        TEXT,
-            risk_factors    TEXT
+            risk_factors    TEXT,
+            differential    TEXT
         )
     """)
     conn.commit()
@@ -70,8 +71,8 @@ def save_transcript(state, prediction, evidence):
                 answering_for, symptom_text, pmh_text, selected_symptoms,
                 pmh, interview_history, prediction_level, prediction_label,
                 risk_pcts, specialist_info, reassurance, escalation,
-                triage_summary, red_flag, risk_factors
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                triage_summary, red_flag, risk_factors, differential
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             generate_session_id(),
             datetime.now(timezone.utc).isoformat(),
@@ -94,6 +95,7 @@ def save_transcript(state, prediction, evidence):
             json.dumps(evidence.get("triage_summary", "")),
             json.dumps(prediction.get("red_flag")) if prediction.get("red_flag") else None,
             json.dumps(prediction.get("risk_factors", [])),
+            json.dumps(evidence.get("differential", [])),
         ))
         conn.commit()
         return True
@@ -142,7 +144,7 @@ def export_all_json():
         d = dict(r)
         for key in ("selected_symptoms", "pmh", "interview_history",
                      "risk_pcts", "specialist_info", "escalation",
-                     "red_flag", "risk_factors"):
+                     "red_flag", "risk_factors", "differential"):
             if d.get(key):
                 try:
                     d[key] = json.loads(d[key])
