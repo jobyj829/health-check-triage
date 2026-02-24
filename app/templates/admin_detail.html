@@ -186,8 +186,8 @@
                     {% if e.severity == 'critical' %}border-red-400
                     {% elif e.severity == 'urgent' %}border-orange-400
                     {% else %}border-yellow-400{% endif %}">
-                    <span class="font-medium">If:</span> {{ e.condition }}
-                    <br><span class="font-medium">Then:</span> {{ e.action }}
+                    <span class="font-medium">If:</span> {{ e.if_sign }}
+                    <br><span class="font-medium">Then:</span> {{ e.then_action }}
                 </div>
                 {% endfor %}
             </div>
@@ -198,7 +198,15 @@
         {% if t.triage_summary %}
         <div class="bg-teal-50 border border-teal-200 rounded-xl p-5">
             <h2 class="font-semibold text-teal-800 mb-2">Triage Nurse Summary</h2>
+            {% if t.triage_summary is iterable and t.triage_summary is not string %}
+            <ul class="list-disc list-inside text-sm text-gray-700 space-y-1">
+                {% for item in t.triage_summary %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
             <div class="text-sm text-gray-700 whitespace-pre-line">{{ t.triage_summary }}</div>
+            {% endif %}
         </div>
         {% endif %}
 
