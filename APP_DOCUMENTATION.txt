@@ -1,0 +1,937 @@
+================================================================================
+  HEALTH CHECK — ED TRIAGE APP
+  Technical Documentation & Implementation Guide
+================================================================================
+
+Last updated: February 2026 (v9)
+Data source: MIMIC-IV v3.1 + MIMIC-IV-ED v2.2 (Beth Israel Deaconess, Boston)
+
+
+TABLE OF CONTENTS
+-----------------
+  1.  What This App Does
+  2.  How to Run It
+  3.  Architecture Overview
+  4.  File-by-File Guide
+  5.  Data Pipeline (Phase 1)
+  6.  Model Training (Phase 2)
+  7.  Interview Engine (Phase 3)
+  8.  Web Application (Phase 3)
+  9.  Safety System
+  10. Evidence & Risk Percentages
+  11. How to Swap to LLM-Powered Interview (Future)
+  12. Model Performance & Limitations
+  13. Deployment Notes
+  14. Changelog
+
+
+================================================================================
+1. WHAT THIS APP DOES
+================================================================================
+
+A patient-facing web application that asks a series of plain-language questions
+about symptoms and medical history, then recommends one of five care levels:
+
+  Level 1 (Red)    — "Go to the Emergency Department now"
+  Level 2 (Orange) — "Visit an Urgent Care Center today"
+  Level 3 (Yellow) — "See your Primary Care Doctor in 1-2 days"
+  Level 4 (Blue)   — "See a [Specific Specialist]" (e.g., Ophthalmologist,
+                      Orthopedic Surgeon, Dermatologist, ENT, etc.)
+  Level 5 (Green)  — "You're likely okay — watch for changes"
+
+For certain complaints (belly pain, headache, urinary, pulmonary,
+non-specific), the app routes to PCP first (Level 3) with a
+"Your Doctor May Refer You To: [Specialist]" card, rather than
+sending the patient directly to a specialist.
+
+The recommendation is backed by:
+  - A machine learning model trained on real ED visit data
+  - Hard-coded red-flag safety rules that override the model
+  - Conservative bias rules that escalate borderline cases
+  - Complaint-to-specialist mapping from Arvig et al. WestJEM 2022
+    (223,612 ED visits → ICD-10 discharge diagnosis distributions)
+  - Published population-level statistics for risk percentages
+  - Personalized triage nurse summary and escalation guidance
+
+Designed for low medical literacy patients (6th-grade reading level).
+No accounts, no data stored, no PHI collected.
+
+
+================================================================================
+2. HOW TO RUN IT
+================================================================================
+
+Prerequisites:
+  - Python 3.9+
+  - The MIMIC data files (already present in mimic-iv-3.1/ and mimic-iv-ed-2.2/)
+
+First-time setup:
+  cd /Users/S183950/Desktop/Mimic
+  pip3 install flask scikit-learn joblib numpy pandas duckdb
+
+To start the app:
+  cd /Users/S183950/Desktop/Mimic
+  python3 run_app.py
+
+Then open in your browser:
+  http://localhost:5001
+
+To rebuild the dataset (if data changes):
+  python3 build_triage_dataset.py
+
+To retrain the model (if dataset changes):
+  python3 train_triage_model.py
+
+
+================================================================================
+3. ARCHITECTURE OVERVIEW
+================================================================================
+
+The app has three layers:
+
+  PATIENT (Browser)
+       |
+       v
+  FLASK WEB APP  (app/routes.py)
+       |
+       +---> Interview Engine  (app/interview_engine.py)
+       |         |
+       |         +---> TreeInterviewEngine  [CURRENT — zero cost]
+       |         |       reads from: app/config/interview_trees/*.json
+       |         |
+       |         +---> LLMInterviewEngine   [FUTURE — swap in later]
+       |                 calls: OpenAI / Anthropic API
+       |
+       +---> Triage Model  (app/model.py)
+       |         |
+       |         +---> Red-flag safety rules  (checked FIRST)
+       |         +---> Conservative bias rules (PMH + symptom count + PCP-first)
+       |         +---> Random Forest classifier  (app/models/triage_xgb.joblib)
+       |         +---> Logistic Regression backup  (app/models/triage_lr.joblib)
+       |         +---> Specialist selector  (app/config/complaint_specialist_map.json)
+       |                 maps symptoms → primary/secondary specialist + rationale
+       |                 source: Arvig et al. WestJEM 2022 (223,612 ED visits)
+       |
+       +---> Evidence Generator  (app/evidence.py)
+       |         reads from: app/config/public_reference_rates.json
+       |         builds: risk percentages, reassurance, escalation, triage summary
+       |         passes through: specialist info for results card
+       |
+       +---> Facility Finder  (results.html JavaScript)
+                uses: OpenStreetMap Nominatim + Overpass API (free, no API keys)
+
+  DATA PIPELINE (offline, run once)
+       |
+       build_triage_dataset.py  --->  outputs/triage_app/triage_dataset.csv.gz
+       train_triage_model.py    --->  app/models/*.joblib + app/config/*.json
+
+
+================================================================================
+4. FILE-BY-FILE GUIDE
+================================================================================
+
+ROOT LEVEL:
+  run_app.py                   Entry point. Starts Flask on port 5001.
+  build_triage_dataset.py      Phase 1: extracts ED visits, maps symptoms
+                               and medications, assigns 5-level outcome labels.
+  train_triage_model.py        Phase 2: trains Random Forest + Logistic Regression,
+                               generates red-flag rules, saves model artifacts.
+  requirements.txt             Python dependencies.
+  APP_DOCUMENTATION.txt        This file.
+
+APP CODE (app/):
+  __init__.py                  Package marker.
+  routes.py                    Flask routes: welcome, interview loop, results.
+                               Handles answer processing, mental-status red flags,
+                               deferred baseline red-flag checks, session state.
+  interview_engine.py          Pluggable interview engine with two implementations:
+                                 - TreeInterviewEngine (active, zero cost)
+                                 - LLMInterviewEngine (stub for future)
+                               Defines Question dataclass with types: single_choice,
+                               multi_choice, number, text, textarea, body_map,
+                               severity_slider.
+  patient_state.py             Accumulates patient answers during interview.
+                               Stores: name, answering_for, age, sex, zip_code,
+                               symptom_text, pmh_text, selected_body_regions,
+                               selected_symptoms, pmh, interview_answers/history,
+                               red_flag_triggered.
+                               Parses free-text symptoms and PMH via keyword matching.
+                               Expands body map regions to symptom IDs.
+                               Converts all answers to a feature vector for the model.
+  model.py                     Loads trained model, makes predictions, applies
+                               safety overrides and conservative bias rules.
+                               Selects specific specialist for Level 4 using
+                               complaint-to-diagnosis mapping from Arvig et al.
+                               WestJEM 2022. Implements PCP-first routing for
+                               non-specific, urologic, headache, pulmonary,
+                               and belly complaints (Level 4 → Level 3 + referral).
+  evidence.py                  Generates evidence for results page:
+                                 - Risk percentages (serious, immediate attention,
+                                   hospitalization, mortality)
+                                 - Reassurance statement (personalized)
+                                 - Escalation "If This Happens" statements
+                                 - Triage nurse summary (demographics, symptoms, PMH)
+                                 - Watch-for signs (tailored to symptoms)
+                                 - Symptom-specific published statistics
+                                 - Specialist referral info (passed through from model)
+                                 - Home remedies for Level 5 recommendations
+
+TEMPLATES (app/templates/):
+  base.html                    Base layout: Tailwind CSS (CDN), nav bar, footer
+                               disclaimer. Defines styles for body map SVG zones,
+                               severity slider buttons, animations.
+  welcome.html                 Landing page with legal disclaimer + consent checkbox.
+  interview.html               One-question-per-screen interview interface.
+                               Renders different UI components per question type:
+                                 - single_choice: tappable option cards with icons
+                                 - text / number: centered input with Continue button
+                                 - textarea: multi-line input for free text
+                                 - severity_slider: 4 emoji buttons (Mild, Moderate,
+                                   Severe, Worst ever) with color gradient bar
+                               Shows progress bar ("Name · Step X of Y"),
+                               context tags ("About your headache"), and skip
+                               option for optional questions (zip code).
+  results.html                 Color-coded recommendation header (personalized with
+                               patient name). Sections:
+                                 - Red flag alert (if triggered)
+                                 - Reassurance statement
+                                 - Risk percentage bars (4 metrics)
+                                 - "Why We're Recommending This" risk factors
+                                 - "If This Happens, Get Help Right Away" escalation
+                                 - "Show This to the Triage Nurse" summary card
+                                 - "Nearby Facilities" finder (JS-powered, if zip given)
+                                 - "When in doubt" conservative message (Level 3+)
+                                 - "What the Data Shows" published statistics
+                                 - "Keep an Eye On" watch-for signs
+                                 - Disclaimer
+                                 - Print / Start Over buttons
+
+STATIC ASSETS (app/static/):
+  css/style.css                Custom styles (minimal — Tailwind handles most).
+  js/interview.js              Minimal JS for checkbox interactions.
+
+CONFIG (app/config/):
+  symptom_groups.json          12 plain-language symptom groups shown to the
+                               patient as tappable cards. Each group maps to
+                               multiple underlying symptom category IDs.
+                               E.g., "Chest pain or pressure" -> [chest_pain,
+                               palpitations]. The model still uses the 42
+                               individual symptom flags under the hood.
+  symptom_categories.json      42 symptom categories mapped from chief complaints.
+                               Used internally by the model for feature encoding.
+                               NOT shown directly to patients (groups are shown).
+  pmh_categories.json          21 past-medical-history categories derived from
+                               medication reconciliation data.
+  medication_map.json          Regex patterns mapping medication therapeutic classes
+                               to PMH categories.
+  red_flags.json               12 hard-coded safety override rules. Each defines
+                               a combination of symptoms/PMH that always triggers
+                               a Level 1 (Emergency) recommendation.
+  evidence_stats.json          Pre-computed aggregate statistics for each symptom.
+                               Used internally for evidence generation.
+  public_reference_rates.json  Publicly available, peer-reviewed statistics for
+                               admission and mortality rates by symptom. Sources:
+                               CDC NHAMCS 2021, Arvig et al. WestJEM 2022, Pines
+                               et al. Medical Care 2015. Used for the risk
+                               percentage bars on the results page. DUA-compliant
+                               (no MIMIC individual patient counts exposed).
+  complaint_specialist_map.json  Complaint-to-specialist mapping derived from
+                               Arvig et al. WestJEM 2022 (Table 2: Chief
+                               Complaints → ICD-10 Discharge Diagnoses across
+                               223,612 ED visits). Maps each symptom ID to:
+                                 - primary_specialist (e.g., "Ophthalmologist")
+                                 - secondary_specialist (e.g., "Neurologist")
+                                 - rationale (evidence-based explanation)
+                                 - diagnosis_distribution (ICD-10 categories + %)
+                                 - thirty_day_mortality_pct
+                               Covers 35+ complaint categories. Used by model.py
+                               to populate the specialist card on the results page.
+
+INTERVIEW TREES (app/config/interview_trees/):
+  chest_pain.json              Follow-up Qs: pain quality, radiation, onset, severity
+                               (severity_slider type), breathing, exertion, SOB,
+                               sweating, nausea, lightheaded, cardiac history.
+  abdominal_pain.json          Follow-up Qs: location, quality, associated symptoms.
+  fever.json                   Follow-up Qs: temperature, duration, neck stiffness.
+  shortness_of_breath.json     Follow-up Qs: onset, positional, leg swelling.
+  headache.json                Follow-up Qs: thunderclap, worst-ever, stiff neck,
+                               severity (severity_slider type), vision, weakness.
+  back_pain.json               Follow-up Qs: location (incl. "Neck" option), onset,
+                               cause, severity, pain quality, radiation to legs,
+                               numbness/weakness, saddle numbness, bladder/bowel,
+                               fever, weight loss, cancer history, IV drug use,
+                               night pain. Red-flag combos for cauda equina,
+                               bilateral leg weakness, spinal infection, metastatic
+                               disease, and trauma with weakness.
+  dizziness.json               Follow-up Qs: room spinning vs lightheaded, stroke signs.
+  nausea_vomiting.json         Follow-up Qs: blood, dehydration, keep fluids down.
+  _generic.json                FALLBACK tree for any symptom without a dedicated
+                               tree (e.g., eye_problem, sore_throat, ear_problem,
+                               rash, swelling, etc.). Asks 6 universal questions:
+                               duration, severity (severity_slider), trajectory,
+                               functional impact, associated fever, tried anything.
+                               Ensures every complaint gets follow-up questions.
+
+  Each file defines:
+    - "symptom_id": matches the symptom category ID
+    - "questions": array of branching questions
+    - Each question has: id, text, type (single_choice | severity_slider), options
+    - Optional "condition" field referencing a previous answer
+    - "red_flag_combinations": patterns that trigger immediate Level 1
+
+MODEL ARTIFACTS (app/models/):
+  triage_xgb.joblib            Primary model: calibrated Random Forest (500 trees).
+                               Trained on 340K visits, tested on 85K.
+  triage_lr.joblib             Backup model: Logistic Regression.
+                               Higher Level 1 sensitivity (87%) but lower accuracy.
+  scaler.joblib                StandardScaler fitted on training data.
+  feature_columns.json         Ordered list of 67 feature column names.
+                               The model expects features in this exact order.
+
+DATA OUTPUTS (outputs/triage_app/):
+  triage_dataset.csv.gz        Full dataset: ~425K rows x 90 columns.
+  dataset_summary.txt          Level distribution, ESI breakdown, top categories.
+  training_report.txt          Model performance: accuracy, F1, confusion matrices.
+
+
+================================================================================
+5. DATA PIPELINE (Phase 1 — build_triage_dataset.py)
+================================================================================
+
+What it does:
+  1. Loads all adult ED visits from MIMIC-IV-ED
+  2. Maps 60K+ free-text chief complaints to 42 symptom categories
+     using regex pattern matching (e.g., "chest pain" -> "Chest Pain",
+     "n/v" -> "Nausea / Throwing Up", "s/p fall" -> "Injury / Fall")
+  3. Maps medication records from medrecon to 21 PMH categories
+     using therapeutic class keywords (e.g., "insulin" -> "Diabetes",
+     "ACE inhibitor" -> "High Blood Pressure")
+  4. Links each ED visit to admission/ICU/mortality outcomes
+  5. Queries labevents to flag ED stays with advanced workup:
+     troponin (itemid 51002, 52642, 51003), D-dimer (50915, 51196, 52551),
+     BNP (50963), lactate (50813, 52442).
+  6. Assigns one of 5 triage levels based on:
+       Level 1 (ED): admitted to ICU/floor, died, ESI 1, OR discharged
+         but had advanced workup (troponin/D-dimer/BNP/lactate ordered)
+       Level 2 (UC): discharged, NO advanced labs, basic workup only
+         (CBC/BMP/UA/X-ray level), ESI 3-5
+       Level 3 (Primary Care): discharged, could wait 1-2 days
+       Level 4 (Specialist): discharged with specialty-appropriate ICD Dx
+       Level 5 (Reassurance): self-limiting, minimal intervention
+  7. Engineers 67 patient-reportable features (symptom flags + PMH flags +
+     age + sex + counts)
+  8. Saves dataset + config files for the app
+
+Key data sources joined:
+  - ed/edstays.csv.gz        (disposition, timestamps)
+  - ed/triage.csv.gz         (chief complaints, vitals, ESI)
+  - ed/medrecon.csv.gz       (home medications)
+  - ed/diagnosis.csv.gz      (ICD codes)
+  - hosp/admissions.csv.gz   (admission outcomes)
+  - icu/icustays.csv.gz      (ICU flag)
+  - hosp/patients.csv.gz     (age, sex)
+  - hosp/labevents.csv.gz    (advanced lab flag: troponin/D-dimer/BNP/lactate)
+
+
+================================================================================
+6. MODEL TRAINING (Phase 2 — train_triage_model.py)
+================================================================================
+
+Features (67 total, all patient-reportable):
+  - 42 binary symptom category flags
+  - 21 binary PMH flags
+  - age (continuous)
+  - gender_male (binary)
+  - n_symptoms (count of selected symptoms)
+  - n_comorbidities (count of PMH conditions)
+
+Models trained:
+  - Random Forest: 500 trees, max_depth=20, class-weighted to heavily
+    penalize missing Level 1 (5.33x weight vs ~0.5-0.7x for others).
+    Primary model used by the app.
+  - Logistic Regression: multinomial, class-weighted, 2000 max iterations.
+    Backup model for interpretability.
+
+Training/test split: 80/20 stratified.
+
+Top feature importances (Random Forest):
+  1. age                    (0.224)
+  2. sym_extremity_pain     (0.108)
+  3. n_comorbidities        (0.092)
+  4. sym_abdominal_pain     (0.069)
+  5. pmh_high_blood_pressure(0.045)
+
+
+================================================================================
+7. INTERVIEW ENGINE (Phase 3 — app/interview_engine.py)
+================================================================================
+
+The interview engine is PLUGGABLE. It exposes two methods:
+
+  get_next_question(patient_state) -> Question or None
+  check_red_flags(patient_state)   -> red-flag dict or None
+
+Current implementation: TreeInterviewEngine
+  - Reads structured JSON question trees from app/config/interview_trees/
+  - Zero API cost, deterministic, works offline
+  - Questions are authored at 6th-grade reading level
+  - Branching logic: questions can have "condition" fields that reference
+    a previous question's answer
+
+Interview flow (one question per screen):
+  1. Baseline questions (always asked in this order):
+     a. "What's your first name?" (text — used for personalization)
+     b. "Who is this health check for?" — TWO-STEP FLOW:
+        Step 1 (single_choice — 2 options):
+          - I'm filling this out for myself  → continues normally
+          - I'm filling this out for someone else  → goes to Step 2
+        Step 2 (single_choice — 3 options, shown only if "someone else"):
+          - I'm a parent / guardian filling this out for my child
+            → continues normally
+          - The person I'm helping is confused / not making sense
+            → IMMEDIATE redirect to Level 1 Emergency results
+          - The person has a medical condition preventing them from answering
+            → continues normally (the interview proceeds and the decision
+              tree / model determines the recommendation)
+     c. "How old are you?" (number)
+     d. "What is your biological sex?" (single_choice: Male / Female)
+     e. "What's bothering you today?" (textarea — free text, parsed
+        into symptom flags via keyword matching)
+     f. "Do you have any health conditions or take any medications?"
+        (textarea — free text, parsed into PMH flags via keywords)
+     g. "What's your zip code?" (text — optional, skippable; used to
+        find nearby ER/UC facilities on results page)
+  2. Red-flag check runs after baseline is complete (see Safety System)
+  3. Symptom-specific follow-ups from matching JSON trees, CAPPED at
+     6 total follow-up questions (MAX_FOLLOWUPS constant). If a
+     matched symptom has no dedicated tree file, the _generic.json
+     fallback tree is used (asked once, not per symptom). Question
+     types include single_choice and severity_slider (emoji-based:
+     Mild, Moderate, Severe, Worst ever). Follow-ups show context
+     tags ("About your headache") for personalization.
+  4. Red-flag check after each follow-up answer
+  5. Model prediction when no more questions remain
+
+Average interview: 8-13 questions (7 baseline + up to 6 follow-ups).
+
+Progress bar: displays "Name · Step X of Y" at top of each screen.
+Total estimate is calculated dynamically via engine.estimate_total().
+
+
+================================================================================
+8. WEB APPLICATION (Phase 3 — app/routes.py + templates/)
+================================================================================
+
+Routes:
+  GET  /           Welcome page with disclaimer + consent checkbox
+  POST /start      Accept disclaimer, initialize session, redirect to interview
+  GET  /interview  Show the next question (one question per screen)
+  POST /answer     Process answer, update state, check red flags, redirect
+  GET  /results    Run model, show recommendation + evidence + disclaimer
+  GET  /restart    Clear session, return to welcome
+
+Session management:
+  Patient state (name, answering_for, age, sex, zip_code, symptoms, PMH,
+  body_regions, answers, history, red_flag_triggered) is stored in Flask's
+  encrypted session cookie. No data is stored on the server. No database,
+  no user accounts, no PHI.
+
+UI design:
+  - Tailwind CSS loaded via CDN (no build step needed)
+  - One question per screen (no chat history displayed)
+  - Free-text input for symptoms and PMH (no body map)
+  - Emoji-based severity slider (4 levels with color gradient)
+  - Color-coded icons for "answering for" options (green=self, blue=family,
+    amber=confused, red=unresponsive)
+  - Large tappable buttons for answers (48px minimum touch target)
+  - Progress bar with patient name and step count
+  - Context tags on follow-ups ("About your headache")
+  - Optional questions have a "Skip this step" link (zip code)
+  - Fade-in animations for smooth transitions
+  - Mobile-responsive (max-width 600px centered card layout)
+  - Help note at bottom: "Having trouble? Call 911 if you need help"
+
+Results page features:
+  - Personalized header: "John, here are your results"
+  - Color-coded recommendation banner (red/orange/yellow/blue/green)
+  - Red flag alert box (if triggered)
+  - Personalized reassurance statement
+  - 3 risk percentage bars with color coding:
+      1. Likelihood of needing immediate medical attention
+      2. Likelihood of hospitalization
+      3. Likelihood of death
+  - Specialist detail card (Level 4, or Level 3 with PCP-first):
+      Shows primary specialist, secondary specialist (if any), evidence-
+      based rationale, and visual diagnosis distribution bars (ICD-10
+      categories from Arvig et al. WestJEM 2022). Heading adapts:
+        - Level 4: "Recommended Specialist"
+        - Level 3 + PCP-first: "Your Doctor May Refer You To"
+  - "Why We're Recommending This" — personalized risk factor list
+  - "If This Happens, Get Help Right Away" — symptom-specific escalation
+    statements in "If X → Then Y" format, color-coded by severity
+    (critical=red, urgent=orange, watch=yellow)
+  - "Show This to the Triage Nurse" — teal card with structured bullet
+    points (demographics, chief complaint, concerning findings, PMH,
+    red flags). Includes "Copy to clipboard" button. Shown for Level ≤ 3.
+  - "Nearby Emergency Departments" / "Nearby Urgent Care Centers" —
+    up to 5 facilities found via OpenStreetMap APIs (free, no API keys).
+    Shows name, address, and "Directions" link. Falls back to
+    "Open in Google Maps" link. Shown for Level ≤ 2 when zip provided.
+  - "What the Data Shows" — published symptom statistics with sources
+  - "Keep an Eye On" — tailored watch-for signs
+  - Disclaimer
+  - Print Results / Start Over buttons
+
+
+================================================================================
+9. SAFETY SYSTEM
+================================================================================
+
+Five layers of safety, checked in order:
+
+Layer 1: MENTAL STATUS RED FLAGS (app/routes.py)
+  Fires IMMEDIATELY during the "answering for" question — before any
+  clinical data is collected. If the user selects:
+    - "confused / disoriented / not making sense" → Level 1 Emergency
+      (message: stroke, severe infection, emergency; call 911)
+  Note: "medical condition prevents answering" does NOT trigger
+  immediate ER redirect — the interview continues normally and the
+  decision tree / model determines the recommendation.
+
+Layer 2: RED-FLAG RULES (app/config/red_flags.json)
+  Hard-coded overrides that fire after ALL baseline questions are answered
+  (ensuring PMH and zip code are collected for the triage nurse summary).
+  If a dangerous symptom combination is detected, the interview stops
+  and immediately recommends Level 1 (Emergency).
+
+  Current rules (12 total):
+    - Chest pain + shortness of breath
+    - Stroke symptoms (any)
+    - Cardiac arrest signs (any)
+    - Severe allergic reaction (any)
+    - Suicidal thoughts / self-harm (any)
+    - Chest pain + diabetes + age > 40
+    - Shortness of breath + heart problems history
+    - Blood in stool or vomit (any)
+    - Altered mental status / confusion (any)
+    - Seizure (any)
+    - Allergic reaction + breathing difficulty
+    - Abdominal pain + on blood thinners
+
+Layer 3: MODEL SAFETY BIAS (app/model.py)
+  Two-tier threshold system tuned for the MIMIC ED-population bias
+  (baseline P(L1) of ~15-25% for almost every presentation):
+    - If P(Level 1) > 40% and prediction is NOT Level 1 → escalate to L1
+    - If P(Level 1) > 30% and prediction is Level 2 or 3 → escalate to L1
+  These thresholds are high enough to avoid sending benign cases
+  (sore throat, rash, blurry vision) to the ER while still catching
+  genuinely risky presentations.
+
+Layer 4: CONSERVATIVE BIAS RULES (app/model.py)
+  - High-risk PMH (Heart Problems, Diabetes, Cancer, Blood Thinners,
+    HIV/Immunocompromised, Organ Transplant, Kidney Problems, Liver
+    Problems) + any active symptom → at minimum Level 3 (PCP).
+    Reassurance and Specialist are overridden.
+  - 3+ symptoms reported → at minimum Level 2 (Urgent Care).
+  - PCP-first routing: if the patient's primary symptom is in the
+    PCP_FIRST_SYMPTOMS set (abdominal_pain, nausea_vomiting, diarrhea,
+    constipation, urinary, headache, cough, sore_throat, other) and
+    the model predicts Level 4 (Specialist), the recommendation is
+    downgraded to Level 3 (Primary Care Doctor) with a specialist
+    referral card indicating "Your Doctor May Refer You To: [Specialist]".
+
+Layer 5: "IF THIS HAPPENS, ESCALATE" WARNINGS (app/evidence.py)
+  Every results page, regardless of recommendation level, includes
+  symptom-specific escalation statements in "If X → Then Y" format:
+    - Critical (red): "If chest pain spreads to arm/jaw → Call 911"
+    - Urgent (orange): "If symptoms worsen → Go to ER"
+    - Watch (yellow): "If no improvement in 24-48h → See a doctor sooner"
+  Plus general escalation signs (trouble breathing, confusion, etc.).
+
+Layer 6: ESCALATION GUIDANCE IN REASSURANCE
+  Every recommendation level's reassurance statement includes
+  tailored language encouraging the patient to seek higher-level
+  care if symptoms worsen or new concerning symptoms appear.
+
+
+================================================================================
+10. EVIDENCE & RISK PERCENTAGES
+================================================================================
+
+The results page displays four risk percentage bars. These are generated
+by app/evidence.py using a combination of:
+
+  1. Model probabilities (from the Random Forest classifier)
+  2. Published population-level statistics (from public_reference_rates.json)
+
+The three metrics:
+
+  a) "Likelihood of needing immediate medical attention"
+     = Blended: model P(Level 1) weighted with published admission rate
+     for the patient's primary symptom.
+
+  b) "Likelihood of hospitalization"
+     = Blended: model P(Level 1) × adjustment factor, anchored to
+     published hospitalization rates from CDC NHAMCS data.
+
+  c) "Likelihood of death"
+     = Published mortality rate for the primary symptom, adjusted by
+     patient risk factors (age, PMH).
+
+Sources in public_reference_rates.json:
+  - CDC National Hospital Ambulatory Medical Care Survey (NHAMCS) 2021
+  - Arvig et al., Western Journal of Emergency Medicine, 2022
+  - Pines et al., Medical Care, 2015
+
+Specialist mapping source (complaint_specialist_map.json):
+  - Arvig et al. WestJEM 2022, Table 2: Chief Complaints, Underlying
+    Diagnoses, and Mortality in 223,612 Adult Non-trauma ED Visits.
+    DOI: 10.5811/westjem.2022.9.56332
+  - Each complaint is mapped to a primary and secondary specialist
+    based on the most common ICD-10 discharge diagnosis categories.
+  - Diagnosis distribution bars are shown on the results page.
+
+DUA compliance:
+  No individual MIMIC patient counts are exposed. All percentages on
+  the results page come from publicly available published literature.
+  The disclaimer states: "Risk percentages are based on published
+  population-level data and may not reflect your individual situation."
+
+Triage nurse summary (evidence.triage_summary):
+  Generated by _build_triage_summary() in evidence.py. Contains:
+    - Patient demographics (age, sex)
+    - Chief complaint (free text)
+    - Concerning findings from follow-up answers (e.g., "What does the
+      pain feel like? Pressure or squeezing")
+    - Relevant medical history
+    - Red flags triggered
+  Shown as a teal card on the results page for Level ≤ 3 (ER/UC/PCP)
+  with a "Copy to clipboard" button.
+
+Reassurance statement:
+  Personalized based on recommendation level, patient name, symptoms,
+  and risk percentage. E.g., "John, based on what you've told us,
+  your symptoms are unlikely to be life-threatening. However, seeing
+  your doctor will help rule out any concerns."
+
+
+================================================================================
+11. HOW TO SWAP TO LLM-POWERED INTERVIEW (Future)
+================================================================================
+
+The architecture was designed so the interview engine can be swapped from
+structured clinical trees (free) to an LLM (GPT-4o, Claude, etc.) with
+minimal code changes. Here's exactly what to do:
+
+STEP 1: Get an API key
+  - Go to https://platform.openai.com (for GPT-4o) or
+    https://console.anthropic.com (for Claude)
+  - Create an account, add a payment method
+  - Generate an API key
+
+STEP 2: Install the client library
+  pip3 install openai        # for GPT-4o / GPT-4o-mini
+  # OR
+  pip3 install anthropic     # for Claude
+
+STEP 3: Set the API key as an environment variable
+  export OPENAI_API_KEY="sk-..."
+  # OR
+  export ANTHROPIC_API_KEY="sk-ant-..."
+
+STEP 4: Implement LLMInterviewEngine in app/interview_engine.py
+
+  The stub class is already there. Replace the get_next_question()
+  method with something like:
+
+  ---------------------------------------------------------------
+  import openai
+  import os
+
+  class LLMInterviewEngine(InterviewEngine):
+      def __init__(self):
+          self.client = openai.OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+          self.system_prompt = """
+          You are a medical triage assistant. Ask the patient ONE focused
+          follow-up question based on their symptoms to help determine
+          whether they need the Emergency Department, Urgent Care,
+          Primary Care, a Specialist, or reassurance.
+
+          Rules:
+          - Use 6th-grade reading level language
+          - Ask ONE question at a time
+          - Provide 3-5 answer options the patient can tap
+          - If you detect a red-flag pattern, return {"red_flag": true}
+          - Return JSON: {"text": "...", "options": [...], "done": false}
+          - When you have enough info, return {"done": true}
+          """
+
+      def get_next_question(self, patient_state):
+          messages = [
+              {"role": "system", "content": self.system_prompt},
+              {"role": "user", "content": json.dumps(patient_state.summary())}
+          ]
+          for item in patient_state.interview_history:
+              messages.append({"role": "assistant", "content": item["question_text"]})
+              messages.append({"role": "user", "content": str(item["answer"])})
+
+          response = self.client.chat.completions.create(
+              model="gpt-4o-mini",   # cheapest: ~$0.003/session
+              messages=messages,
+              response_format={"type": "json_object"},
+          )
+          data = json.loads(response.choices[0].message.content)
+          if data.get("done"):
+              return None
+          return Question(
+              id=f"llm_{len(patient_state.interview_history)}",
+              text=data["text"],
+              question_type="single_choice",
+              options=[{"value": o, "label": o} for o in data["options"]],
+          )
+  ---------------------------------------------------------------
+
+STEP 5: Change ONE line in app/routes.py
+
+  Current:
+    engine = TreeInterviewEngine()
+
+  Change to:
+    from .interview_engine import LLMInterviewEngine
+    engine = LLMInterviewEngine()
+
+  Or, for a config-driven approach:
+    import os
+    if os.environ.get("INTERVIEW_ENGINE") == "llm":
+        from .interview_engine import LLMInterviewEngine
+        engine = LLMInterviewEngine()
+    else:
+        engine = TreeInterviewEngine()
+
+STEP 6: Restart the app
+  python3 run_app.py
+
+That's it. The UI, model, safety rules, and evidence system are
+completely decoupled from the interview engine. Nothing else changes.
+
+COST ESTIMATES:
+  - GPT-4o:       ~$0.02 - $0.05 per patient session (10 exchanges)
+  - GPT-4o-mini:  ~$0.002 - $0.005 per session (recommended for MVP)
+  - Claude Sonnet: ~$0.02 - $0.04 per session
+  At 10,000 patients/month with GPT-4o-mini: ~$30-50/month
+
+HYBRID OPTION:
+  You can also mix both: use the structured trees for the baseline
+  questions (age, sex, symptoms, PMH) and the LLM for follow-up
+  questions only. This reduces API calls while keeping the
+  intelligent conversation feel.
+
+
+================================================================================
+12. MODEL PERFORMANCE & LIMITATIONS
+================================================================================
+
+Current model performance (Random Forest on test set):
+  Overall accuracy:    54.9%
+  F1 (weighted):       48.5%
+  Level 1 sensitivity: 86.5% (model alone — safety rules supplement this)
+
+Why accuracy is moderate:
+  The model uses ONLY patient-reportable features (symptoms + PMH + age/sex).
+  It does NOT have access to vital signs, lab results, or physical exam
+  findings, which are the strongest predictors of admission. This is by
+  design — a patient at home doesn't have a blood pressure cuff or blood
+  work. The model provides a reasonable baseline; the safety system (red-flag
+  rules + conservative bias + escalation warnings) catches critical cases.
+
+Key limitations:
+  1. Single-center data: MIMIC is from Beth Israel Deaconess Medical Center
+     (Boston academic tertiary hospital). Patients may be sicker than the
+     general population.
+  2. Selection bias: we only have data on patients who came to the ER. We
+     don't know about patients who stayed home successfully.
+  3. Chief complaint gap: MIMIC chief complaints are nurse-written; the app
+     collects patient-reported symptoms. The interview follow-up questions
+     help bridge this gap.
+  4. No vitals: the model doesn't use vital signs because patients can't
+     reliably self-report blood pressure, oxygen saturation, etc.
+
+Future improvements:
+  - Add optional vital signs input (for patients with home monitors)
+  - Add wearable device integration (Apple Watch HR, SpO2)
+  - External validation with multi-site data
+  - LLM-powered interview for more nuanced symptom capture
+  - A/B testing different model architectures
+  - Pediatric-specific question trees (for parent/child flow)
+
+
+================================================================================
+13. DEPLOYMENT NOTES
+================================================================================
+
+For local demo (current):
+  python3 run_app.py
+  Open http://localhost:5001
+
+For production deployment:
+  1. Change SECRET_KEY in routes.py (or set SECRET_KEY env variable)
+  2. Use a production WSGI server:
+       pip3 install gunicorn
+       gunicorn -w 4 -b 0.0.0.0:5001 "app.routes:app"
+  3. Put behind HTTPS (nginx reverse proxy + Let's Encrypt)
+  4. Add rate limiting (flask-limiter)
+  5. The app is stateless (session is in the cookie) — it scales
+     horizontally with no shared state
+
+DUA compliance:
+  The app ships trained model weights and aggregate statistics only.
+  No individual MIMIC patient records are ever exposed to the end user.
+  Risk percentages on the results page are sourced from publicly
+  available published literature (CDC NHAMCS, WestJEM, Medical Care).
+  Model coefficients and tree structures are derived statistics, not
+  "data" per the PhysioNet Credentialed Health Data License.
+
+External API dependencies (results page, optional):
+  - OpenStreetMap Nominatim: geocodes zip code to lat/lng (free, no key)
+  - OpenStreetMap Overpass API: finds nearby hospitals/clinics (free, no key)
+  - Both are called client-side via JavaScript; app works without them
+  - Falls back to Google Maps search link if APIs are unavailable
+
+
+================================================================================
+14. CHANGELOG
+================================================================================
+
+v1 — Initial release
+  - Data pipeline (build_triage_dataset.py)
+  - Model training (train_triage_model.py)
+  - Flask web app with card-based symptom selection
+  - Chat-style interview interface
+  - 12 red-flag safety rules
+  - Results page with evidence statistics
+
+v2 — Simplification
+  - Removed medical jargon from symptom prompts
+  - Redefined Urgent Care criteria (discharge only, no advanced imaging)
+  - Simplified symptom selection to 12 plain-language groups
+
+v3 — Free text + risk percentages
+  - Replaced symptom cards with free-text input for initial symptoms
+  - Replaced PMH checkboxes with free-text input
+  - Added risk percentage bars (immediate attention, hospitalization, death)
+  - DUA compliance: removed all patient count mentions from UI
+  - Sourced percentages from publicly available literature
+
+v4 — UX overhaul
+  - One question per screen (replaced chat history)
+  - Interactive SVG body map for symptom location
+  - Emoji-based severity sliders (Mild / Moderate / Severe / Worst ever)
+  - Patient name for personalization
+  - Mental status immediate flag (confused / unresponsive)
+  - "If This Happens, Escalate" statements
+  - Personalized reassurance statement
+  - "Likelihood of something serious" percentage
+  - Context tags on follow-up questions ("About your headache")
+  - Conservative body map symptom mappings (removed high-severity auto-triggers)
+
+v5 — Conservative bias + triage tools
+  - Refined "Who is this for?" to 5 specific options:
+    myself / parent for child / family helping / confused / can't respond
+  - Conservative bias: ER threshold lowered 15% → 10%, PMH-based
+    escalation, 3+ symptoms → at minimum UC
+  - Zip code question (optional, skippable) for facility lookup
+  - "Nearby Emergency Departments" / "Nearby Urgent Care Centers" via
+    OpenStreetMap APIs (free, no API keys)
+  - "Show This to the Triage Nurse" summary card with copy-to-clipboard
+  - "When in doubt, seek care" message for Level 3+ recommendations
+  - Red flags deferred until baseline complete (PMH + zip collected first)
+  - Mental status flags still fire immediately
+
+v6 — Streamlined interview
+  - Removed body map — symptoms captured via free text only
+  - Capped follow-up questions at 6 max (MAX_FOLLOWUPS = 6) to keep
+    the interview fast and focused
+  - Fixed facility finder: Overpass API query now uses nwr (node/way/
+    relation) instead of node-only, with 32km search radius, timeout,
+    and deduplication. Verified returning real hospitals for 10001 (NYC)
+    and 90210 (Beverly Hills)
+  - Cleaned up unused body map CSS and JavaScript
+  - Total interview: 7 baseline + up to 6 follow-ups = 13 questions max
+
+v7 — Two-step answering-for + home remedies
+  - "Answering for" split into two questions:
+    Step 1: "For yourself or someone else?" (2 options)
+    Step 2 (only if "someone else"): "Why?" with 3 specific reasons:
+      a. Parent/guardian of a child → continues normally
+      b. Confused and unable to answer → IMMEDIATE ER redirect
+      c. Medical condition prevents them from answering → IMMEDIATE ER redirect
+  - "Try This at Home" section for Level 5 (reassurance) recommendations:
+    green card with numbered, symptom-specific home remedies (rest, hydrate,
+    OTC medication, cold compress, etc.). Covers 13+ symptom categories
+    with specific guidance per symptom. Falls back to general remedies
+    if no symptom-specific match.
+  - Safety bias retuned: ER escalation threshold now uses a two-tier
+    system — 25% for Level 5 predictions (high-confidence benign), 15%
+    for Level 2-4. This allows truly benign cases (mild headache in a
+    healthy 25-year-old) to correctly get "You're Likely Okay" while
+    still catching all genuinely risky cases.
+
+v8 — Chronic condition fix
+  - Corrected "medical condition prevents answering" option: no longer
+    triggers IMMEDIATE ER redirect. Instead, the interview continues
+    normally and the decision tree / model determines the recommendation.
+    Only "confused / not making sense" still triggers immediate ER.
+
+v9 — Specialist mapping + PCP-first routing + symptom parsing fixes (current)
+  - Complaint-to-specialist mapping:
+    Added complaint_specialist_map.json derived from Arvig et al.
+    WestJEM 2022 (Table 2: 223,612 ED visits → ICD-10 discharge
+    diagnosis distributions). Covers 35+ complaint categories.
+    Level 4 recommendations now name a SPECIFIC specialist:
+      e.g., "See an Ophthalmologist", "See an Orthopedic Surgeon",
+      "See a Dermatologist", "See an ENT Specialist", etc.
+    Results page shows a specialist detail card with:
+      - Primary specialist name
+      - Secondary specialist (if applicable)
+      - Evidence-based rationale from the paper
+      - Visual diagnosis distribution bars (ICD-10 categories)
+    Grammar handled dynamically (a/an based on specialist name).
+  - PCP-first routing for select complaints:
+    For non-specific, urologic, headache, pulmonary, and belly complaints
+    (PCP_FIRST_SYMPTOMS in model.py), Level 4 predictions are downgraded
+    to Level 3 (Primary Care Doctor) with a "Your Doctor May Refer You To"
+    card showing the specialist as a PCP referral.
+    Rationale: these complaints benefit from PCP evaluation and possible
+    referral rather than direct specialist consultation.
+    Affected symptoms: abdominal_pain, nausea_vomiting, diarrhea,
+    constipation, urinary, headache, cough, sore_throat, other.
+  - Personalized reassurance statements:
+    Level 3 + PCP-first: mentions the specific specialist as a referral.
+    Level 4 (direct specialist): names the specialist and secondary.
+  - Generic fallback interview tree (_generic.json):
+    Symptoms without a dedicated tree (eye_problem, sore_throat, rash,
+    swelling, etc.) now get 6 universal follow-up questions via a
+    generic tree: duration, severity (slider), trajectory, functional
+    impact, fever, tried anything. Prevents immediate model prediction
+    without follow-up for uncommon complaints.
+  - Symptom parsing fixes:
+    "neck" patterns added to back_pain keywords (previously missed "my
+    neck is hurting"). back_pain.json updated with "Neck" as a location
+    option and label changed to "Back or Neck Pain".
+    eye_problem regex fixed: \beye\b → \beyes?\b (now matches "eyes").
+  - Safety bias thresholds raised:
+    P(L1) > 40% for any non-L1 → escalate to L1
+    P(L1) > 30% for Level 2-3 → escalate to L1
+    Previous thresholds (15%/25%) were too low for the MIMIC ED-population
+    bias (baseline P(L1) of ~15-25% even for benign cases). New thresholds
+    prevent false ER escalation for sore throat, rash, blurry vision,
+    mild headache, etc.
+  - Public reference rates updated:
+    Mortality rates in public_reference_rates.json updated with 0-7 day
+    and 8-30 day mortality from Arvig et al. WestJEM 2022 for chest_pain,
+    shortness_of_breath, abdominal_pain, fever, headache, weakness.
+
+
+================================================================================
+  END OF DOCUMENTATION
+================================================================================

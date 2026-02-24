@@ -1,0 +1,213 @@
+{
+  "symptom_id": "back_pain",
+  "label": "Back or Neck Pain",
+  "questions": [
+    {
+      "id": "location",
+      "text": "Where does it hurt the most?",
+      "type": "single_choice",
+      "options": [
+        {"value": "neck", "label": "Neck"},
+        {"value": "upper", "label": "Upper back (between the shoulder blades)"},
+        {"value": "mid", "label": "Middle of the back"},
+        {"value": "lower", "label": "Lower back"},
+        {"value": "tailbone", "label": "Near my tailbone"},
+        {"value": "one_side", "label": "Off to one side (flank area)"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset",
+      "text": "When did the back pain start?",
+      "type": "single_choice",
+      "options": [
+        {"value": "today", "label": "Today"},
+        {"value": "days", "label": "A few days ago"},
+        {"value": "weeks", "label": "A few weeks ago"},
+        {"value": "months", "label": "Months ago or longer"},
+        {"value": "sudden_worsening", "label": "I've had back pain before, but it suddenly got much worse"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "cause",
+      "text": "Did anything happen that might have caused the pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "lifting", "label": "I lifted something heavy"},
+        {"value": "fall", "label": "I fell"},
+        {"value": "accident", "label": "Car accident or other big impact"},
+        {"value": "twisting", "label": "I twisted or moved in an awkward way"},
+        {"value": "nothing", "label": "Nothing that I know of \u2013 it just started"},
+        {"value": "other", "label": "Something else"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "severity",
+      "text": "How bad is the pain right now? (0 = no pain, 10 = worst ever)",
+      "type": "single_choice",
+      "options": [
+        {"value": "mild", "label": "1\u20133 (Mild)"},
+        {"value": "moderate", "label": "4\u20136 (Medium)"},
+        {"value": "severe", "label": "7\u20139 (Bad)"},
+        {"value": "worst", "label": "10 (Worst ever)"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "quality",
+      "text": "What does the pain feel like?",
+      "type": "single_choice",
+      "options": [
+        {"value": "aching", "label": "Dull ache"},
+        {"value": "sharp", "label": "Sharp or stabbing"},
+        {"value": "shooting", "label": "Shooting (like electricity)"},
+        {"value": "burning", "label": "Burning"},
+        {"value": "spasm", "label": "Muscle spasm or cramping"},
+        {"value": "stiff", "label": "Stiffness more than pain"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "radiation_legs",
+      "text": "Does the pain travel down into your buttock or leg?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No, it stays in my back"},
+        {"value": "one_leg_above_knee", "label": "Yes, down one leg but only to the knee"},
+        {"value": "one_leg_below_knee", "label": "Yes, down one leg past the knee to the foot"},
+        {"value": "both_legs", "label": "Yes, down both legs"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "numbness_weakness",
+      "text": "Do you have any numbness, tingling, or weakness in your legs or feet?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "numbness", "label": "Yes, numbness or tingling"},
+        {"value": "weakness", "label": "Yes, weakness \u2013 my leg feels like it might give out"},
+        {"value": "both", "label": "Both numbness and weakness"},
+        {"value": "foot_drop", "label": "I'm having trouble lifting my foot or toes"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "saddle_area",
+      "text": "Do you have any numbness in the area where you would sit on a saddle (between your legs, around your private parts)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "bladder_bowel",
+      "text": "Have you had any new trouble peeing or controlling your bowels?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "retention", "label": "Yes, I can't pee even though I feel like I need to"},
+        {"value": "incontinence_urine", "label": "Yes, I'm leaking pee without meaning to"},
+        {"value": "incontinence_bowel", "label": "Yes, I can't control my bowels"},
+        {"value": "both", "label": "Yes, both bladder and bowel problems"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "fever",
+      "text": "Do you have a fever or feel feverish?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "weight_loss",
+      "text": "Have you lost weight without trying in the past few months?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "cancer_history",
+      "text": "Have you ever been told you have cancer?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes_active", "label": "Yes, and I'm still being treated or it might be back"},
+        {"value": "yes_past", "label": "Yes, but it was treated in the past"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "iv_drug_use",
+      "text": "Have you used any injected (IV) drugs recently?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "prefer_not", "label": "Prefer not to answer"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "night_pain",
+      "text": "Does the pain wake you up at night?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"saddle_area": ["yes"], "bladder_bowel": ["retention", "incontinence_urine", "incontinence_bowel", "both"]},
+      "message": "Numbness in the saddle area with bladder or bowel problems could be cauda equina syndrome. This is a surgical emergency that needs to be seen immediately."
+    },
+    {
+      "answer_pattern": {"numbness_weakness": ["weakness", "both", "foot_drop"], "radiation_legs": ["both_legs"]},
+      "message": "Leg weakness with pain going down both legs may mean serious nerve compression. This needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"fever": ["yes"], "iv_drug_use": ["yes"]},
+      "message": "Back pain with fever and IV drug use raises concern for a spinal infection. This needs urgent medical attention."
+    },
+    {
+      "answer_pattern": {"fever": ["yes"], "severity": ["severe", "worst"]},
+      "message": "Severe back pain with fever could be a spinal infection. This needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"cancer_history": ["yes_active"], "night_pain": ["yes"]},
+      "message": "New back pain in someone with a history of cancer, especially pain that wakes you at night, needs urgent evaluation to check for cancer spread."
+    },
+    {
+      "answer_pattern": {"cancer_history": ["yes_active"], "weight_loss": ["yes"]},
+      "message": "Back pain with weight loss and a cancer history is concerning for metastatic disease. This needs prompt imaging."
+    },
+    {
+      "answer_pattern": {"cause": ["fall", "accident"], "numbness_weakness": ["weakness", "both", "foot_drop"]},
+      "message": "Back pain with weakness after a fall or accident could mean a spinal injury. Keep still and get emergency help."
+    },
+    {
+      "answer_pattern": {"bladder_bowel": ["retention", "incontinence_urine", "incontinence_bowel", "both"]},
+      "message": "New bladder or bowel control problems with back pain need urgent medical evaluation."
+    },
+    {
+      "answer_pattern": {"numbness_weakness": ["foot_drop"]},
+      "message": "Trouble lifting your foot (foot drop) suggests significant nerve damage. This needs urgent evaluation."
+    }
+  ]
+}

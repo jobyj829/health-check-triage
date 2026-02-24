@@ -1,0 +1,128 @@
+[
+  {
+    "id": "chest_pain_sob",
+    "name": "Chest Pain + Shortness of Breath",
+    "description": "Chest pain with difficulty breathing may indicate a heart attack or pulmonary embolism.",
+    "conditions": {
+      "sym_chest_pain": 1,
+      "sym_shortness_of_breath": 1
+    },
+    "override_level": 1,
+    "message": "You mentioned chest pain AND trouble breathing. This combination needs emergency evaluation right away."
+  },
+  {
+    "id": "stroke_symptoms",
+    "name": "Possible Stroke",
+    "description": "Stroke symptoms require immediate emergency care (time-critical).",
+    "conditions": {
+      "sym_stroke_symptoms": 1
+    },
+    "override_level": 1,
+    "message": "Your symptoms may indicate a stroke. Call 911 or go to the nearest Emergency Department immediately. Time is critical."
+  },
+  {
+    "id": "cardiac_arrest",
+    "name": "Cardiac Arrest / Unresponsive",
+    "description": "Signs of cardiac arrest.",
+    "conditions": {
+      "sym_cardiac_arrest": 1
+    },
+    "override_level": 1,
+    "message": "This is a life-threatening emergency. Call 911 immediately."
+  },
+  {
+    "id": "anaphylaxis",
+    "name": "Severe Allergic Reaction",
+    "description": "Anaphylaxis can be fatal without immediate treatment.",
+    "conditions": {
+      "sym_anaphylaxis": 1
+    },
+    "override_level": 1,
+    "message": "A severe allergic reaction needs emergency treatment right away. If you have an EpiPen, use it now and call 911."
+  },
+  {
+    "id": "suicide_self_harm",
+    "name": "Suicidal Thoughts / Self-Harm",
+    "description": "Any mention of self-harm requires immediate crisis intervention.",
+    "conditions": {
+      "sym_suicide_self_harm": 1
+    },
+    "override_level": 1,
+    "message": "If you or someone you know is thinking about self-harm, please call 988 (Suicide & Crisis Lifeline) or go to your nearest Emergency Department now. You are not alone."
+  },
+  {
+    "id": "chest_pain_diabetes_elderly",
+    "name": "Chest Pain + Diabetes + Age > 40",
+    "description": "Diabetic patients over 40 with chest pain are at high risk for atypical MI.",
+    "conditions": {
+      "sym_chest_pain": 1,
+      "pmh_diabetes": 1
+    },
+    "age_min": 40,
+    "override_level": 1,
+    "message": "You mentioned chest pain and you have diabetes. People with diabetes can have heart attacks with unusual symptoms. Please go to the Emergency Department."
+  },
+  {
+    "id": "sob_heart_failure",
+    "name": "Shortness of Breath + Heart Problems",
+    "description": "Acute decompensated heart failure requires emergency care.",
+    "conditions": {
+      "sym_shortness_of_breath": 1,
+      "pmh_heart_problems": 1
+    },
+    "override_level": 1,
+    "message": "You're having trouble breathing and you have heart problems. This could mean your heart condition is getting worse. Please go to the Emergency Department."
+  },
+  {
+    "id": "gi_bleed",
+    "name": "Blood in Stool or Vomit",
+    "description": "GI bleeding can be life-threatening.",
+    "conditions": {
+      "sym_gi_bleed": 1
+    },
+    "override_level": 1,
+    "message": "Blood in your stool or vomit can be a sign of serious internal bleeding. Please go to the Emergency Department."
+  },
+  {
+    "id": "altered_mental_status",
+    "name": "Confusion / Not Acting Right",
+    "description": "Altered mental status has many dangerous causes.",
+    "conditions": {
+      "sym_altered_mental": 1
+    },
+    "override_level": 1,
+    "message": "Sudden confusion or change in behavior can be a sign of a serious medical problem. Please go to the Emergency Department."
+  },
+  {
+    "id": "seizure",
+    "name": "Seizure",
+    "description": "New or prolonged seizures need emergency evaluation.",
+    "conditions": {
+      "sym_seizure": 1
+    },
+    "override_level": 1,
+    "message": "Seizures need emergency medical evaluation. Please go to the Emergency Department."
+  },
+  {
+    "id": "allergic_reaction_breathing",
+    "name": "Allergic Reaction + Breathing Difficulty",
+    "description": "Allergic reaction with breathing problems suggests anaphylaxis.",
+    "conditions": {
+      "sym_allergic_reaction": 1,
+      "sym_shortness_of_breath": 1
+    },
+    "override_level": 1,
+    "message": "An allergic reaction that makes it hard to breathe is an emergency. If you have an EpiPen, use it and call 911."
+  },
+  {
+    "id": "abd_pain_blood_thinners",
+    "name": "Abdominal Pain + Blood Thinners",
+    "description": "Patients on anticoagulants with acute abdominal pain may have internal bleeding.",
+    "conditions": {
+      "sym_abdominal_pain": 1,
+      "pmh_blood_thinner___clots": 1
+    },
+    "override_level": 1,
+    "message": "You have belly pain and you take blood thinners. This combination could indicate internal bleeding. Please go to the Emergency Department."
+  }
+]

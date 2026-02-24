@@ -1,0 +1,232 @@
+{
+  "symptom_id": "abdominal_pain",
+  "label": "Belly Pain",
+  "questions": [
+    {
+      "id": "location",
+      "text": "Where does your belly hurt the most? (Pick the area closest to where you feel the pain.)",
+      "type": "single_choice",
+      "options": [
+        {"value": "upper_right", "label": "Upper right side (near ribs on the right)"},
+        {"value": "upper_left", "label": "Upper left side (near ribs on the left)"},
+        {"value": "upper_middle", "label": "Upper middle (just below the chest)"},
+        {"value": "lower_right", "label": "Lower right side"},
+        {"value": "lower_left", "label": "Lower left side"},
+        {"value": "lower_middle", "label": "Lower middle (below the belly button)"},
+        {"value": "around_navel", "label": "Around the belly button"},
+        {"value": "flank_right", "label": "Right side toward the back"},
+        {"value": "flank_left", "label": "Left side toward the back"},
+        {"value": "all_over", "label": "All over my belly"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "quality",
+      "text": "What does the pain feel like?",
+      "type": "single_choice",
+      "options": [
+        {"value": "crampy", "label": "Crampy (comes in waves)"},
+        {"value": "sharp", "label": "Sharp or stabbing"},
+        {"value": "constant_dull", "label": "Constant dull ache"},
+        {"value": "burning", "label": "Burning"},
+        {"value": "pressure", "label": "Pressure or fullness"},
+        {"value": "colicky", "label": "Comes and goes, very intense each time"},
+        {"value": "other", "label": "Something else"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset",
+      "text": "When did the belly pain start?",
+      "type": "single_choice",
+      "options": [
+        {"value": "hours_lt_6", "label": "Less than 6 hours ago"},
+        {"value": "hours_6_24", "label": "6 to 24 hours ago"},
+        {"value": "days_1_3", "label": "1 to 3 days ago"},
+        {"value": "days_gt_3", "label": "More than 3 days ago"},
+        {"value": "weeks", "label": "More than a week ago"},
+        {"value": "recurring", "label": "It keeps coming back over weeks or months"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset_type",
+      "text": "Did the pain come on suddenly or slowly?",
+      "type": "single_choice",
+      "options": [
+        {"value": "sudden", "label": "Suddenly \u2013 it hit me all at once"},
+        {"value": "gradual", "label": "Slowly \u2013 it built up over time"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "severity",
+      "text": "How bad is the pain right now? (0 = no pain, 10 = worst ever)",
+      "type": "single_choice",
+      "options": [
+        {"value": "mild", "label": "1\u20133 (Mild)"},
+        {"value": "moderate", "label": "4\u20136 (Medium)"},
+        {"value": "severe", "label": "7\u20139 (Bad)"},
+        {"value": "worst", "label": "10 (Worst ever)"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "vomiting",
+      "text": "Have you been throwing up?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes_few", "label": "Yes, a few times"},
+        {"value": "yes_many", "label": "Yes, many times"},
+        {"value": "yes_blood", "label": "Yes, and there was blood in it"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "diarrhea",
+      "text": "Have you had loose or watery poop (diarrhea)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes", "label": "Yes"},
+        {"value": "yes_bloody", "label": "Yes, and there was blood in it"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "blood_stool",
+      "text": "Have you seen blood when you go to the bathroom (in your poop or on the toilet paper)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "bright_red", "label": "Yes, bright red blood"},
+        {"value": "dark_black", "label": "Yes, dark or black colored poop"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "fever",
+      "text": "Do you have a fever or feel hot and chilly?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "eating_drinking",
+      "text": "Are you able to eat and drink without the pain getting much worse?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, I can eat and drink okay"},
+        {"value": "liquids_only", "label": "I can only drink liquids"},
+        {"value": "nothing", "label": "I can't keep anything down"},
+        {"value": "worse_after_eating", "label": "The pain gets worse after I eat"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "bowel_changes",
+      "text": "Have you been able to pass gas or have a bowel movement (poop) recently?",
+      "type": "single_choice",
+      "options": [
+        {"value": "normal", "label": "Yes, everything seems normal"},
+        {"value": "constipated", "label": "No, I haven't been able to go"},
+        {"value": "gas_only", "label": "I can pass gas but not poop"},
+        {"value": "diarrhea_only", "label": "Only diarrhea"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "urinary_symptoms",
+      "text": "Does it burn when you pee, or are you peeing much more often than usual?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "burning", "label": "Yes, it burns when I pee"},
+        {"value": "frequency", "label": "Yes, I'm peeing much more often"},
+        {"value": "both", "label": "Both burning and going more often"},
+        {"value": "blood_urine", "label": "There's blood in my pee"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "pregnancy_possible",
+      "text": "Is there any chance you could be pregnant?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, possibly"},
+        {"value": "no", "label": "No"},
+        {"value": "confirmed", "label": "Yes, I know I am pregnant"},
+        {"value": "not_applicable", "label": "Does not apply to me"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "last_period",
+      "text": "When was your last period?",
+      "type": "single_choice",
+      "options": [
+        {"value": "normal_recent", "label": "Within the last month and normal"},
+        {"value": "late", "label": "It's late or I missed it"},
+        {"value": "irregular", "label": "My periods are not regular"},
+        {"value": "not_applicable", "label": "Does not apply to me"}
+      ],
+      "condition": {"question_id": "pregnancy_possible", "values": ["yes", "confirmed"]}
+    },
+    {
+      "id": "recent_surgery_trauma",
+      "text": "Have you had belly surgery or a belly injury recently?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes_surgery", "label": "Yes, I had surgery recently"},
+        {"value": "yes_injury", "label": "Yes, I was hit or hurt in the belly"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"location": ["lower_right"], "onset_type": ["sudden"], "fever": ["yes"]},
+      "message": "Sudden lower right belly pain with fever could be a sign of appendicitis. This needs to be checked right away."
+    },
+    {
+      "answer_pattern": {"location": ["upper_right"], "quality": ["colicky", "sharp"], "vomiting": ["yes_few", "yes_many"]},
+      "message": "Sharp upper right belly pain with throwing up may be a gallbladder problem."
+    },
+    {
+      "answer_pattern": {"severity": ["severe", "worst"], "onset_type": ["sudden"], "vomiting": ["yes_many"]},
+      "message": "Sudden severe belly pain with a lot of throwing up needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"bowel_changes": ["constipated"], "vomiting": ["yes_many"], "all_over": ["all_over"]},
+      "message": "Belly pain all over with inability to poop and repeated throwing up could mean a bowel blockage."
+    },
+    {
+      "answer_pattern": {"blood_stool": ["bright_red", "dark_black"]},
+      "message": "Blood in your poop (bright red or dark/black) needs urgent medical attention."
+    },
+    {
+      "answer_pattern": {"vomiting": ["yes_blood"]},
+      "message": "Throwing up blood is a serious sign. This needs to be evaluated immediately."
+    },
+    {
+      "answer_pattern": {"pregnancy_possible": ["yes", "confirmed"], "location": ["lower_right", "lower_left"], "severity": ["severe", "worst"]},
+      "message": "Severe lower belly pain with possible pregnancy could be an ectopic pregnancy. This is a medical emergency."
+    },
+    {
+      "answer_pattern": {"location": ["flank_right", "flank_left"], "quality": ["colicky"], "urinary_symptoms": ["burning", "blood_urine", "both"]},
+      "message": "Waves of side pain with urinary symptoms may be a kidney stone."
+    },
+    {
+      "answer_pattern": {"severity": ["severe", "worst"], "fever": ["yes"], "eating_drinking": ["nothing"]},
+      "message": "Severe belly pain with fever and inability to keep food or drinks down needs urgent care."
+    }
+  ]
+}

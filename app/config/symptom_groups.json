@@ -1,0 +1,74 @@
+[
+  {
+    "id": "chest",
+    "label": "Chest pain or pressure",
+    "icon": "heart",
+    "maps_to": ["chest_pain", "palpitations"]
+  },
+  {
+    "id": "breathing",
+    "label": "Hard to breathe",
+    "icon": "lungs",
+    "maps_to": ["shortness_of_breath", "cough", "sore_throat"]
+  },
+  {
+    "id": "belly",
+    "label": "Stomach or belly problems",
+    "icon": "stomach",
+    "maps_to": ["abdominal_pain", "nausea_vomiting", "diarrhea", "gi_bleed", "constipation"]
+  },
+  {
+    "id": "fever",
+    "label": "Fever or feeling sick",
+    "icon": "thermometer",
+    "maps_to": ["fever", "weakness"]
+  },
+  {
+    "id": "headache",
+    "label": "Headache",
+    "icon": "head",
+    "maps_to": ["headache"]
+  },
+  {
+    "id": "dizzy",
+    "label": "Dizzy, faint, or confused",
+    "icon": "dizzy",
+    "maps_to": ["dizziness", "altered_mental", "cardiac_arrest", "stroke_symptoms"]
+  },
+  {
+    "id": "injury",
+    "label": "Hurt or injured",
+    "icon": "bandage",
+    "maps_to": ["injury_fall", "fracture", "laceration"]
+  },
+  {
+    "id": "body_pain",
+    "label": "Arm, leg, or back pain",
+    "icon": "body",
+    "maps_to": ["extremity_pain", "back_pain", "numbness"]
+  },
+  {
+    "id": "skin",
+    "label": "Skin problem or allergic reaction",
+    "icon": "skin",
+    "maps_to": ["rash", "swelling", "allergic_reaction", "anaphylaxis"]
+  },
+  {
+    "id": "bathroom",
+    "label": "Bathroom problems",
+    "icon": "bathroom",
+    "maps_to": ["urinary", "vaginal_bleeding", "pelvic_pain"]
+  },
+  {
+    "id": "mental",
+    "label": "Feeling very anxious, sad, or having scary thoughts",
+    "icon": "brain",
+    "maps_to": ["anxiety_depression", "suicide_self_harm", "psychosis", "substance_use"]
+  },
+  {
+    "id": "other",
+    "label": "Something else",
+    "icon": "question",
+    "maps_to": ["other", "abnormal_labs", "medication_refill", "follow_up", "eye_problem", "ear_problem", "nosebleed", "pregnancy_related"]
+  }
+]

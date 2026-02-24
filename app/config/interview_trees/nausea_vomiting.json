@@ -1,0 +1,231 @@
+{
+  "symptom_id": "nausea_vomiting",
+  "label": "Nausea and Throwing Up",
+  "questions": [
+    {
+      "id": "primary_symptom",
+      "text": "Which best describes what you're going through?",
+      "type": "single_choice",
+      "options": [
+        {"value": "nausea_only", "label": "I feel sick to my stomach but haven't thrown up"},
+        {"value": "vomiting_few", "label": "I've thrown up a few times"},
+        {"value": "vomiting_many", "label": "I've thrown up many times"},
+        {"value": "dry_heaving", "label": "I'm dry heaving (trying to throw up but nothing comes out)"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "duration",
+      "text": "How long has this been going on?",
+      "type": "single_choice",
+      "options": [
+        {"value": "hours", "label": "A few hours"},
+        {"value": "1_day", "label": "About a day"},
+        {"value": "2_3_days", "label": "2 to 3 days"},
+        {"value": "gt_3_days", "label": "More than 3 days"},
+        {"value": "weeks", "label": "On and off for weeks"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "frequency",
+      "text": "How often are you throwing up?",
+      "type": "single_choice",
+      "options": [
+        {"value": "once_twice", "label": "Just once or twice total"},
+        {"value": "few_per_day", "label": "A few times a day"},
+        {"value": "many_per_day", "label": "Many times a day (more than 5)"},
+        {"value": "continuous", "label": "Almost non-stop"},
+        {"value": "not_vomiting", "label": "I haven't thrown up, just feeling sick"}
+      ],
+      "condition": {"question_id": "primary_symptom", "values": ["vomiting_few", "vomiting_many"]}
+    },
+    {
+      "id": "vomit_contents",
+      "text": "What does the vomit look like?",
+      "type": "single_choice",
+      "options": [
+        {"value": "food", "label": "Food I ate"},
+        {"value": "yellow_green", "label": "Yellow or green (bile)"},
+        {"value": "blood_red", "label": "Bright red blood"},
+        {"value": "blood_coffee", "label": "Dark brown, like coffee grounds"},
+        {"value": "clear", "label": "Clear or watery"},
+        {"value": "not_vomiting", "label": "I haven't thrown up"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "keep_fluids_down",
+      "text": "Can you keep liquids down (water, juice, etc.)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, I can drink small sips"},
+        {"value": "sometimes", "label": "Sometimes, but not always"},
+        {"value": "no", "label": "No, everything comes right back up"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "dehydration_signs",
+      "text": "Do you have any of these signs? Dry mouth, not peeing much, feeling very thirsty, or feeling dizzy when you stand up?",
+      "type": "single_choice",
+      "options": [
+        {"value": "none", "label": "No, none of these"},
+        {"value": "mild", "label": "Dry mouth and feeling thirsty"},
+        {"value": "moderate", "label": "Not peeing much and dizzy when I stand"},
+        {"value": "severe", "label": "All of these and I feel very weak"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "belly_pain",
+      "text": "Do you have belly pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "mild_crampy", "label": "Mild cramps"},
+        {"value": "moderate", "label": "Moderate pain"},
+        {"value": "severe", "label": "Bad belly pain"},
+        {"value": "worst", "label": "Worst belly pain I've had"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "belly_pain_location",
+      "text": "Where is the belly pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "upper_middle", "label": "Upper middle (just below the chest)"},
+        {"value": "upper_right", "label": "Upper right side"},
+        {"value": "lower_right", "label": "Lower right side"},
+        {"value": "lower", "label": "Lower belly"},
+        {"value": "all_over", "label": "All over"},
+        {"value": "not_applicable", "label": "I don't have belly pain"}
+      ],
+      "condition": {"question_id": "belly_pain", "values": ["mild_crampy", "moderate", "severe", "worst"]}
+    },
+    {
+      "id": "diarrhea",
+      "text": "Do you also have loose or watery poop (diarrhea)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes", "label": "Yes"},
+        {"value": "yes_bloody", "label": "Yes, and there's blood in it"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "fever",
+      "text": "Do you have a fever or feel feverish?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "headache",
+      "text": "Do you have a headache?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "mild", "label": "Mild headache"},
+        {"value": "severe", "label": "Severe headache"},
+        {"value": "worst_ever", "label": "Worst headache of my life"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "possible_food",
+      "text": "Did you eat anything unusual, or could this be food poisoning?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes_suspicious", "label": "Yes, I ate something I think might be the cause"},
+        {"value": "others_sick", "label": "Yes, and other people who ate the same thing are sick too"},
+        {"value": "no", "label": "No, nothing unusual"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "pregnancy_possible",
+      "text": "Is there any chance you could be pregnant?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, possibly"},
+        {"value": "confirmed", "label": "Yes, I am pregnant"},
+        {"value": "no", "label": "No"},
+        {"value": "not_applicable", "label": "Does not apply to me"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "medications_substances",
+      "text": "Did you recently start a new medicine, or have you taken any drugs or alcohol?",
+      "type": "single_choice",
+      "options": [
+        {"value": "new_medication", "label": "Yes, I started a new medicine"},
+        {"value": "alcohol", "label": "Yes, I drank alcohol"},
+        {"value": "drugs", "label": "Yes, I took a drug or substance"},
+        {"value": "overdose", "label": "I may have taken too much of something"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "chest_pain",
+      "text": "Do you have chest pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes", "label": "Yes"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"vomit_contents": ["blood_red", "blood_coffee"]},
+      "message": "Throwing up blood (bright red or dark like coffee grounds) is a serious sign of bleeding. This needs immediate medical attention."
+    },
+    {
+      "answer_pattern": {"keep_fluids_down": ["no"], "dehydration_signs": ["severe"]},
+      "message": "Not being able to keep fluids down with severe signs of dehydration needs urgent IV fluids and medical care."
+    },
+    {
+      "answer_pattern": {"headache": ["worst_ever"]},
+      "message": "Throwing up with the worst headache of your life could be a sign of bleeding in the brain. This is an emergency."
+    },
+    {
+      "answer_pattern": {"belly_pain": ["severe", "worst"], "belly_pain_location": ["lower_right"]},
+      "message": "Throwing up with bad pain in the lower right belly could be appendicitis. This needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"belly_pain": ["severe", "worst"], "fever": ["yes"]},
+      "message": "Throwing up with bad belly pain and fever could be a serious belly infection. This needs urgent care."
+    },
+    {
+      "answer_pattern": {"medications_substances": ["overdose"]},
+      "message": "A possible overdose is a medical emergency. Please tell the medical team exactly what was taken and how much."
+    },
+    {
+      "answer_pattern": {"chest_pain": ["yes"]},
+      "message": "Throwing up with chest pain could be a sign of a heart attack. This needs immediate evaluation."
+    },
+    {
+      "answer_pattern": {"pregnancy_possible": ["confirmed"], "keep_fluids_down": ["no"], "dehydration_signs": ["moderate", "severe"]},
+      "message": "Severe vomiting during pregnancy with dehydration may be hyperemesis and needs urgent treatment with IV fluids."
+    },
+    {
+      "answer_pattern": {"diarrhea": ["yes_bloody"], "fever": ["yes"]},
+      "message": "Throwing up with bloody diarrhea and fever could be a serious gut infection. This needs prompt medical evaluation."
+    },
+    {
+      "answer_pattern": {"duration": ["gt_3_days", "weeks"], "keep_fluids_down": ["no"]},
+      "message": "Not being able to keep fluids down for more than 3 days needs urgent medical attention to prevent dangerous dehydration."
+    }
+  ]
+}

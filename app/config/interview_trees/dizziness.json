@@ -1,0 +1,211 @@
+{
+  "symptom_id": "dizziness",
+  "label": "Dizziness",
+  "questions": [
+    {
+      "id": "type",
+      "text": "Which best describes how you feel?",
+      "type": "single_choice",
+      "options": [
+        {"value": "spinning", "label": "The room is spinning around me (or I feel like I'm spinning)"},
+        {"value": "lightheaded", "label": "Lightheaded, like I might faint"},
+        {"value": "off_balance", "label": "Off balance or unsteady, like I might fall"},
+        {"value": "floating", "label": "A floating or rocking feeling"},
+        {"value": "unsure", "label": "I'm not sure how to describe it"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset",
+      "text": "When did the dizziness start?",
+      "type": "single_choice",
+      "options": [
+        {"value": "minutes", "label": "A few minutes ago"},
+        {"value": "hours", "label": "A few hours ago"},
+        {"value": "today", "label": "Sometime today"},
+        {"value": "days", "label": "A few days ago"},
+        {"value": "weeks", "label": "Weeks ago or longer"},
+        {"value": "recurring", "label": "It comes and goes"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset_type",
+      "text": "Did the dizziness come on suddenly or slowly?",
+      "type": "single_choice",
+      "options": [
+        {"value": "sudden", "label": "Suddenly"},
+        {"value": "gradual", "label": "Slowly"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "duration_episodes",
+      "text": "When you feel dizzy, how long does it last?",
+      "type": "single_choice",
+      "options": [
+        {"value": "seconds", "label": "A few seconds"},
+        {"value": "minutes", "label": "A few minutes"},
+        {"value": "hours", "label": "Hours"},
+        {"value": "constant", "label": "It hasn't stopped"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "triggers",
+      "text": "Does anything make the dizziness worse?",
+      "type": "single_choice",
+      "options": [
+        {"value": "head_movement", "label": "Moving my head or rolling over in bed"},
+        {"value": "standing_up", "label": "Standing up from sitting or lying down"},
+        {"value": "walking", "label": "Walking"},
+        {"value": "nothing", "label": "Nothing in particular \u2013 it's constant"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "hearing_changes",
+      "text": "Have you noticed any changes in your hearing?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "hearing_loss", "label": "Yes, hearing is worse in one or both ears"},
+        {"value": "ringing", "label": "Yes, ringing or buzzing in my ear(s)"},
+        {"value": "fullness", "label": "One ear feels full or plugged"},
+        {"value": "both_loss_ringing", "label": "Both hearing loss and ringing"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "nausea_vomiting",
+      "text": "Do you feel sick to your stomach or have you thrown up?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "nausea", "label": "Feeling sick to my stomach"},
+        {"value": "vomiting", "label": "I have thrown up"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "weakness_one_side",
+      "text": "Do you have any weakness or numbness on one side of your body (face, arm, or leg)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "face", "label": "Yes, one side of my face feels weak or droopy"},
+        {"value": "arm_leg", "label": "Yes, one arm or leg feels weak or numb"},
+        {"value": "both_face_limb", "label": "Yes, both face and arm or leg on one side"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "speech_vision",
+      "text": "Are you having trouble speaking, seeing, or swallowing?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "speech", "label": "Trouble speaking or slurred speech"},
+        {"value": "vision", "label": "Double vision or vision loss"},
+        {"value": "swallowing", "label": "Trouble swallowing"},
+        {"value": "multiple", "label": "More than one of these"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "walking_difficulty",
+      "text": "Are you able to walk in a straight line, or do you veer to one side?",
+      "type": "single_choice",
+      "options": [
+        {"value": "normal", "label": "I can walk normally"},
+        {"value": "unsteady", "label": "I'm unsteady but can walk"},
+        {"value": "veering", "label": "I keep veering to one side"},
+        {"value": "cannot_walk", "label": "I can't walk at all"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "chest_pain",
+      "text": "Do you have chest pain or a fast or pounding heartbeat?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "chest_pain", "label": "Yes, chest pain"},
+        {"value": "palpitations", "label": "Yes, fast or pounding heartbeat"},
+        {"value": "both", "label": "Both chest pain and fast heartbeat"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "headache",
+      "text": "Do you have a headache?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "mild", "label": "Mild headache"},
+        {"value": "severe", "label": "Severe headache"},
+        {"value": "worst_ever", "label": "Worst headache of my life"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "fainted",
+      "text": "Did you pass out or almost pass out?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "almost", "label": "I almost passed out (got very close)"},
+        {"value": "yes", "label": "Yes, I passed out"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "medications",
+      "text": "Did you recently start a new medicine or change the dose of one you already take?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"weakness_one_side": ["face", "arm_leg", "both_face_limb"]},
+      "message": "Dizziness with weakness or numbness on one side of the body could be a stroke. This is an emergency \u2013 call 911."
+    },
+    {
+      "answer_pattern": {"speech_vision": ["speech", "multiple"]},
+      "message": "Dizziness with trouble speaking or slurred speech could be a stroke. This is an emergency \u2013 call 911."
+    },
+    {
+      "answer_pattern": {"speech_vision": ["vision"], "walking_difficulty": ["veering", "cannot_walk"]},
+      "message": "Dizziness with double vision and trouble walking could be a stroke affecting the back of the brain. This needs immediate evaluation."
+    },
+    {
+      "answer_pattern": {"headache": ["worst_ever"], "onset_type": ["sudden"]},
+      "message": "Sudden dizziness with the worst headache of your life could be bleeding in the brain. This is an emergency."
+    },
+    {
+      "answer_pattern": {"fainted": ["yes"], "chest_pain": ["chest_pain", "both"]},
+      "message": "Passing out with chest pain may be a heart problem. This needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"type": ["spinning"], "hearing_changes": ["hearing_loss", "both_loss_ringing"]},
+      "message": "Spinning dizziness with hearing loss could be Meniere's disease or another inner ear problem that needs medical evaluation."
+    },
+    {
+      "answer_pattern": {"walking_difficulty": ["cannot_walk"], "onset_type": ["sudden"]},
+      "message": "Sudden dizziness so severe you can't walk needs emergency evaluation to rule out stroke."
+    },
+    {
+      "answer_pattern": {"fainted": ["yes"], "chest_pain": ["palpitations", "both"]},
+      "message": "Passing out with a fast or irregular heartbeat could mean a dangerous heart rhythm. This needs immediate medical care."
+    }
+  ]
+}

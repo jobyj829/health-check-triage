@@ -1,0 +1,792 @@
+{
+  "total_patients": 425011,
+  "level_distribution": {
+    "1": {
+      "count": 208054,
+      "pct": 49.0,
+      "label": "Emergency Department"
+    },
+    "4": {
+      "count": 63120,
+      "pct": 14.9,
+      "label": "Specialist"
+    },
+    "5": {
+      "count": 62788,
+      "pct": 14.8,
+      "label": "Reassurance"
+    },
+    "3": {
+      "count": 56598,
+      "pct": 13.3,
+      "label": "Primary Care"
+    },
+    "2": {
+      "count": 34451,
+      "pct": 8.1,
+      "label": "Urgent Care"
+    }
+  },
+  "by_symptom": {
+    "cardiac_arrest": {
+      "label": "Heart Stopped / Not Responsive",
+      "n": 710,
+      "level_pcts": {
+        "1": 82.5,
+        "2": 16.2,
+        "3": 0.6,
+        "4": 0.0,
+        "5": 0.7
+      },
+      "icu_rate": 55.5,
+      "mortality_rate": 33.9,
+      "model_pred_pcts": {
+        "1": 100.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      }
+    },
+    "stroke_symptoms": {
+      "label": "Stroke Symptoms",
+      "n": 3077,
+      "level_pcts": {
+        "1": 86.0,
+        "2": 4.2,
+        "3": 6.7,
+        "4": 0.3,
+        "5": 2.8
+      },
+      "icu_rate": 33.7,
+      "mortality_rate": 4.5,
+      "model_pred_pcts": {
+        "1": 99.2,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.5,
+        "5": 0.3
+      }
+    },
+    "anaphylaxis": {
+      "label": "Severe Allergic Reaction",
+      "n": 78,
+      "level_pcts": {
+        "1": 82.1,
+        "2": 5.1,
+        "3": 9.0,
+        "4": 1.3,
+        "5": 2.6
+      },
+      "icu_rate": 44.9,
+      "mortality_rate": 0.0
+    },
+    "suicide_self_harm": {
+      "label": "Thoughts of Self-Harm",
+      "n": 1743,
+      "level_pcts": {
+        "1": 75.7,
+        "2": 6.8,
+        "3": 11.5,
+        "4": 0.8,
+        "5": 5.3
+      },
+      "icu_rate": 14.8,
+      "mortality_rate": 0.5,
+      "model_pred_pcts": {
+        "1": 98.9,
+        "2": 0.0,
+        "3": 0.3,
+        "4": 0.0,
+        "5": 0.9
+      }
+    },
+    "psychosis": {
+      "label": "Seeing / Hearing Things",
+      "n": 294,
+      "level_pcts": {
+        "1": 88.8,
+        "2": 1.7,
+        "3": 5.4,
+        "4": 1.7,
+        "5": 2.4
+      },
+      "icu_rate": 1.0,
+      "mortality_rate": 0.3,
+      "model_pred_pcts": {
+        "1": 100.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      }
+    },
+    "altered_mental": {
+      "label": "Confusion / Not Acting Right",
+      "n": 6932,
+      "level_pcts": {
+        "1": 87.4,
+        "2": 1.4,
+        "3": 7.0,
+        "4": 0.5,
+        "5": 3.6
+      },
+      "icu_rate": 28.5,
+      "mortality_rate": 5.7,
+      "model_pred_pcts": {
+        "1": 100.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      }
+    },
+    "chest_pain": {
+      "label": "Chest Pain",
+      "n": 29281,
+      "level_pcts": {
+        "1": 55.8,
+        "2": 7.6,
+        "3": 27.5,
+        "4": 1.8,
+        "5": 7.3
+      },
+      "icu_rate": 5.4,
+      "mortality_rate": 0.4,
+      "model_pred_pcts": {
+        "1": 75.4,
+        "2": 0.9,
+        "3": 22.9,
+        "4": 0.2,
+        "5": 0.6
+      }
+    },
+    "shortness_of_breath": {
+      "label": "Trouble Breathing",
+      "n": 22656,
+      "level_pcts": {
+        "1": 73.7,
+        "2": 5.0,
+        "3": 15.1,
+        "4": 1.2,
+        "5": 5.0
+      },
+      "icu_rate": 17.8,
+      "mortality_rate": 2.8,
+      "model_pred_pcts": {
+        "1": 92.6,
+        "2": 0.7,
+        "3": 5.9,
+        "4": 0.4,
+        "5": 0.4
+      }
+    },
+    "palpitations": {
+      "label": "Heart Racing / Fluttering",
+      "n": 480,
+      "level_pcts": {
+        "1": 61.9,
+        "2": 15.6,
+        "3": 19.6,
+        "4": 0.4,
+        "5": 2.5
+      },
+      "icu_rate": 9.8,
+      "mortality_rate": 1.7,
+      "model_pred_pcts": {
+        "1": 97.8,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 2.2
+      }
+    },
+    "cough": {
+      "label": "Cough / Cold Symptoms",
+      "n": 9393,
+      "level_pcts": {
+        "1": 46.4,
+        "2": 11.9,
+        "3": 16.1,
+        "4": 5.7,
+        "5": 19.9
+      },
+      "icu_rate": 7.1,
+      "mortality_rate": 1.0,
+      "model_pred_pcts": {
+        "1": 79.9,
+        "2": 3.1,
+        "3": 3.4,
+        "4": 1.4,
+        "5": 12.2
+      }
+    },
+    "sore_throat": {
+      "label": "Sore Throat",
+      "n": 4523,
+      "level_pcts": {
+        "1": 18.5,
+        "2": 10.0,
+        "3": 9.8,
+        "4": 30.1,
+        "5": 31.6
+      },
+      "icu_rate": 1.7,
+      "mortality_rate": 0.0,
+      "model_pred_pcts": {
+        "1": 32.7,
+        "2": 0.0,
+        "3": 1.0,
+        "4": 50.5,
+        "5": 15.9
+      }
+    },
+    "abdominal_pain": {
+      "label": "Belly Pain",
+      "n": 55896,
+      "level_pcts": {
+        "1": 48.0,
+        "2": 4.0,
+        "3": 13.6,
+        "4": 1.7,
+        "5": 32.7
+      },
+      "icu_rate": 4.1,
+      "mortality_rate": 0.6,
+      "model_pred_pcts": {
+        "1": 63.3,
+        "2": 0.0,
+        "3": 0.7,
+        "4": 0.1,
+        "5": 35.9
+      }
+    },
+    "nausea_vomiting": {
+      "label": "Nausea / Throwing Up",
+      "n": 20157,
+      "level_pcts": {
+        "1": 49.5,
+        "2": 2.9,
+        "3": 10.2,
+        "4": 2.2,
+        "5": 35.2
+      },
+      "icu_rate": 5.7,
+      "mortality_rate": 0.7,
+      "model_pred_pcts": {
+        "1": 63.3,
+        "2": 0.0,
+        "3": 0.4,
+        "4": 0.1,
+        "5": 36.2
+      }
+    },
+    "gi_bleed": {
+      "label": "Blood in Stool or Vomit",
+      "n": 6799,
+      "level_pcts": {
+        "1": 72.3,
+        "2": 6.5,
+        "3": 12.4,
+        "4": 0.2,
+        "5": 8.5
+      },
+      "icu_rate": 19.9,
+      "mortality_rate": 1.7,
+      "model_pred_pcts": {
+        "1": 92.4,
+        "2": 2.5,
+        "3": 0.3,
+        "4": 0.4,
+        "5": 4.5
+      }
+    },
+    "fever": {
+      "label": "Fever / Chills",
+      "n": 18866,
+      "level_pcts": {
+        "1": 59.3,
+        "2": 7.1,
+        "3": 15.0,
+        "4": 5.4,
+        "5": 13.1
+      },
+      "icu_rate": 8.7,
+      "mortality_rate": 0.8,
+      "model_pred_pcts": {
+        "1": 81.8,
+        "2": 0.6,
+        "3": 1.2,
+        "4": 3.0,
+        "5": 13.4
+      }
+    },
+    "headache": {
+      "label": "Headache",
+      "n": 13780,
+      "level_pcts": {
+        "1": 28.0,
+        "2": 5.9,
+        "3": 15.5,
+        "4": 8.0,
+        "5": 42.8
+      },
+      "icu_rate": 4.7,
+      "mortality_rate": 0.2,
+      "model_pred_pcts": {
+        "1": 27.0,
+        "2": 0.0,
+        "3": 1.3,
+        "4": 3.3,
+        "5": 68.4
+      }
+    },
+    "dizziness": {
+      "label": "Dizziness / Feeling Faint",
+      "n": 2348,
+      "level_pcts": {
+        "1": 40.9,
+        "2": 6.6,
+        "3": 15.8,
+        "4": 4.2,
+        "5": 32.5
+      },
+      "icu_rate": 3.8,
+      "mortality_rate": 0.2,
+      "model_pred_pcts": {
+        "1": 81.4,
+        "2": 0.2,
+        "3": 2.7,
+        "4": 2.0,
+        "5": 13.6
+      }
+    },
+    "weakness": {
+      "label": "Feeling Weak / Tired",
+      "n": 14052,
+      "level_pcts": {
+        "1": 73.0,
+        "2": 2.5,
+        "3": 11.7,
+        "4": 2.7,
+        "5": 10.2
+      },
+      "icu_rate": 12.3,
+      "mortality_rate": 2.1,
+      "model_pred_pcts": {
+        "1": 97.0,
+        "2": 0.0,
+        "3": 0.3,
+        "4": 0.8,
+        "5": 1.9
+      }
+    },
+    "back_pain": {
+      "label": "Back Pain",
+      "n": 17080,
+      "level_pcts": {
+        "1": 30.4,
+        "2": 3.4,
+        "3": 7.8,
+        "4": 41.0,
+        "5": 17.4
+      },
+      "icu_rate": 2.2,
+      "mortality_rate": 0.3,
+      "model_pred_pcts": {
+        "1": 35.3,
+        "2": 0.0,
+        "3": 1.3,
+        "4": 60.5,
+        "5": 3.0
+      }
+    },
+    "injury_fall": {
+      "label": "Injury / Fall",
+      "n": 34569,
+      "level_pcts": {
+        "1": 45.5,
+        "2": 8.3,
+        "3": 11.4,
+        "4": 28.7,
+        "5": 6.2
+      },
+      "icu_rate": 7.7,
+      "mortality_rate": 1.0,
+      "model_pred_pcts": {
+        "1": 66.7,
+        "2": 0.0,
+        "3": 0.2,
+        "4": 32.7,
+        "5": 0.4
+      }
+    },
+    "fracture": {
+      "label": "Possible Broken Bone",
+      "n": 144,
+      "level_pcts": {
+        "1": 54.2,
+        "2": 7.6,
+        "3": 11.8,
+        "4": 19.4,
+        "5": 6.9
+      },
+      "icu_rate": 6.2,
+      "mortality_rate": 0.7,
+      "model_pred_pcts": {
+        "1": 78.8,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 18.2,
+        "5": 3.0
+      }
+    },
+    "extremity_pain": {
+      "label": "Arm / Leg / Joint Pain",
+      "n": 30402,
+      "level_pcts": {
+        "1": 29.6,
+        "2": 6.0,
+        "3": 7.5,
+        "4": 50.5,
+        "5": 6.5
+      },
+      "icu_rate": 1.5,
+      "mortality_rate": 0.2,
+      "model_pred_pcts": {
+        "1": 24.9,
+        "2": 0.0,
+        "3": 0.9,
+        "4": 74.1,
+        "5": 0.1
+      }
+    },
+    "laceration": {
+      "label": "Cut / Wound",
+      "n": 8837,
+      "level_pcts": {
+        "1": 44.8,
+        "2": 10.4,
+        "3": 11.7,
+        "4": 23.1,
+        "5": 9.9
+      },
+      "icu_rate": 3.6,
+      "mortality_rate": 0.5,
+      "model_pred_pcts": {
+        "1": 76.7,
+        "2": 0.1,
+        "3": 0.1,
+        "4": 22.5,
+        "5": 0.7
+      }
+    },
+    "urinary": {
+      "label": "Urinary Problems",
+      "n": 12634,
+      "level_pcts": {
+        "1": 32.4,
+        "2": 15.3,
+        "3": 25.6,
+        "4": 4.5,
+        "5": 22.2
+      },
+      "icu_rate": 2.4,
+      "mortality_rate": 0.3,
+      "model_pred_pcts": {
+        "1": 58.0,
+        "2": 13.1,
+        "3": 3.2,
+        "4": 1.1,
+        "5": 24.6
+      }
+    },
+    "rash": {
+      "label": "Skin Problem / Rash",
+      "n": 6550,
+      "level_pcts": {
+        "1": 36.0,
+        "2": 15.5,
+        "3": 11.3,
+        "4": 24.7,
+        "5": 12.5
+      },
+      "icu_rate": 2.6,
+      "mortality_rate": 0.2,
+      "model_pred_pcts": {
+        "1": 66.4,
+        "2": 4.1,
+        "3": 0.5,
+        "4": 26.9,
+        "5": 2.1
+      }
+    },
+    "swelling": {
+      "label": "Swelling",
+      "n": 1062,
+      "level_pcts": {
+        "1": 67.2,
+        "2": 9.5,
+        "3": 14.9,
+        "4": 6.9,
+        "5": 1.5
+      },
+      "icu_rate": 6.9,
+      "mortality_rate": 0.8,
+      "model_pred_pcts": {
+        "1": 90.0,
+        "2": 0.0,
+        "3": 0.5,
+        "4": 4.3,
+        "5": 5.2
+      }
+    },
+    "eye_problem": {
+      "label": "Eye Problem",
+      "n": 4511,
+      "level_pcts": {
+        "1": 31.0,
+        "2": 11.3,
+        "3": 13.2,
+        "4": 31.3,
+        "5": 13.2
+      },
+      "icu_rate": 2.5,
+      "mortality_rate": 0.0,
+      "model_pred_pcts": {
+        "1": 63.2,
+        "2": 0.0,
+        "3": 0.3,
+        "4": 28.5,
+        "5": 7.9
+      }
+    },
+    "ear_problem": {
+      "label": "Ear Problem",
+      "n": 2010,
+      "level_pcts": {
+        "1": 10.3,
+        "2": 5.7,
+        "3": 4.5,
+        "4": 62.4,
+        "5": 17.0
+      },
+      "icu_rate": 0.5,
+      "mortality_rate": 0.0,
+      "model_pred_pcts": {
+        "1": 21.4,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 76.7,
+        "5": 1.8
+      }
+    },
+    "nosebleed": {
+      "label": "Nosebleed",
+      "n": 1316,
+      "level_pcts": {
+        "1": 22.8,
+        "2": 18.8,
+        "3": 16.0,
+        "4": 3.2,
+        "5": 39.1
+      },
+      "icu_rate": 3.8,
+      "mortality_rate": 0.4,
+      "model_pred_pcts": {
+        "1": 91.5,
+        "2": 0.0,
+        "3": 0.4,
+        "4": 2.7,
+        "5": 5.4
+      }
+    },
+    "vaginal_bleeding": {
+      "label": "Vaginal Bleeding",
+      "n": 146,
+      "level_pcts": {
+        "1": 31.5,
+        "2": 21.9,
+        "3": 45.2,
+        "4": 0.0,
+        "5": 1.4
+      },
+      "icu_rate": 0.7,
+      "mortality_rate": 0.0,
+      "model_pred_pcts": {
+        "1": 71.4,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 28.6
+      }
+    },
+    "pelvic_pain": {
+      "label": "Pelvic Pain",
+      "n": 1048,
+      "level_pcts": {
+        "1": 20.6,
+        "2": 13.5,
+        "3": 29.4,
+        "4": 2.1,
+        "5": 34.4
+      },
+      "icu_rate": 0.6,
+      "mortality_rate": 0.0,
+      "model_pred_pcts": {
+        "1": 45.5,
+        "2": 3.5,
+        "3": 3.5,
+        "4": 3.5,
+        "5": 44.0
+      }
+    },
+    "pregnancy_related": {
+      "label": "Pregnancy Concern",
+      "n": 179,
+      "level_pcts": {
+        "1": 73.7,
+        "2": 26.3,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      },
+      "icu_rate": 0.6,
+      "mortality_rate": 0.6,
+      "model_pred_pcts": {
+        "1": 100.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0,
+        "5": 0.0
+      }
+    },
+    "anxiety_depression": {
+      "label": "Feeling Anxious or Sad",
+      "n": 4614,
+      "level_pcts": {
+        "1": 46.9,
+        "2": 7.5,
+        "3": 14.4,
+        "4": 21.7,
+        "5": 9.6
+      },
+      "icu_rate": 0.8,
+      "mortality_rate": 0.1,
+      "model_pred_pcts": {
+        "1": 92.2,
+        "2": 0.9,
+        "3": 2.2,
+        "4": 2.2,
+        "5": 2.5
+      }
+    },
+    "substance_use": {
+      "label": "Alcohol / Drug Related",
+      "n": 12383,
+      "level_pcts": {
+        "1": 54.0,
+        "2": 2.7,
+        "3": 9.2,
+        "4": 24.1,
+        "5": 10.0
+      },
+      "icu_rate": 2.9,
+      "mortality_rate": 0.1,
+      "model_pred_pcts": {
+        "1": 87.2,
+        "2": 0.0,
+        "3": 0.1,
+        "4": 12.2,
+        "5": 0.5
+      }
+    },
+    "allergic_reaction": {
+      "label": "Allergic Reaction",
+      "n": 3002,
+      "level_pcts": {
+        "1": 32.5,
+        "2": 27.0,
+        "3": 20.7,
+        "4": 13.7,
+        "5": 6.1
+      },
+      "icu_rate": 4.0,
+      "mortality_rate": 0.0,
+      "model_pred_pcts": {
+        "1": 51.8,
+        "2": 45.4,
+        "3": 0.8,
+        "4": 1.4,
+        "5": 0.6
+      }
+    },
+    "abnormal_labs": {
+      "label": "Abnormal Lab Results",
+      "n": 3010,
+      "level_pcts": {
+        "1": 77.4,
+        "2": 3.7,
+        "3": 15.3,
+        "4": 0.7,
+        "5": 2.8
+      },
+      "icu_rate": 14.4,
+      "mortality_rate": 2.2,
+      "model_pred_pcts": {
+        "1": 93.9,
+        "2": 0.0,
+        "3": 4.7,
+        "4": 0.5,
+        "5": 1.0
+      }
+    },
+    "medication_refill": {
+      "label": "Medication Refill",
+      "n": 663,
+      "level_pcts": {
+        "1": 14.3,
+        "2": 13.4,
+        "3": 7.8,
+        "4": 13.7,
+        "5": 50.7
+      },
+      "icu_rate": 0.5,
+      "mortality_rate": 0.0,
+      "model_pred_pcts": {
+        "1": 80.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 2.1,
+        "5": 17.9
+      }
+    },
+    "follow_up": {
+      "label": "Follow-Up Visit",
+      "n": 523,
+      "level_pcts": {
+        "1": 39.6,
+        "2": 15.7,
+        "3": 13.2,
+        "4": 12.0,
+        "5": 19.5
+      },
+      "icu_rate": 1.9,
+      "mortality_rate": 0.0,
+      "model_pred_pcts": {
+        "1": 82.8,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 13.1,
+        "5": 4.0
+      }
+    }
+  },
+  "model_performance": {
+    "accuracy": 0.5492,
+    "f1_weighted": 0.4847,
+    "level1_sensitivity": 0.8654,
+    "test_size": 85003,
+    "train_size": 340008
+  }
+}

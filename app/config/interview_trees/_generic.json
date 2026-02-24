@@ -1,0 +1,70 @@
+{
+  "symptom_id": "_generic",
+  "label": "your symptoms",
+  "questions": [
+    {
+      "id": "duration",
+      "text": "How long have you had this?",
+      "type": "single_choice",
+      "options": [
+        {"value": "minutes", "label": "Just started (minutes ago)"},
+        {"value": "hours", "label": "A few hours"},
+        {"value": "days", "label": "A day or two"},
+        {"value": "weeks", "label": "More than a few days"}
+      ]
+    },
+    {
+      "id": "severity",
+      "text": "How bad is it right now?",
+      "type": "severity_slider",
+      "options": [
+        {"value": "mild", "label": "Mild", "description": "Noticeable but I can go about my day"},
+        {"value": "moderate", "label": "Moderate", "description": "Hard to ignore, slowing me down"},
+        {"value": "severe", "label": "Severe", "description": "Really bad, hard to do anything"},
+        {"value": "worst", "label": "Worst ever", "description": "The worst I have ever felt"}
+      ]
+    },
+    {
+      "id": "trajectory",
+      "text": "Is it getting better, worse, or staying the same?",
+      "type": "single_choice",
+      "options": [
+        {"value": "better", "label": "Getting better"},
+        {"value": "same", "label": "About the same"},
+        {"value": "worse", "label": "Getting worse"},
+        {"value": "much_worse", "label": "Getting much worse quickly"}
+      ]
+    },
+    {
+      "id": "function",
+      "text": "Can you still do your normal daily activities?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, mostly normal"},
+        {"value": "limited", "label": "Somewhat — I'm having trouble with some things"},
+        {"value": "no", "label": "No — it's really affecting what I can do"}
+      ]
+    },
+    {
+      "id": "associated_fever",
+      "text": "Do you have a fever or chills?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ]
+    },
+    {
+      "id": "tried_anything",
+      "text": "Have you tried anything for it yet?",
+      "type": "single_choice",
+      "options": [
+        {"value": "nothing", "label": "No, nothing yet"},
+        {"value": "otc_helped", "label": "Yes, over-the-counter medicine — it helped"},
+        {"value": "otc_no_help", "label": "Yes, over-the-counter medicine — it didn't help"},
+        {"value": "other", "label": "Yes, something else"}
+      ]
+    }
+  ]
+}

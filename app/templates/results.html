@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="fade-in">
+
+    <!-- Red flag alert (if triggered) -->
+    {% if prediction.red_flag %}
+    <div class="bg-red-50 border-2 border-red-300 rounded-xl p-5 mb-6">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.27 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <div>
+                <h3 class="font-bold text-red-800 text-lg">{{ prediction.red_flag.name }}</h3>
+                <p class="text-red-700 mt-1">{{ prediction.red_flag.message }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main recommendation -->
+    {% set color_classes = {
+        'red': 'bg-red-600 border-red-700',
+        'orange': 'bg-orange-500 border-orange-600',
+        'yellow': 'bg-yellow-500 border-yellow-600',
+        'blue': 'bg-blue-500 border-blue-600',
+        'green': 'bg-green-500 border-green-600'
+    } %}
+    {% set text_classes = {
+        'red': 'text-red-800',
+        'orange': 'text-orange-800',
+        'yellow': 'text-yellow-800',
+        'blue': 'text-blue-800',
+        'green': 'text-green-800'
+    } %}
+    {% set bg_light = {
+        'red': 'bg-red-50 border-red-200',
+        'orange': 'bg-orange-50 border-orange-200',
+        'yellow': 'bg-yellow-50 border-yellow-200',
+        'blue': 'bg-blue-50 border-blue-200',
+        'green': 'bg-green-50 border-green-200'
+    } %}
+
+    <div class="{{ color_classes[prediction.color] }} text-white rounded-2xl p-6 mb-6 text-center shadow-lg">
+        {% if state.name %}
+        <p class="text-sm opacity-80 mb-1">{{ state.name }}, here are your results</p>
+        {% endif %}
+        <p class="text-sm uppercase tracking-wider opacity-90 mb-2">Our Recommendation</p>
+        <h1 class="text-2xl md:text-3xl font-bold mb-3">{{ prediction.label }}</h1>
+        <p class="text-lg opacity-95">{{ prediction.urgency }}</p>
+    </div>
+
+    <!-- Reassurance statement -->
+    {% if evidence.reassurance %}
+    <div class="{{ bg_light[prediction.color] }} border rounded-xl p-5 mb-6">
+        <h2 class="font-semibold {{ text_classes[prediction.color] }} mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+            What This Means for You
+        </h2>
+        <p class="text-gray-700 leading-relaxed">{{ evidence.reassurance }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Specialist Detail Card -->
+    {% set show_specialist = (prediction.level == 4 and evidence.specialist) or (prediction.level == 3 and evidence.specialist and evidence.specialist.pcp_first) %}
+    {% if show_specialist and evidence.specialist.specialist %}
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-6">
+        <h2 class="font-semibold text-blue-800 mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            {% if evidence.specialist.pcp_first %}
+            Your Doctor May Refer You To
+            {% else %}
+            Recommended Specialist
+            {% endif %}
+        </h2>
+
+        {% if evidence.specialist.pcp_first %}
+        <p class="text-sm text-gray-600 mb-3">
+            Start with your primary care doctor. If they determine you need specialized care,
+            they will likely refer you to:
+        </p>
+        {% endif %}
+
+        <div class="bg-white rounded-lg p-4 border border-blue-100 mb-3">
+            <p class="text-xl font-bold text-blue-900 mb-1">{{ evidence.specialist.specialist }}</p>
+            {% if evidence.specialist.secondary %}
+            <p class="text-sm text-gray-500">Also consider: <span class="font-medium text-gray-700">{{ evidence.specialist.secondary }}</span></p>
+            {% endif %}
+        </div>
+
+        <p class="text-sm text-gray-700 leading-relaxed mb-4">{{ evidence.specialist.rationale }}</p>
+
+        {% if evidence.specialist.diagnosis_distribution %}
+        <div class="mt-3">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Where similar complaints lead (discharge diagnoses)
+            </p>
+            <div class="space-y-2">
+                {% for diag, pct in evidence.specialist.diagnosis_distribution.items() %}
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-600 w-48 flex-shrink-0 truncate" title="{{ diag }}">{{ diag }}</span>
+                    <div class="flex-1 bg-gray-200 rounded-full h-2.5">
+                        <div class="h-2.5 rounded-full bg-blue-400 transition-all duration-700"
+                             style="width: {{ [pct, 100] | min }}%"></div>
+                    </div>
+                    <span class="text-xs font-medium text-gray-600 w-12 text-right">{{ pct }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+            <p class="text-xs text-gray-400 mt-2 italic">
+                Source: Arvig et al. <em>Western Journal of Emergency Medicine</em> 2022 — 223,612 ED visits
+            </p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Risk Percentages -->
+    {% if evidence.risk_pcts %}
+    <div class="bg-white border border-gray-200 rounded-xl p-5 mb-6">
+        <h2 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            Risk Assessment
+        </h2>
+        <p class="text-xs text-gray-500 mb-4">Based on available published emergency department data</p>
+
+        <div class="space-y-4">
+            {% set imm = evidence.risk_pcts.immediate_attention %}
+            <div>
+                <div class="flex justify-between items-baseline mb-1">
+                    <span class="text-sm font-medium text-gray-700">Likelihood of needing immediate attention</span>
+                    <span class="text-lg font-bold {% if imm >= 50 %}text-red-600{% elif imm >= 25 %}text-orange-600{% else %}text-green-600{% endif %}">{{ imm }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="h-3 rounded-full transition-all duration-700 {% if imm >= 50 %}bg-red-500{% elif imm >= 25 %}bg-orange-400{% else %}bg-green-400{% endif %}"
+                         style="width: {{ [imm, 100] | min }}%"></div>
+                </div>
+            </div>
+
+            {% set hosp = evidence.risk_pcts.hospitalization %}
+            <div>
+                <div class="flex justify-between items-baseline mb-1">
+                    <span class="text-sm font-medium text-gray-700">Likelihood of hospitalization</span>
+                    <span class="text-lg font-bold {% if hosp >= 30 %}text-red-600{% elif hosp >= 10 %}text-orange-600{% else %}text-green-600{% endif %}">{{ hosp }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="h-3 rounded-full transition-all duration-700 {% if hosp >= 30 %}bg-red-500{% elif hosp >= 10 %}bg-orange-400{% else %}bg-green-400{% endif %}"
+                         style="width: {{ [hosp, 100] | min }}%"></div>
+                </div>
+            </div>
+
+            {% set mort = evidence.risk_pcts.death %}
+            <div>
+                <div class="flex justify-between items-baseline mb-1">
+                    <span class="text-sm font-medium text-gray-700">Likelihood of death</span>
+                    <span class="text-lg font-bold {% if mort >= 5 %}text-red-600{% elif mort >= 1 %}text-orange-600{% else %}text-green-600{% endif %}">{{ mort }}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="h-3 rounded-full transition-all duration-700 {% if mort >= 5 %}bg-red-500{% elif mort >= 1 %}bg-orange-400{% else %}bg-green-400{% endif %}"
+                         style="width: {{ [mort * 5, 100] | min }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Why We're Recommending This (rationale) -->
+    {% if prediction.risk_factors %}
+    <div class="{{ bg_light[prediction.color] }} border rounded-xl p-5 mb-6">
+        <h2 class="font-semibold {{ text_classes[prediction.color] }} mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            Why We're Recommending This
+        </h2>
+        <ul class="space-y-2">
+            {% for factor in prediction.risk_factors %}
+            <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 {{ text_classes[prediction.color] }} flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-gray-700">{{ factor }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Try This at Home (for reassurance-level recommendations) -->
+    {% if evidence.home_remedies and prediction.level >= 5 %}
+    <div class="bg-green-50 border border-green-200 rounded-xl p-5 mb-6">
+        <h2 class="font-semibold text-green-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Try This at Home
+        </h2>
+        <div class="space-y-3">
+            {% for item in evidence.home_remedies %}
+            <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-green-100">
+                <span class="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5 text-green-600 font-bold text-sm">{{ loop.index }}</span>
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-gray-800">{{ item.remedy }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">{{ item.detail }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <p class="text-xs text-gray-400 mt-3">
+            If these don't help within a day or two, or your symptoms get worse, see a doctor.
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- If This Happens, Escalate -->
+    {% if evidence.escalation %}
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
+        <h2 class="font-semibold text-amber-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.27 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+            </svg>
+            If This Happens, Get Help Right Away
+        </h2>
+        <div class="space-y-3">
+            {% for item in evidence.escalation %}
+            <div class="flex items-start gap-3 p-3 bg-white rounded-lg border border-amber-100">
+                {% if item.severity == "critical" %}
+                <span class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.27 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                </span>
+                {% elif item.severity == "urgent" %}
+                <span class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"/></svg>
+                </span>
+                {% else %}
+                <span class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                </span>
+                {% endif %}
+                <div class="flex-1">
+                    <p class="text-sm text-gray-800">
+                        <strong class="text-amber-800">If</strong> {{ item.if_sign }}
+                    </p>
+                    <p class="text-sm font-semibold mt-1 {% if item.severity == 'critical' %}text-red-700{% elif item.severity == 'urgent' %}text-orange-700{% else %}text-yellow-700{% endif %}">
+                        &rarr; {{ item.then_action }}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tell the Triage Nurse (shown for ER/UC/PCP recommendations) -->
+    {% if prediction.level <= 3 and evidence.triage_summary %}
+    <div class="bg-teal-50 border border-teal-200 rounded-xl p-5 mb-6">
+        <h2 class="font-semibold text-teal-800 mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Show This to the Triage Nurse
+        </h2>
+        <p class="text-xs text-teal-600 mb-3">When you arrive, show this screen or tell the nurse:</p>
+        <div class="bg-white rounded-lg p-4 border border-teal-100" id="triageSummaryCard">
+            <ul class="space-y-1.5">
+                {% for item in evidence.triage_summary %}
+                <li class="text-sm text-gray-800 flex items-start gap-2">
+                    <span class="text-teal-500 mt-0.5 flex-shrink-0">&#8226;</span>
+                    <span>{{ item }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <button onclick="copyTriageSummary()" id="copyBtn"
+                class="mt-3 text-sm text-teal-600 hover:text-teal-800 font-medium flex items-center gap-1 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            Copy to clipboard
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- Nearby Facilities (shown for ER/UC if zip code provided) -->
+    {% if prediction.level <= 2 and state.zip_code %}
+    <div class="bg-white border border-gray-200 rounded-xl p-5 mb-6">
+        <h2 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            {% if prediction.level == 1 %}Nearby Emergency Departments{% else %}Nearby Urgent Care Centers{% endif %}
+        </h2>
+        <div id="facilityResults">
+            <div class="flex items-center gap-2 text-sm text-gray-500 py-4">
+                <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                Searching near {{ state.zip_code }}...
+            </div>
+        </div>
+        <a href="https://www.google.com/maps/search/{% if prediction.level == 1 %}emergency+room{% else %}urgent+care{% endif %}+near+{{ state.zip_code }}"
+           target="_blank" rel="noopener"
+           class="inline-flex items-center gap-1 mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Open in Google Maps
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- What the Data Shows -->
+    <div class="bg-white border border-gray-200 rounded-xl p-5 mb-6">
+        <h2 class="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            What the Data Shows
+        </h2>
+        <p class="text-gray-600 mb-4">{{ evidence.summary }}</p>
+
+        {% if evidence.symptom_stats %}
+        <div class="space-y-3">
+            {% for stat in evidence.symptom_stats[:3] %}
+            <div class="bg-gray-50 rounded-lg p-3">
+                <p class="text-sm font-medium text-gray-700 mb-1">{{ stat.label }}</p>
+                <div class="flex gap-4 text-xs text-gray-500">
+                    <span>Published admission rate: {{ stat.admission_rate }}%</span>
+                    <span>Published mortality rate: {{ stat.mortality_rate }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <p class="text-xs text-gray-400 mt-3">
+            Sources: CDC NHAMCS 2021; Arvig et al. <em>WestJEM</em> 2022; Pines et al. <em>Medical Care</em> 2015
+        </p>
+    </div>
+
+    <!-- Watch for these signs (brief list) -->
+    {% if evidence.watch_for %}
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-6">
+        <h2 class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            Keep an Eye On
+        </h2>
+        <ul class="space-y-1.5">
+            {% for sign in evidence.watch_for %}
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+                <span class="text-gray-400 mt-0.5">&#8226;</span>
+                <span>{{ sign }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Disclaimer -->
+    <div class="bg-gray-100 border border-gray-200 rounded-xl p-5 mb-6">
+        <p class="text-xs text-gray-500 leading-relaxed">
+            <strong>Disclaimer:</strong> This tool provides general health information only and is
+            NOT a substitute for professional medical advice, diagnosis, or treatment. Always seek
+            the advice of your physician or other qualified health provider with any questions you
+            may have regarding a medical condition. Never disregard professional medical advice or
+            delay in seeking it because of something you have read from this tool. If you think you
+            may have a medical emergency, call your doctor, go to the emergency department, or
+            call 911 immediately. Risk percentages are based on published population-level data and
+            may not reflect your individual situation.
+        </p>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-3 mb-8">
+        <button onclick="window.print()"
+                class="flex-1 bg-white border-2 border-gray-200 text-gray-700 font-semibold
+                       py-3 px-6 rounded-xl hover:bg-gray-50 transition-all text-sm">
+            Print Results
+        </button>
+        <a href="/restart"
+           class="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl
+                  hover:bg-blue-700 transition-all text-sm text-center">
+            Start Over
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* Copy triage summary to clipboard */
+function copyTriageSummary() {
+    var card = document.getElementById('triageSummaryCard');
+    if (!card) return;
+    var items = card.querySelectorAll('li span:last-child');
+    var text = Array.from(items).map(function(s) { return '• ' + s.textContent; }).join('\n');
+    navigator.clipboard.writeText(text).then(function() {
+        var btn = document.getElementById('copyBtn');
+        btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Copied!';
+        setTimeout(function() {
+            btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg> Copy to clipboard';
+        }, 2000);
+    });
+}
+
+/* Find nearby facilities using OpenStreetMap (nwr = node/way/relation) */
+{% if prediction.level <= 2 and state.zip_code %}
+(function() {
+    var zip = '{{ state.zip_code }}';
+    var type = {{ prediction.level }};
+    var resultsDiv = document.getElementById('facilityResults');
+    if (!zip || !resultsDiv) return;
+
+    var geoUrl = 'https://nominatim.openstreetmap.org/search?postalcode=' + zip + '&country=us&format=json&limit=1';
+
+    fetch(geoUrl, {headers: {'Accept': 'application/json', 'User-Agent': 'HealthCheckTriageApp/1.0'}})
+    .then(function(r) { return r.json(); })
+    .then(function(geo) {
+        if (!geo.length) throw new Error('Zip not found');
+        var lat = geo[0].lat, lon = geo[0].lon;
+        var radius = 32000;
+        var query;
+        if (type === 1) {
+            query = '[out:json][timeout:10];(' +
+                'nwr(around:' + radius + ',' + lat + ',' + lon + ')["amenity"="hospital"]["emergency"="yes"];' +
+                'nwr(around:' + radius + ',' + lat + ',' + lon + ')["amenity"="hospital"];' +
+                ');out center 15;';
+        } else {
+            query = '[out:json][timeout:10];(' +
+                'nwr(around:' + radius + ',' + lat + ',' + lon + ')["healthcare"="urgent_care"];' +
+                'nwr(around:' + radius + ',' + lat + ',' + lon + ')["amenity"="clinic"];' +
+                'nwr(around:' + radius + ',' + lat + ',' + lon + ')["amenity"="doctors"];' +
+                ');out center 15;';
+        }
+        return fetch('https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query));
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        var seen = {};
+        var places = data.elements.filter(function(e) {
+            if (!e.tags || !e.tags.name) return false;
+            if (seen[e.tags.name]) return false;
+            seen[e.tags.name] = true;
+            return true;
+        }).slice(0, 5);
+        if (!places.length) {
+            resultsDiv.innerHTML = '<p class="text-sm text-gray-500 py-2">No facilities found in our database for this area. Use the Google Maps link below to search.</p>';
+            return;
+        }
+        var html = '<div class="space-y-3">';
+        places.forEach(function(p) {
+            var addr = [p.tags['addr:housenumber'], p.tags['addr:street'], p.tags['addr:city'], p.tags['addr:state']].filter(Boolean).join(', ');
+            var phone = p.tags.phone || p.tags['contact:phone'] || '';
+            var searchName = p.tags.name + (addr ? ' ' + addr : ' ' + zip);
+            html += '<div class="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">';
+            html += '<span class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">';
+            html += '<svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>';
+            html += '</span>';
+            html += '<div class="flex-1 min-w-0">';
+            html += '<p class="text-sm font-medium text-gray-800">' + p.tags.name + '</p>';
+            if (addr) html += '<p class="text-xs text-gray-500">' + addr + '</p>';
+            if (phone) html += '<p class="text-xs text-blue-600">' + phone + '</p>';
+            html += '</div>';
+            html += '<a href="https://www.google.com/maps/search/' + encodeURIComponent(searchName) + '" target="_blank" rel="noopener" class="text-xs text-blue-600 hover:text-blue-800 flex-shrink-0 mt-1 whitespace-nowrap">Directions</a>';
+            html += '</div>';
+        });
+        html += '</div>';
+        resultsDiv.innerHTML = html;
+    })
+    .catch(function(err) {
+        console.error('Facility search error:', err);
+        resultsDiv.innerHTML = '<p class="text-sm text-gray-500 py-2">Could not load facilities. Use the Google Maps link below to search.</p>';
+    });
+})();
+{% endif %}
+</script>
+{% endblock %}

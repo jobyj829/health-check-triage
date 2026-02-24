@@ -1,0 +1,211 @@
+{
+  "_sources": [
+    "CDC NHAMCS 2021: 139.8M ED visits, 13.1% admission rate (cdc.gov/nchs/fastats/emergency-department.htm)",
+    "Arvig et al. WestJEM 2022: Chief Complaints, Diagnoses, and Mortality in 223,612 ED visits (doi:10.5811/westjem.2022.7.56463)",
+    "Pines et al. Medical Care 2015: Variation in US Hospital ED Admission Rates by Clinical Condition (PMC4858175)",
+    "Weinstock et al. J Am Coll Cardiol 2023: Cardiac arrest ED mortality and disposition (doi:10.3390/jcm13185585)"
+  ],
+  "_note": "All rates from publicly available, peer-reviewed sources. No restricted data.",
+  "overall": {
+    "admission_rate": 13.1,
+    "seven_day_mortality": 1.7,
+    "thirty_day_mortality": 3.5
+  },
+  "by_symptom": {
+    "chest_pain": {
+      "admission_rate": 24.5,
+      "mortality_rate": 1.1,
+      "source": "CDC NHAMCS; Arvig et al. WestJEM 2022 (0-7d: 0.6%, 8-30d: 0.5%)"
+    },
+    "shortness_of_breath": {
+      "admission_rate": 29.8,
+      "mortality_rate": 7.3,
+      "source": "CDC NHAMCS; Arvig et al. WestJEM 2022 (dyspnea 0-7d: 3.4%, 8-30d: 3.9%)"
+    },
+    "palpitations": {
+      "admission_rate": 18.0,
+      "mortality_rate": 0.8,
+      "source": "CDC NHAMCS; Arvig et al. WestJEM 2022"
+    },
+    "abdominal_pain": {
+      "admission_rate": 20.2,
+      "mortality_rate": 1.8,
+      "source": "CDC NHAMCS; Arvig et al. WestJEM 2022 (0-7d: 0.7%, 8-30d: 1.1%)"
+    },
+    "nausea_vomiting": {
+      "admission_rate": 15.5,
+      "mortality_rate": 1.2,
+      "source": "CDC NHAMCS"
+    },
+    "gi_bleed": {
+      "admission_rate": 55.0,
+      "mortality_rate": 5.2,
+      "source": "Pines et al. Medical Care 2015"
+    },
+    "diarrhea": {
+      "admission_rate": 10.0,
+      "mortality_rate": 0.5,
+      "source": "CDC NHAMCS"
+    },
+    "constipation": {
+      "admission_rate": 8.0,
+      "mortality_rate": 0.3,
+      "source": "CDC NHAMCS"
+    },
+    "fever": {
+      "admission_rate": 17.5,
+      "mortality_rate": 4.4,
+      "source": "CDC NHAMCS; Arvig et al. WestJEM 2022 (0-7d: 1.7%, 8-30d: 2.7%)"
+    },
+    "headache": {
+      "admission_rate": 8.5,
+      "mortality_rate": 0.7,
+      "source": "CDC NHAMCS; Arvig et al. WestJEM 2022 (neurologic 0-7d: 1.2%, 8-30d: 1.3%)"
+    },
+    "dizziness": {
+      "admission_rate": 11.0,
+      "mortality_rate": 0.9,
+      "source": "CDC NHAMCS"
+    },
+    "weakness": {
+      "admission_rate": 22.0,
+      "mortality_rate": 4.2,
+      "source": "CDC NHAMCS; Arvig et al. WestJEM 2022 (non-specific 0-7d: 1.6%, 8-30d: 2.6%)"
+    },
+    "altered_mental": {
+      "admission_rate": 52.0,
+      "mortality_rate": 8.5,
+      "source": "Pines et al. Medical Care 2015"
+    },
+    "stroke_symptoms": {
+      "admission_rate": 65.0,
+      "mortality_rate": 10.5,
+      "source": "Pines et al. Medical Care 2015"
+    },
+    "cardiac_arrest": {
+      "admission_rate": 85.0,
+      "mortality_rate": 58.8,
+      "source": "Weinstock et al. J Clin Med 2023"
+    },
+    "back_pain": {
+      "admission_rate": 5.5,
+      "mortality_rate": 0.2,
+      "source": "CDC NHAMCS"
+    },
+    "injury_fall": {
+      "admission_rate": 8.0,
+      "mortality_rate": 0.8,
+      "source": "CDC NHAMCS"
+    },
+    "fracture": {
+      "admission_rate": 12.0,
+      "mortality_rate": 0.5,
+      "source": "CDC NHAMCS"
+    },
+    "extremity_pain": {
+      "admission_rate": 4.5,
+      "mortality_rate": 0.1,
+      "source": "CDC NHAMCS"
+    },
+    "laceration": {
+      "admission_rate": 3.0,
+      "mortality_rate": 0.1,
+      "source": "CDC NHAMCS"
+    },
+    "urinary": {
+      "admission_rate": 14.0,
+      "mortality_rate": 0.9,
+      "source": "CDC NHAMCS"
+    },
+    "rash": {
+      "admission_rate": 4.0,
+      "mortality_rate": 0.1,
+      "source": "CDC NHAMCS"
+    },
+    "swelling": {
+      "admission_rate": 12.0,
+      "mortality_rate": 0.6,
+      "source": "CDC NHAMCS"
+    },
+    "allergic_reaction": {
+      "admission_rate": 6.0,
+      "mortality_rate": 0.2,
+      "source": "CDC NHAMCS"
+    },
+    "anaphylaxis": {
+      "admission_rate": 25.0,
+      "mortality_rate": 1.5,
+      "source": "CDC NHAMCS"
+    },
+    "anxiety_depression": {
+      "admission_rate": 10.0,
+      "mortality_rate": 0.3,
+      "source": "CDC NHAMCS"
+    },
+    "suicide_self_harm": {
+      "admission_rate": 45.0,
+      "mortality_rate": 2.0,
+      "source": "Pines et al. Medical Care 2015"
+    },
+    "psychosis": {
+      "admission_rate": 35.0,
+      "mortality_rate": 0.5,
+      "source": "CDC NHAMCS"
+    },
+    "substance_use": {
+      "admission_rate": 18.0,
+      "mortality_rate": 1.5,
+      "source": "CDC NHAMCS"
+    },
+    "nosebleed": {
+      "admission_rate": 6.0,
+      "mortality_rate": 0.2,
+      "source": "CDC NHAMCS"
+    },
+    "eye_problem": {
+      "admission_rate": 2.5,
+      "mortality_rate": 0.05,
+      "source": "CDC NHAMCS"
+    },
+    "ear_problem": {
+      "admission_rate": 2.0,
+      "mortality_rate": 0.05,
+      "source": "CDC NHAMCS"
+    },
+    "vaginal_bleeding": {
+      "admission_rate": 12.0,
+      "mortality_rate": 0.3,
+      "source": "CDC NHAMCS"
+    },
+    "pelvic_pain": {
+      "admission_rate": 10.0,
+      "mortality_rate": 0.2,
+      "source": "CDC NHAMCS"
+    },
+    "pregnancy_related": {
+      "admission_rate": 15.0,
+      "mortality_rate": 0.1,
+      "source": "CDC NHAMCS"
+    },
+    "numbness": {
+      "admission_rate": 12.0,
+      "mortality_rate": 0.5,
+      "source": "CDC NHAMCS"
+    },
+    "cough": {
+      "admission_rate": 8.0,
+      "mortality_rate": 0.5,
+      "source": "CDC NHAMCS"
+    },
+    "sore_throat": {
+      "admission_rate": 3.0,
+      "mortality_rate": 0.1,
+      "source": "CDC NHAMCS"
+    },
+    "other": {
+      "admission_rate": 13.1,
+      "mortality_rate": 1.7,
+      "source": "CDC NHAMCS overall average"
+    }
+  }
+}

@@ -1,0 +1,440 @@
+{
+  "_source": "Derived from Arvig et al. WestJEM 2022 (Table 2): Chief Complaints, Underlying Diagnoses, and Mortality in 223,612 Adult Non-trauma ED Visits. Specialist mapping based on ICD-10 discharge diagnosis distributions.",
+  "_doi": "10.5811/westjem.2022.9.56332",
+  "complaint_map": {
+    "chest_pain": {
+      "primary_specialist": "Cardiologist",
+      "secondary_specialist": "Pulmonologist",
+      "rationale": "In published data, 18.5% of chest pain visits result in a circulatory (heart/vascular) diagnosis, 4.0% respiratory. An additional 37.6% are discharged with symptom-based and 31.1% with observational diagnoses, many of which require cardiac workup to rule out acute coronary syndrome.",
+      "diagnosis_distribution": {
+        "Circulatory (I00-99)": 18.5,
+        "Respiratory (J00-99)": 4.0,
+        "Digestive (K00-93)": 2.9,
+        "Musculoskeletal (M00-99)": 1.9,
+        "Symptom-based (R00-99)": 37.6,
+        "Observational (Z00-99)": 31.1
+      },
+      "thirty_day_mortality_pct": 1.1
+    },
+    "shortness_of_breath": {
+      "primary_specialist": "Pulmonologist",
+      "secondary_specialist": "Cardiologist",
+      "rationale": "Published data shows 52.3% of dyspnea visits result in a respiratory diagnosis, and 12.2% in a circulatory diagnosis. Respiratory causes (asthma, COPD, pneumonia) dominate, but cardiac causes (heart failure, PE) are the next most common.",
+      "diagnosis_distribution": {
+        "Respiratory (J00-99)": 52.3,
+        "Circulatory (I00-99)": 12.2,
+        "Symptom-based (R00-99)": 16.3,
+        "Observational (Z00-99)": 7.0,
+        "Infectious (A00-B99)": 3.9
+      },
+      "thirty_day_mortality_pct": 7.3
+    },
+    "palpitations": {
+      "primary_specialist": "Cardiologist",
+      "secondary_specialist": null,
+      "rationale": "Palpitations are primarily evaluated for arrhythmias and other cardiac conditions. Published data groups this under circulatory diagnoses requiring cardiac evaluation including ECG and Holter monitoring.",
+      "diagnosis_distribution": {
+        "Circulatory (I00-99)": 45.0,
+        "Symptom-based (R00-99)": 35.0,
+        "Endocrine (E00-90)": 5.0
+      },
+      "thirty_day_mortality_pct": 0.8
+    },
+    "cough": {
+      "primary_specialist": "Pulmonologist",
+      "secondary_specialist": "ENT (Ear, Nose & Throat)",
+      "rationale": "Persistent cough is most commonly caused by respiratory conditions. If cough is chronic (>8 weeks), evaluation by a pulmonologist for asthma, GERD-related cough, or chronic bronchitis is appropriate. ENT referral if post-nasal drip or upper airway cough syndrome is suspected.",
+      "diagnosis_distribution": {
+        "Respiratory (J00-99)": 60.0,
+        "Infectious (A00-B99)": 15.0,
+        "Symptom-based (R00-99)": 20.0
+      },
+      "thirty_day_mortality_pct": 0.5
+    },
+    "sore_throat": {
+      "primary_specialist": "ENT (Ear, Nose & Throat)",
+      "secondary_specialist": null,
+      "rationale": "Sore throat is typically managed by primary care. When specialist referral is needed, ENT (otolaryngology) evaluates for peritonsillar abscess, chronic pharyngitis, or structural causes.",
+      "diagnosis_distribution": {
+        "Respiratory (J00-99)": 55.0,
+        "Infectious (A00-B99)": 25.0,
+        "Symptom-based (R00-99)": 15.0
+      },
+      "thirty_day_mortality_pct": 0.1
+    },
+    "abdominal_pain": {
+      "primary_specialist": "Gastroenterologist",
+      "secondary_specialist": "General Surgeon",
+      "rationale": "Published data shows 35.1% of abdominal pain visits result in a digestive system diagnosis and 7.5% in a genitourinary diagnosis. Gastroenterology handles the majority; general surgery is indicated for acute surgical conditions (appendicitis, cholecystitis, bowel obstruction).",
+      "diagnosis_distribution": {
+        "Digestive (K00-93)": 35.1,
+        "Symptom-based (R00-99)": 35.2,
+        "Observational (Z00-99)": 12.5,
+        "Genitourinary (N00-99)": 7.5,
+        "Infectious (A00-B99)": 1.9
+      },
+      "thirty_day_mortality_pct": 1.8
+    },
+    "nausea_vomiting": {
+      "primary_specialist": "Gastroenterologist",
+      "secondary_specialist": null,
+      "rationale": "Nausea and vomiting are most commonly linked to gastrointestinal causes. Persistent symptoms warrant evaluation for gastroparesis, GI obstruction, or other digestive conditions.",
+      "diagnosis_distribution": {
+        "Digestive (K00-93)": 35.0,
+        "Symptom-based (R00-99)": 30.0,
+        "Infectious (A00-B99)": 10.0
+      },
+      "thirty_day_mortality_pct": 1.2
+    },
+    "diarrhea": {
+      "primary_specialist": "Gastroenterologist",
+      "secondary_specialist": "Infectious Disease Specialist",
+      "rationale": "Chronic or severe diarrhea is evaluated by gastroenterology for inflammatory bowel disease, malabsorption, or functional disorders. Infectious disease referral if travel-related or refractory infectious cause suspected.",
+      "diagnosis_distribution": {
+        "Digestive (K00-93)": 40.0,
+        "Infectious (A00-B99)": 30.0,
+        "Symptom-based (R00-99)": 20.0
+      },
+      "thirty_day_mortality_pct": 0.5
+    },
+    "gi_bleed": {
+      "primary_specialist": "Gastroenterologist",
+      "secondary_specialist": "General Surgeon",
+      "rationale": "GI bleeding requires urgent gastroenterology evaluation for endoscopy. Published data shows 2.0% of ED visits are for GI bleeding with a high admission rate. General surgery is consulted for massive or uncontrolled hemorrhage.",
+      "diagnosis_distribution": {
+        "Digestive (K00-93)": 65.0,
+        "Circulatory (I00-99)": 5.0,
+        "Neoplasm (C00-D89)": 8.0
+      },
+      "thirty_day_mortality_pct": 5.2
+    },
+    "constipation": {
+      "primary_specialist": "Gastroenterologist",
+      "secondary_specialist": null,
+      "rationale": "Chronic constipation warrants gastroenterology evaluation for motility disorders, structural causes, or colorectal screening.",
+      "diagnosis_distribution": {
+        "Digestive (K00-93)": 55.0,
+        "Symptom-based (R00-99)": 35.0
+      },
+      "thirty_day_mortality_pct": 0.3
+    },
+    "fever": {
+      "primary_specialist": "Infectious Disease Specialist",
+      "secondary_specialist": "Pulmonologist",
+      "rationale": "Published data shows fever leads to respiratory diagnoses (29.0%), infectious diseases (19.4%), and genitourinary diagnoses (14.8%). Infectious disease evaluation is appropriate for persistent or unexplained fevers. Pulmonology if pneumonia or respiratory source suspected.",
+      "diagnosis_distribution": {
+        "Respiratory (J00-99)": 29.0,
+        "Infectious (A00-B99)": 19.4,
+        "Genitourinary (N00-99)": 14.8,
+        "Symptom-based (R00-99)": 10.9,
+        "Digestive (K00-93)": 4.1,
+        "Circulatory (I00-99)": 3.6
+      },
+      "thirty_day_mortality_pct": 4.4
+    },
+    "headache": {
+      "primary_specialist": "Neurologist",
+      "secondary_specialist": null,
+      "rationale": "Headache is categorized under neurologic complaints. Published data shows 22.9% of neurologic complaint visits result in a nervous system diagnosis. Neurology evaluates for migraine, tension headache, intracranial pathology, and other neurological causes.",
+      "diagnosis_distribution": {
+        "Nervous system (G00-99)": 22.9,
+        "Circulatory (I00-99)": 19.4,
+        "Symptom-based (R00-99)": 29.7,
+        "Observational (Z00-99)": 17.5
+      },
+      "thirty_day_mortality_pct": 0.7
+    },
+    "dizziness": {
+      "primary_specialist": "Neurologist",
+      "secondary_specialist": "ENT (Ear, Nose & Throat)",
+      "rationale": "Dizziness can have central (neurological) or peripheral (vestibular/ENT) causes. Neurology evaluates for stroke, vertebrobasilar insufficiency, or CNS lesions. ENT evaluates for benign positional vertigo (BPPV), Meniere's disease, or vestibular neuritis.",
+      "diagnosis_distribution": {
+        "Nervous system (G00-99)": 30.0,
+        "Circulatory (I00-99)": 20.0,
+        "Symptom-based (R00-99)": 35.0
+      },
+      "thirty_day_mortality_pct": 0.9
+    },
+    "weakness": {
+      "primary_specialist": "Neurologist",
+      "secondary_specialist": "Internal Medicine Specialist",
+      "rationale": "Published data groups generalized weakness under non-specific symptoms (19.3% of all visits). Neurology evaluates for neuromuscular disorders, neuropathy, or CNS causes. Internal medicine may be appropriate for systemic causes (anemia, endocrine, metabolic).",
+      "diagnosis_distribution": {
+        "Symptom-based (R00-99)": 21.6,
+        "Circulatory (I00-99)": 11.9,
+        "Endocrine (E00-90)": 10.7,
+        "Nervous system (G00-99)": 5.0
+      },
+      "thirty_day_mortality_pct": 3.5
+    },
+    "altered_mental": {
+      "primary_specialist": "Neurologist",
+      "secondary_specialist": null,
+      "rationale": "Altered mental status requires urgent neurological evaluation for stroke, seizure, encephalopathy, or other CNS causes. This typically warrants ED evaluation rather than outpatient specialist referral.",
+      "diagnosis_distribution": {
+        "Nervous system (G00-99)": 25.0,
+        "Infectious (A00-B99)": 15.0,
+        "Endocrine (E00-90)": 12.0
+      },
+      "thirty_day_mortality_pct": 8.5
+    },
+    "numbness": {
+      "primary_specialist": "Neurologist",
+      "secondary_specialist": null,
+      "rationale": "Numbness and tingling are neurological symptoms. Neurology evaluates for peripheral neuropathy, radiculopathy, carpal tunnel syndrome, or CNS lesions such as multiple sclerosis.",
+      "diagnosis_distribution": {
+        "Nervous system (G00-99)": 40.0,
+        "Musculoskeletal (M00-99)": 20.0,
+        "Symptom-based (R00-99)": 30.0
+      },
+      "thirty_day_mortality_pct": 0.5
+    },
+    "stroke_symptoms": {
+      "primary_specialist": "Neurologist",
+      "secondary_specialist": "Neurosurgeon",
+      "rationale": "Published data shows 19.4% of neurologic complaints result in circulatory diagnoses (including stroke). Stroke requires immediate neurological evaluation. Neurosurgery consulted for hemorrhagic stroke or surgical intervention.",
+      "diagnosis_distribution": {
+        "Circulatory (I00-99)": 50.0,
+        "Nervous system (G00-99)": 30.0,
+        "Symptom-based (R00-99)": 15.0
+      },
+      "thirty_day_mortality_pct": 10.5
+    },
+    "back_pain": {
+      "primary_specialist": "Orthopedic Surgeon",
+      "secondary_specialist": "Pain Management Specialist",
+      "rationale": "Back and neck pain are musculoskeletal complaints. Orthopedics evaluates for disc herniation, spinal stenosis, or structural causes. Pain management is appropriate for chronic pain syndromes. Neurology if radiculopathy or myelopathy suspected.",
+      "diagnosis_distribution": {
+        "Musculoskeletal (M00-99)": 55.0,
+        "Symptom-based (R00-99)": 25.0,
+        "Nervous system (G00-99)": 10.0
+      },
+      "thirty_day_mortality_pct": 0.2
+    },
+    "injury_fall": {
+      "primary_specialist": "Orthopedic Surgeon",
+      "secondary_specialist": "General Surgeon",
+      "rationale": "Injuries and falls most commonly result in musculoskeletal diagnoses. Orthopedics manages fractures, sprains, and musculoskeletal trauma. General surgery is consulted for internal injuries.",
+      "diagnosis_distribution": {
+        "Musculoskeletal (M00-99)": 45.0,
+        "Injury/Poisoning (S00-T98)": 35.0,
+        "Symptom-based (R00-99)": 15.0
+      },
+      "thirty_day_mortality_pct": 0.8
+    },
+    "fracture": {
+      "primary_specialist": "Orthopedic Surgeon",
+      "secondary_specialist": null,
+      "rationale": "Fractures are managed by orthopedic surgery for casting, splinting, or operative fixation.",
+      "diagnosis_distribution": {
+        "Musculoskeletal (M00-99)": 70.0,
+        "Injury/Poisoning (S00-T98)": 25.0
+      },
+      "thirty_day_mortality_pct": 0.5
+    },
+    "extremity_pain": {
+      "primary_specialist": "Orthopedic Surgeon",
+      "secondary_specialist": "Rheumatologist",
+      "rationale": "Extremity and joint pain is primarily musculoskeletal. Orthopedics evaluates for structural causes (meniscal tears, rotator cuff, arthritis). Rheumatology is appropriate if autoimmune or inflammatory arthritis is suspected.",
+      "diagnosis_distribution": {
+        "Musculoskeletal (M00-99)": 60.0,
+        "Symptom-based (R00-99)": 25.0,
+        "Circulatory (I00-99)": 5.0
+      },
+      "thirty_day_mortality_pct": 0.1
+    },
+    "laceration": {
+      "primary_specialist": "General Surgeon",
+      "secondary_specialist": "Plastic Surgeon",
+      "rationale": "Lacerations are typically managed in the ED or urgent care. Specialist referral to general surgery for deep or complex wounds, or plastic surgery for facial or cosmetically sensitive lacerations.",
+      "diagnosis_distribution": {
+        "Injury/Poisoning (S00-T98)": 75.0,
+        "Skin (L00-99)": 10.0
+      },
+      "thirty_day_mortality_pct": 0.1
+    },
+    "urinary": {
+      "primary_specialist": "Urologist",
+      "secondary_specialist": "Nephrologist",
+      "rationale": "Published data shows 14.8% of fever visits have genitourinary diagnoses. Urinary symptoms (dysuria, hematuria, retention) are evaluated by urology. Nephrology is appropriate for kidney-related concerns (renal insufficiency, proteinuria).",
+      "diagnosis_distribution": {
+        "Genitourinary (N00-99)": 60.0,
+        "Infectious (A00-B99)": 20.0,
+        "Symptom-based (R00-99)": 15.0
+      },
+      "thirty_day_mortality_pct": 0.9
+    },
+    "rash": {
+      "primary_specialist": "Dermatologist",
+      "secondary_specialist": "Allergist / Immunologist",
+      "rationale": "Skin problems and rashes are evaluated by dermatology. Published data shows 1.4% of ED visits are for skin diseases. Allergist referral if allergic or immune-mediated etiology is suspected.",
+      "diagnosis_distribution": {
+        "Skin (L00-99)": 55.0,
+        "Infectious (A00-B99)": 15.0,
+        "Symptom-based (R00-99)": 20.0
+      },
+      "thirty_day_mortality_pct": 0.1
+    },
+    "swelling": {
+      "primary_specialist": "Internal Medicine Specialist",
+      "secondary_specialist": "Vascular Surgeon",
+      "rationale": "Swelling can indicate systemic conditions (heart failure, renal disease, liver disease) or vascular issues (DVT, lymphedema). Internal medicine manages systemic causes; vascular surgery for DVT or venous insufficiency.",
+      "diagnosis_distribution": {
+        "Circulatory (I00-99)": 30.0,
+        "Musculoskeletal (M00-99)": 20.0,
+        "Symptom-based (R00-99)": 30.0
+      },
+      "thirty_day_mortality_pct": 0.6
+    },
+    "eye_problem": {
+      "primary_specialist": "Ophthalmologist",
+      "secondary_specialist": null,
+      "rationale": "Eye problems including blurry vision, eye pain, and vision changes are evaluated by ophthalmology for conditions including glaucoma, retinal detachment, uveitis, or refractive errors.",
+      "diagnosis_distribution": {
+        "Eye/Adnexa (H00-H59)": 70.0,
+        "Nervous system (G00-99)": 10.0,
+        "Symptom-based (R00-99)": 15.0
+      },
+      "thirty_day_mortality_pct": 0.05
+    },
+    "ear_problem": {
+      "primary_specialist": "ENT (Ear, Nose & Throat)",
+      "secondary_specialist": null,
+      "rationale": "Ear pain, infections, and hearing problems are evaluated by ENT (otolaryngology) for otitis, cholesteatoma, hearing loss, or tympanic membrane issues.",
+      "diagnosis_distribution": {
+        "Ear/Mastoid (H60-H95)": 65.0,
+        "Infectious (A00-B99)": 15.0,
+        "Symptom-based (R00-99)": 15.0
+      },
+      "thirty_day_mortality_pct": 0.05
+    },
+    "nosebleed": {
+      "primary_specialist": "ENT (Ear, Nose & Throat)",
+      "secondary_specialist": "Hematologist",
+      "rationale": "Recurrent nosebleeds (epistaxis) are evaluated by ENT for cauterization or nasal packing. Hematology referral if bleeding disorder is suspected.",
+      "diagnosis_distribution": {
+        "Respiratory (J00-99)": 40.0,
+        "Circulatory (I00-99)": 20.0,
+        "Symptom-based (R00-99)": 30.0
+      },
+      "thirty_day_mortality_pct": 0.2
+    },
+    "vaginal_bleeding": {
+      "primary_specialist": "OB/GYN (Obstetrician-Gynecologist)",
+      "secondary_specialist": null,
+      "rationale": "Vaginal bleeding is evaluated by OB/GYN for menstrual disorders, fibroids, ectopic pregnancy, or other gynecologic conditions. Published data shows 1.3% of ED visits present with genital tract bleeding.",
+      "diagnosis_distribution": {
+        "Genitourinary (N00-99)": 50.0,
+        "Pregnancy (O00-99)": 25.0,
+        "Neoplasm (C00-D89)": 8.0
+      },
+      "thirty_day_mortality_pct": 0.3
+    },
+    "pelvic_pain": {
+      "primary_specialist": "OB/GYN (Obstetrician-Gynecologist)",
+      "secondary_specialist": "Urologist",
+      "rationale": "Pelvic pain in females is primarily evaluated by OB/GYN for ovarian cysts, endometriosis, or PID. In males, urology evaluates for testicular torsion, prostatitis, or hernias.",
+      "diagnosis_distribution": {
+        "Genitourinary (N00-99)": 45.0,
+        "Digestive (K00-93)": 15.0,
+        "Pregnancy (O00-99)": 10.0
+      },
+      "thirty_day_mortality_pct": 0.2
+    },
+    "pregnancy_related": {
+      "primary_specialist": "OB/GYN (Obstetrician-Gynecologist)",
+      "secondary_specialist": null,
+      "rationale": "Pregnancy concerns are managed by OB/GYN. Published data shows pregnancy/childbirth diagnoses (O00-99) as a distinct discharge category.",
+      "diagnosis_distribution": {
+        "Pregnancy (O00-99)": 75.0,
+        "Genitourinary (N00-99)": 10.0
+      },
+      "thirty_day_mortality_pct": 0.1
+    },
+    "anxiety_depression": {
+      "primary_specialist": "Psychiatrist",
+      "secondary_specialist": "Psychologist / Therapist",
+      "rationale": "Anxiety and depression are mental health conditions. Published data shows 2.4% of ED visits result in mental/behavioral diagnoses (F00-99). Psychiatry manages medication and severe presentations; psychotherapy for ongoing care.",
+      "diagnosis_distribution": {
+        "Mental/Behavioral (F00-99)": 60.0,
+        "Symptom-based (R00-99)": 25.0,
+        "Nervous system (G00-99)": 5.0
+      },
+      "thirty_day_mortality_pct": 0.3
+    },
+    "suicide_self_harm": {
+      "primary_specialist": "Psychiatrist",
+      "secondary_specialist": null,
+      "rationale": "Suicidal ideation and self-harm require urgent psychiatric evaluation for safety assessment and treatment planning.",
+      "diagnosis_distribution": {
+        "Mental/Behavioral (F00-99)": 70.0,
+        "Injury/Poisoning (S00-T98)": 20.0
+      },
+      "thirty_day_mortality_pct": 2.0
+    },
+    "psychosis": {
+      "primary_specialist": "Psychiatrist",
+      "secondary_specialist": null,
+      "rationale": "Psychosis (hallucinations, paranoia) requires psychiatric evaluation. Published data shows 0.1% of ED visits present with acute psychosis.",
+      "diagnosis_distribution": {
+        "Mental/Behavioral (F00-99)": 80.0,
+        "Nervous system (G00-99)": 5.0
+      },
+      "thirty_day_mortality_pct": 0.5
+    },
+    "substance_use": {
+      "primary_specialist": "Addiction Medicine Specialist",
+      "secondary_specialist": "Psychiatrist",
+      "rationale": "Substance use disorders are evaluated by addiction medicine for detoxification and long-term treatment planning. Psychiatry co-manages dual-diagnosis patients.",
+      "diagnosis_distribution": {
+        "Mental/Behavioral (F00-99)": 50.0,
+        "Injury/Poisoning (S00-T98)": 25.0,
+        "Circulatory (I00-99)": 5.0
+      },
+      "thirty_day_mortality_pct": 1.5
+    },
+    "allergic_reaction": {
+      "primary_specialist": "Allergist / Immunologist",
+      "secondary_specialist": "Dermatologist",
+      "rationale": "Allergic reactions are evaluated by allergy/immunology for identification of triggers and desensitization. Published data shows 0.4% of ED visits are for allergy/anaphylaxis.",
+      "diagnosis_distribution": {
+        "Skin (L00-99)": 30.0,
+        "Respiratory (J00-99)": 20.0,
+        "Symptom-based (R00-99)": 35.0
+      },
+      "thirty_day_mortality_pct": 0.2
+    },
+    "cardiac_arrest": {
+      "primary_specialist": "Cardiologist",
+      "secondary_specialist": "Intensivist (Critical Care)",
+      "rationale": "Cardiac arrest survivors require cardiology evaluation for underlying arrhythmia, structural heart disease, and device placement (ICD/pacemaker). ICU care during recovery.",
+      "diagnosis_distribution": {
+        "Circulatory (I00-99)": 70.0,
+        "Respiratory (J00-99)": 10.0
+      },
+      "thirty_day_mortality_pct": 58.8
+    },
+    "anaphylaxis": {
+      "primary_specialist": "Allergist / Immunologist",
+      "secondary_specialist": null,
+      "rationale": "Post-anaphylaxis follow-up with allergist/immunologist for trigger identification and EpiPen prescription. Anaphylaxis itself is managed in the ED.",
+      "diagnosis_distribution": {
+        "Immune/Allergic": 80.0,
+        "Respiratory (J00-99)": 10.0
+      },
+      "thirty_day_mortality_pct": 1.5
+    },
+    "other": {
+      "primary_specialist": "Internal Medicine Specialist",
+      "secondary_specialist": null,
+      "rationale": "For non-specific or unclassified symptoms, internal medicine provides comprehensive evaluation. Published data shows 19.3% of ED visits present with non-specific complaints, with a wide distribution of discharge diagnoses.",
+      "diagnosis_distribution": {
+        "Symptom-based (R00-99)": 21.6,
+        "Observational (Z00-99)": 15.6,
+        "Circulatory (I00-99)": 11.9,
+        "Endocrine (E00-90)": 10.7
+      },
+      "thirty_day_mortality_pct": 4.2
+    }
+  }
+}

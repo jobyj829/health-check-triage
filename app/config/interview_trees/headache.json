@@ -1,0 +1,221 @@
+{
+  "symptom_id": "headache",
+  "label": "Headache",
+  "questions": [
+    {
+      "id": "onset",
+      "text": "How quickly did the headache start?",
+      "type": "single_choice",
+      "options": [
+        {"value": "thunderclap", "label": "All at once \u2013 it was the worst within seconds"},
+        {"value": "rapid", "label": "It got very bad within minutes"},
+        {"value": "gradual", "label": "It built up slowly over hours"},
+        {"value": "slow", "label": "It built up slowly over days"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "worst_ever",
+      "text": "Is this the worst headache you've ever had in your life?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, by far"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure, but it's very bad"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "severity",
+      "text": "How bad is the headache right now?",
+      "type": "severity_slider",
+      "options": [
+        {"value": "mild", "label": "Mild", "description": "Uncomfortable but I can manage"},
+        {"value": "moderate", "label": "Moderate", "description": "Hard to ignore"},
+        {"value": "severe", "label": "Severe", "description": "Really hurts"},
+        {"value": "worst", "label": "Worst ever", "description": "The worst pain of my life"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "location",
+      "text": "Where on your head does it hurt?",
+      "type": "single_choice",
+      "options": [
+        {"value": "one_side", "label": "One side of my head"},
+        {"value": "both_sides", "label": "Both sides, like a band around my head"},
+        {"value": "front", "label": "The front or forehead"},
+        {"value": "back", "label": "The back of my head or neck"},
+        {"value": "behind_eye", "label": "Behind one eye"},
+        {"value": "all_over", "label": "All over my head"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "quality",
+      "text": "What does the headache feel like?",
+      "type": "single_choice",
+      "options": [
+        {"value": "throbbing", "label": "Throbbing or pounding"},
+        {"value": "pressure", "label": "Pressure or squeezing"},
+        {"value": "sharp", "label": "Sharp or stabbing"},
+        {"value": "dull", "label": "Dull ache"},
+        {"value": "other", "label": "Something else"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "stiff_neck",
+      "text": "Is your neck stiff? Does it hurt to bend your head down?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "fever",
+      "text": "Do you have a fever or feel feverish?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "vision_changes",
+      "text": "Are you having any changes in your vision?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "blurry", "label": "Things are blurry"},
+        {"value": "double", "label": "I'm seeing double"},
+        {"value": "loss", "label": "I've lost some of my vision"},
+        {"value": "spots_lights", "label": "I see spots, lights, or zigzag lines"},
+        {"value": "sensitive", "label": "Light really bothers me"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "weakness_numbness",
+      "text": "Do you have any weakness, numbness, or tingling in your face, arms, or legs?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "one_side_face", "label": "Yes, on one side of my face"},
+        {"value": "one_side_body", "label": "Yes, on one side of my body (arm or leg)"},
+        {"value": "both_sides", "label": "Yes, on both sides"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "speech_difficulty",
+      "text": "Are you having trouble speaking or finding the right words?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "confusion",
+      "text": "Are you confused or having trouble thinking clearly?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "nausea_vomiting",
+      "text": "Do you feel sick to your stomach or have you thrown up?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "nausea", "label": "Feeling sick to my stomach"},
+        {"value": "vomiting", "label": "I have thrown up"},
+        {"value": "projectile", "label": "I threw up hard, without warning"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "history_similar",
+      "text": "Have you had headaches like this before?",
+      "type": "single_choice",
+      "options": [
+        {"value": "never", "label": "No, this is completely new"},
+        {"value": "similar_pattern", "label": "Yes, I get headaches like this sometimes"},
+        {"value": "migraine_known", "label": "Yes, I've been told I have migraines"},
+        {"value": "different", "label": "I get headaches, but this one feels different"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "head_injury",
+      "text": "Did you hit your head or have any kind of head injury recently?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes_today", "label": "Yes, today"},
+        {"value": "yes_recently", "label": "Yes, in the past few days"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "blood_thinners",
+      "text": "Are you taking blood thinners (like warfarin, Eliquis, or Xarelto)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"onset": ["thunderclap"], "worst_ever": ["yes"]},
+      "message": "A sudden 'thunderclap' headache that's the worst of your life could be bleeding in the brain (subarachnoid hemorrhage). This is a life-threatening emergency."
+    },
+    {
+      "answer_pattern": {"stiff_neck": ["yes"], "fever": ["yes"]},
+      "message": "Headache with a stiff neck and fever could be meningitis. This needs emergency treatment."
+    },
+    {
+      "answer_pattern": {"weakness_numbness": ["one_side_face", "one_side_body"]},
+      "message": "Headache with weakness or numbness on one side could be a sign of a stroke. This is an emergency \u2013 call 911."
+    },
+    {
+      "answer_pattern": {"speech_difficulty": ["yes"]},
+      "message": "Headache with trouble speaking could be a sign of a stroke. This is an emergency \u2013 call 911."
+    },
+    {
+      "answer_pattern": {"onset": ["thunderclap"], "nausea_vomiting": ["projectile"]},
+      "message": "Sudden severe headache with forceful vomiting may be a sign of bleeding in the brain."
+    },
+    {
+      "answer_pattern": {"head_injury": ["yes_today", "yes_recently"], "confusion": ["yes"]},
+      "message": "Headache after a head injury with confusion could mean a serious brain injury. This needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"head_injury": ["yes_today", "yes_recently"], "blood_thinners": ["yes"]},
+      "message": "A head injury while on blood thinners raises the risk of bleeding in the brain. This needs a CT scan urgently."
+    },
+    {
+      "answer_pattern": {"vision_changes": ["loss", "double"], "severity": ["severe", "worst"]},
+      "message": "Severe headache with vision loss or double vision needs urgent evaluation to rule out serious causes."
+    },
+    {
+      "answer_pattern": {"history_similar": ["never", "different"], "worst_ever": ["yes"]},
+      "message": "A new type of headache that's the worst you've ever had is a red flag that needs emergency evaluation."
+    }
+  ]
+}

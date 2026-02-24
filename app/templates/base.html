@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Check — Should I Go to the ER?</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .fade-in { animation: fadeSlideIn 0.45s ease-out; }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-option { transition: all 0.2s ease; }
+        .btn-option:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+
+        /* Severity slider */
+        .severity-btn { transition: all 0.15s ease; }
+        .severity-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white border-b border-gray-200 px-4 py-3">
+        <div class="max-w-2xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                </div>
+                <span class="font-bold text-gray-800 text-lg">Health Check</span>
+            </div>
+            <a href="/" class="text-sm text-gray-500 hover:text-gray-700">Start Over</a>
+        </div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto px-4 py-6">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="max-w-2xl mx-auto px-4 py-4 text-center">
+        <p class="text-xs text-gray-400 leading-relaxed">
+            This tool provides general health information only. It is NOT a substitute for
+            professional medical advice. If you think you may have a medical emergency,
+            call <strong>911</strong> immediately.
+        </p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

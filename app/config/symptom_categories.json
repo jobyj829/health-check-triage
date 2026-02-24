@@ -1,0 +1,254 @@
+[
+  {
+    "id": "cardiac_arrest",
+    "label": "Heart Stopped / Not Responsive",
+    "count_in_training": 710,
+    "feature_col": "sym_cardiac_arrest"
+  },
+  {
+    "id": "stroke_symptoms",
+    "label": "Stroke Symptoms",
+    "count_in_training": 3077,
+    "feature_col": "sym_stroke_symptoms"
+  },
+  {
+    "id": "anaphylaxis",
+    "label": "Severe Allergic Reaction",
+    "count_in_training": 78,
+    "feature_col": "sym_anaphylaxis"
+  },
+  {
+    "id": "suicide_self_harm",
+    "label": "Thoughts of Self-Harm",
+    "count_in_training": 1743,
+    "feature_col": "sym_suicide_self_harm"
+  },
+  {
+    "id": "psychosis",
+    "label": "Seeing / Hearing Things",
+    "count_in_training": 294,
+    "feature_col": "sym_psychosis"
+  },
+  {
+    "id": "altered_mental",
+    "label": "Confusion / Not Acting Right",
+    "count_in_training": 6932,
+    "feature_col": "sym_altered_mental"
+  },
+  {
+    "id": "chest_pain",
+    "label": "Chest Pain",
+    "count_in_training": 29281,
+    "feature_col": "sym_chest_pain"
+  },
+  {
+    "id": "shortness_of_breath",
+    "label": "Trouble Breathing",
+    "count_in_training": 22656,
+    "feature_col": "sym_shortness_of_breath"
+  },
+  {
+    "id": "palpitations",
+    "label": "Heart Racing / Fluttering",
+    "count_in_training": 480,
+    "feature_col": "sym_palpitations"
+  },
+  {
+    "id": "cough",
+    "label": "Cough / Cold Symptoms",
+    "count_in_training": 9393,
+    "feature_col": "sym_cough"
+  },
+  {
+    "id": "sore_throat",
+    "label": "Sore Throat",
+    "count_in_training": 4523,
+    "feature_col": "sym_sore_throat"
+  },
+  {
+    "id": "abdominal_pain",
+    "label": "Belly Pain",
+    "count_in_training": 55896,
+    "feature_col": "sym_abdominal_pain"
+  },
+  {
+    "id": "nausea_vomiting",
+    "label": "Nausea / Throwing Up",
+    "count_in_training": 20157,
+    "feature_col": "sym_nausea_vomiting"
+  },
+  {
+    "id": "diarrhea",
+    "label": "Diarrhea",
+    "count_in_training": 10,
+    "feature_col": "sym_diarrhea"
+  },
+  {
+    "id": "gi_bleed",
+    "label": "Blood in Stool or Vomit",
+    "count_in_training": 6799,
+    "feature_col": "sym_gi_bleed"
+  },
+  {
+    "id": "constipation",
+    "label": "Constipation",
+    "count_in_training": 18,
+    "feature_col": "sym_constipation"
+  },
+  {
+    "id": "fever",
+    "label": "Fever / Chills",
+    "count_in_training": 18866,
+    "feature_col": "sym_fever"
+  },
+  {
+    "id": "headache",
+    "label": "Headache",
+    "count_in_training": 13780,
+    "feature_col": "sym_headache"
+  },
+  {
+    "id": "dizziness",
+    "label": "Dizziness / Feeling Faint",
+    "count_in_training": 2348,
+    "feature_col": "sym_dizziness"
+  },
+  {
+    "id": "weakness",
+    "label": "Feeling Weak / Tired",
+    "count_in_training": 14052,
+    "feature_col": "sym_weakness"
+  },
+  {
+    "id": "numbness",
+    "label": "Numbness / Tingling",
+    "count_in_training": 46,
+    "feature_col": "sym_numbness"
+  },
+  {
+    "id": "back_pain",
+    "label": "Back Pain",
+    "count_in_training": 17080,
+    "feature_col": "sym_back_pain"
+  },
+  {
+    "id": "injury_fall",
+    "label": "Injury / Fall",
+    "count_in_training": 34569,
+    "feature_col": "sym_injury_fall"
+  },
+  {
+    "id": "fracture",
+    "label": "Possible Broken Bone",
+    "count_in_training": 144,
+    "feature_col": "sym_fracture"
+  },
+  {
+    "id": "extremity_pain",
+    "label": "Arm / Leg / Joint Pain",
+    "count_in_training": 30402,
+    "feature_col": "sym_extremity_pain"
+  },
+  {
+    "id": "laceration",
+    "label": "Cut / Wound",
+    "count_in_training": 8837,
+    "feature_col": "sym_laceration"
+  },
+  {
+    "id": "urinary",
+    "label": "Urinary Problems",
+    "count_in_training": 12634,
+    "feature_col": "sym_urinary"
+  },
+  {
+    "id": "rash",
+    "label": "Skin Problem / Rash",
+    "count_in_training": 6550,
+    "feature_col": "sym_rash"
+  },
+  {
+    "id": "swelling",
+    "label": "Swelling",
+    "count_in_training": 1062,
+    "feature_col": "sym_swelling"
+  },
+  {
+    "id": "eye_problem",
+    "label": "Eye Problem",
+    "count_in_training": 4511,
+    "feature_col": "sym_eye_problem"
+  },
+  {
+    "id": "ear_problem",
+    "label": "Ear Problem",
+    "count_in_training": 2010,
+    "feature_col": "sym_ear_problem"
+  },
+  {
+    "id": "nosebleed",
+    "label": "Nosebleed",
+    "count_in_training": 1316,
+    "feature_col": "sym_nosebleed"
+  },
+  {
+    "id": "vaginal_bleeding",
+    "label": "Vaginal Bleeding",
+    "count_in_training": 146,
+    "feature_col": "sym_vaginal_bleeding"
+  },
+  {
+    "id": "pelvic_pain",
+    "label": "Pelvic Pain",
+    "count_in_training": 1048,
+    "feature_col": "sym_pelvic_pain"
+  },
+  {
+    "id": "pregnancy_related",
+    "label": "Pregnancy Concern",
+    "count_in_training": 179,
+    "feature_col": "sym_pregnancy_related"
+  },
+  {
+    "id": "anxiety_depression",
+    "label": "Feeling Anxious or Sad",
+    "count_in_training": 4614,
+    "feature_col": "sym_anxiety_depression"
+  },
+  {
+    "id": "substance_use",
+    "label": "Alcohol / Drug Related",
+    "count_in_training": 12383,
+    "feature_col": "sym_substance_use"
+  },
+  {
+    "id": "allergic_reaction",
+    "label": "Allergic Reaction",
+    "count_in_training": 3002,
+    "feature_col": "sym_allergic_reaction"
+  },
+  {
+    "id": "abnormal_labs",
+    "label": "Abnormal Lab Results",
+    "count_in_training": 3010,
+    "feature_col": "sym_abnormal_labs"
+  },
+  {
+    "id": "medication_refill",
+    "label": "Medication Refill",
+    "count_in_training": 663,
+    "feature_col": "sym_medication_refill"
+  },
+  {
+    "id": "follow_up",
+    "label": "Follow-Up Visit",
+    "count_in_training": 523,
+    "feature_col": "sym_follow_up"
+  },
+  {
+    "id": "other",
+    "label": "Other / Not Listed",
+    "count_in_training": 134055,
+    "feature_col": "sym_other"
+  }
+]

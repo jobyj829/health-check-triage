@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="fade-in min-h-[60vh] flex flex-col">
+
+    <!-- Progress -->
+    <div class="mb-6">
+        <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs text-gray-400">
+                {% if patient_name and question.id not in ("name",) %}{{ patient_name }} &middot; {% endif %}
+                Step {{ progress }}
+            </span>
+            <span class="text-xs text-gray-400">{{ ((progress - 1) / total * 100) | int }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-1.5">
+            <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-500"
+                 style="width: {{ [(progress - 1) / total * 100, 100] | min }}%"></div>
+        </div>
+    </div>
+
+    <!-- Context tag -->
+    {% if question.metadata.get("context") %}
+    <div class="flex justify-center mb-3">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            {{ question.metadata.context }}
+        </span>
+    </div>
+    {% endif %}
+
+    <!-- Question -->
+    <h2 class="text-xl md:text-2xl font-bold text-gray-900 text-center mb-2 leading-relaxed px-2">
+        {{ question.text }}
+    </h2>
+
+    <!-- Subtitle -->
+    {% if question.metadata.get("subtitle") %}
+    <p class="text-sm text-gray-500 text-center mb-6 px-4">{{ question.metadata.subtitle }}</p>
+    {% else %}
+    <div class="mb-6"></div>
+    {% endif %}
+
+    <!-- Answer form -->
+    <form action="/answer" method="POST" id="answerForm" class="flex-1 flex flex-col">
+        <input type="hidden" name="question_id" value="{{ question.id }}">
+        <input type="hidden" name="question_type" value="{{ question.question_type }}">
+        <input type="hidden" name="question_text" value="{{ question.text }}">
+
+        {# ── SINGLE CHOICE ─────────────────────────────────── #}
+        {% if question.question_type == "single_choice" %}
+        <div class="space-y-3 max-w-md mx-auto w-full">
+            {% for opt in question.options %}
+            <button type="submit" name="answer" value="{{ opt.value }}"
+                    class="w-full text-left bg-white border-2 border-gray-200 rounded-xl px-5 py-4
+                           hover:border-blue-400 hover:bg-blue-50 hover:shadow-md
+                           focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                           transition-all text-base flex items-center gap-3">
+                {% if opt.get("icon") == "user" %}
+                <span class="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </span>
+                {% elif opt.get("icon") == "child" %}
+                <span class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </span>
+                {% elif opt.get("icon") == "users" %}
+                <span class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </span>
+                {% elif opt.get("icon") == "alert" %}
+                <span class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.27 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                </span>
+                {% elif opt.get("icon") == "emergency" %}
+                <span class="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.27 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                </span>
+                {% endif %}
+                <span class="text-gray-700 font-medium">{{ opt.label }}</span>
+                <input type="hidden" name="answer_label" value="{{ opt.label }}">
+            </button>
+            {% endfor %}
+        </div>
+
+        {# ── SEVERITY SLIDER ─────────────────────────────────── #}
+        {% elif question.question_type == "severity_slider" %}
+        <div class="max-w-md mx-auto w-full">
+            {% set severity_config = [
+                {"value": "mild", "emoji": "\U0001f60a", "color_border": "border-green-400", "color_bg": "bg-green-50"},
+                {"value": "moderate", "emoji": "\U0001f610", "color_border": "border-yellow-400", "color_bg": "bg-yellow-50"},
+                {"value": "severe", "emoji": "\U0001f623", "color_border": "border-orange-400", "color_bg": "bg-orange-50"},
+                {"value": "worst", "emoji": "\U0001f631", "color_border": "border-red-400", "color_bg": "bg-red-50"},
+            ] %}
+            <div class="grid grid-cols-4 gap-2 mb-4">
+                {% for opt in question.options %}
+                {% set sev = severity_config[loop.index0] if loop.index0 < severity_config|length else severity_config[-1] %}
+                <button type="submit" name="answer" value="{{ opt.value }}"
+                        class="severity-btn flex flex-col items-center py-4 px-2 rounded-xl border-2 border-gray-200
+                               bg-white hover:{{ sev.color_border }} hover:{{ sev.color_bg }} hover:shadow-md">
+                    <span class="text-3xl mb-1">{{ sev.emoji }}</span>
+                    <span class="text-sm font-semibold text-gray-800">{{ opt.label }}</span>
+                    {% if opt.get("description") %}
+                    <span class="text-xs text-gray-500 text-center mt-0.5 leading-tight">{{ opt.description }}</span>
+                    {% endif %}
+                    <input type="hidden" name="answer_label" value="{{ opt.label }}">
+                </button>
+                {% endfor %}
+            </div>
+            <div class="h-2 rounded-full bg-gradient-to-r from-green-400 via-yellow-400 via-orange-400 to-red-500 opacity-60"></div>
+        </div>
+
+        {# ── NUMBER ─────────────────────────────────── #}
+        {% elif question.question_type == "number" %}
+        <div class="max-w-xs mx-auto w-full">
+            <input type="number" name="answer" id="numberInput"
+                   min="{{ question.metadata.get('min', 0) }}"
+                   max="{{ question.metadata.get('max', 200) }}"
+                   placeholder="{{ question.metadata.get('placeholder', 'Enter a number') }}"
+                   class="w-full border-2 border-gray-200 rounded-xl px-5 py-4 text-xl text-center
+                          focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                          transition-all text-gray-800"
+                   required autofocus>
+            <button type="submit"
+                    class="w-full mt-3 bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl
+                           hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all text-lg">
+                Continue
+            </button>
+        </div>
+
+        {# ── TEXTAREA ─────────────────────────────────── #}
+        {% elif question.question_type == "textarea" %}
+        <div class="max-w-md mx-auto w-full space-y-3">
+            <textarea name="answer" id="textareaInput"
+                      rows="{{ question.metadata.get('rows', 3) }}"
+                      placeholder="{{ question.metadata.get('placeholder', 'Type here...') }}"
+                      class="w-full border-2 border-gray-200 rounded-xl px-5 py-4 text-lg
+                             focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                             transition-all text-gray-800 resize-none"
+                      required autofocus></textarea>
+            <button type="submit" id="textareaSubmit"
+                    class="w-full bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl
+                           hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all
+                           text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled>
+                Continue
+            </button>
+        </div>
+
+        {# ── TEXT (short) ─────────────────────────────────── #}
+        {% elif question.question_type == "text" %}
+        <div class="max-w-xs mx-auto w-full">
+            <input type="text" name="answer" id="textInput"
+                   placeholder="{{ question.metadata.get('placeholder', 'Type here...') }}"
+                   {% if question.metadata.get('pattern') %}pattern="{{ question.metadata.pattern }}"{% endif %}
+                   class="w-full border-2 border-gray-200 rounded-xl px-5 py-4 text-xl text-center
+                          focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+                          transition-all text-gray-800"
+                   {% if not question.metadata.get('optional') %}required{% endif %} autofocus>
+            <button type="submit"
+                    class="w-full mt-3 bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl
+                           hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all text-lg">
+                Continue
+            </button>
+            {% if question.metadata.get('optional') %}
+            <button type="submit" name="answer" value=""
+                    class="w-full mt-2 text-sm text-gray-400 hover:text-blue-500 transition-colors py-2">
+                Skip this step
+            </button>
+            {% endif %}
+        </div>
+
+        {# ── MULTI CHOICE ─────────────────────────────────── #}
+        {% elif question.question_type == "multi_choice" %}
+        <div class="space-y-3 max-w-md mx-auto w-full">
+            {% for opt in question.options %}
+            <label class="flex items-center gap-3 bg-white border-2 border-gray-200
+                          rounded-xl px-5 py-4 cursor-pointer
+                          hover:border-blue-400 hover:bg-blue-50 transition-all">
+                <input type="checkbox" name="answer" value="{{ opt.value }}"
+                       class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 multi-check">
+                <input type="hidden" name="answer_label" value="{{ opt.label }}" disabled>
+                <span class="text-gray-700 font-medium text-base">{{ opt.label }}</span>
+            </label>
+            {% endfor %}
+            <button type="submit" id="multiSubmit"
+                    class="w-full bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl
+                           hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all
+                           text-lg disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+                    disabled>
+                Continue
+            </button>
+        </div>
+        {% endif %}
+    </form>
+
+    <!-- Help note -->
+    <p class="text-xs text-gray-400 mt-auto pt-6 text-center">
+        Having trouble? Have someone help you, or call <strong>911</strong> if you need immediate help.
+    </p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.scrollTo({top: 0, behavior: 'smooth'});
+
+/* ── Textarea ── */
+var ta = document.getElementById('textareaInput');
+var taSub = document.getElementById('textareaSubmit');
+if (ta && taSub) {
+    ta.addEventListener('input', function() { taSub.disabled = this.value.trim().length === 0; });
+}
+
+/* ── Multi-choice ── */
+var mcChecks = document.querySelectorAll('.multi-check');
+var mcSubmit = document.getElementById('multiSubmit');
+if (mcChecks.length > 0 && mcSubmit) {
+    mcChecks.forEach(function(cb) {
+        cb.addEventListener('change', function() {
+            var label = this.closest('label');
+            var hl = label.querySelector('input[name="answer_label"]');
+            if (hl) hl.disabled = !this.checked;
+            mcSubmit.disabled = !Array.from(mcChecks).some(function(c) { return c.checked; });
+            label.classList.toggle('border-blue-500', this.checked);
+            label.classList.toggle('bg-blue-50', this.checked);
+        });
+    });
+}
+</script>
+{% endblock %}

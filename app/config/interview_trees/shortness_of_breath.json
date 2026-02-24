@@ -1,0 +1,207 @@
+{
+  "symptom_id": "shortness_of_breath",
+  "label": "Shortness of Breath",
+  "questions": [
+    {
+      "id": "onset",
+      "text": "How quickly did the trouble breathing start?",
+      "type": "single_choice",
+      "options": [
+        {"value": "sudden_minutes", "label": "All at once, within minutes"},
+        {"value": "sudden_hours", "label": "Over a few hours"},
+        {"value": "gradual_days", "label": "Slowly over a few days"},
+        {"value": "gradual_weeks", "label": "Slowly over weeks or longer"},
+        {"value": "recurring", "label": "It comes and goes"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "at_rest_or_activity",
+      "text": "When do you have trouble breathing?",
+      "type": "single_choice",
+      "options": [
+        {"value": "at_rest", "label": "Even when I'm sitting still"},
+        {"value": "minimal_activity", "label": "With very little activity (like walking around the house)"},
+        {"value": "moderate_activity", "label": "With moderate activity (like climbing stairs)"},
+        {"value": "heavy_activity", "label": "Only with heavy activity (like running)"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "severity",
+      "text": "How bad is the trouble breathing right now?",
+      "type": "single_choice",
+      "options": [
+        {"value": "mild", "label": "A little short of breath, but I can talk in full sentences"},
+        {"value": "moderate", "label": "I have to stop and catch my breath between sentences"},
+        {"value": "severe", "label": "I can barely get words out"},
+        {"value": "critical", "label": "I feel like I can't get enough air at all"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "position",
+      "text": "Is the breathing worse when you lie flat?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, I have to sit up or prop myself up to breathe"},
+        {"value": "no", "label": "No, it's the same in any position"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "chest_pain",
+      "text": "Do you also have chest pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes_sharp", "label": "Yes, sharp pain especially when I breathe in"},
+        {"value": "yes_pressure", "label": "Yes, pressure or squeezing"},
+        {"value": "yes_other", "label": "Yes, another kind of pain"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "cough",
+      "text": "Do you have a cough?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "dry", "label": "Yes, dry cough"},
+        {"value": "productive_clear", "label": "Yes, coughing up clear or white mucus"},
+        {"value": "productive_colored", "label": "Yes, coughing up yellow or green mucus"},
+        {"value": "bloody", "label": "Yes, coughing up blood or pink frothy stuff"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "wheezing",
+      "text": "Do you hear any wheezing or whistling sound when you breathe?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "leg_swelling",
+      "text": "Are your legs or ankles swollen?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "both", "label": "Yes, both legs"},
+        {"value": "one_leg", "label": "Yes, just one leg"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "fever",
+      "text": "Do you have a fever or feel feverish?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "recent_immobility",
+      "text": "Have you been on a long trip (car ride or flight), had surgery, or been stuck in bed recently?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "history_asthma_copd",
+      "text": "Do you have asthma, COPD (lung disease), or any other breathing problem that's been diagnosed before?",
+      "type": "single_choice",
+      "options": [
+        {"value": "asthma", "label": "Yes, asthma"},
+        {"value": "copd", "label": "Yes, COPD or emphysema"},
+        {"value": "other_lung", "label": "Yes, another lung problem"},
+        {"value": "heart_failure", "label": "Yes, heart failure"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "inhaler_use",
+      "text": "Do you use an inhaler or breathing treatment? If so, has it helped?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes_helps", "label": "Yes, and it helped"},
+        {"value": "yes_no_help", "label": "Yes, but it didn't help this time"},
+        {"value": "no_inhaler", "label": "I don't use one"}
+      ],
+      "condition": {"question_id": "history_asthma_copd", "values": ["asthma", "copd", "other_lung"]}
+    },
+    {
+      "id": "allergic_exposure",
+      "text": "Were you around anything you're allergic to, or did you eat something new before this started?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "swelling_face_throat",
+      "text": "Is your face, lips, tongue, or throat swelling up?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": {"question_id": "allergic_exposure", "values": ["yes"]}
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"severity": ["severe", "critical"]},
+      "message": "Severe trouble breathing needs immediate medical attention."
+    },
+    {
+      "answer_pattern": {"onset": ["sudden_minutes"], "chest_pain": ["yes_sharp"], "recent_immobility": ["yes"]},
+      "message": "Sudden trouble breathing with sharp chest pain after being inactive could be a blood clot in the lung (pulmonary embolism). This is an emergency."
+    },
+    {
+      "answer_pattern": {"onset": ["sudden_minutes"], "leg_swelling": ["one_leg"]},
+      "message": "Sudden shortness of breath with swelling in one leg raises concern for a blood clot. This needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"chest_pain": ["yes_pressure"], "severity": ["moderate", "severe", "critical"]},
+      "message": "Trouble breathing with chest pressure may be a heart problem. This needs immediate attention."
+    },
+    {
+      "answer_pattern": {"position": ["yes"], "leg_swelling": ["both"]},
+      "message": "Trouble breathing when lying flat with swollen legs may be a sign of heart failure. This needs urgent care."
+    },
+    {
+      "answer_pattern": {"cough": ["bloody"]},
+      "message": "Coughing up blood or pink frothy mucus is a serious sign that needs immediate medical evaluation."
+    },
+    {
+      "answer_pattern": {"swelling_face_throat": ["yes"]},
+      "message": "Swelling of the face, lips, tongue, or throat with trouble breathing could be a severe allergic reaction (anaphylaxis). This is a life-threatening emergency."
+    },
+    {
+      "answer_pattern": {"history_asthma_copd": ["asthma", "copd"], "inhaler_use": ["yes_no_help"]},
+      "message": "Trouble breathing that isn't getting better with your usual inhaler suggests a severe flare-up that needs emergency treatment."
+    },
+    {
+      "answer_pattern": {"at_rest_or_activity": ["at_rest"], "onset": ["sudden_minutes"]},
+      "message": "Sudden trouble breathing at rest is a medical emergency."
+    }
+  ]
+}

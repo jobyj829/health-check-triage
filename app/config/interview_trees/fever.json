@@ -1,0 +1,215 @@
+{
+  "symptom_id": "fever",
+  "label": "Fever",
+  "questions": [
+    {
+      "id": "temp_known",
+      "text": "Did you take your temperature? If so, what was it?",
+      "type": "single_choice",
+      "options": [
+        {"value": "lt_100.4", "label": "Less than 100.4\u00b0F (38\u00b0C)"},
+        {"value": "100.4_102", "label": "100.4\u00b0F to 102\u00b0F (38\u00b0C to 39\u00b0C)"},
+        {"value": "102_104", "label": "102\u00b0F to 104\u00b0F (39\u00b0C to 40\u00b0C)"},
+        {"value": "gt_104", "label": "Over 104\u00b0F (40\u00b0C)"},
+        {"value": "not_measured", "label": "I didn't take it, but I feel hot or have chills"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "duration",
+      "text": "How long have you had the fever?",
+      "type": "single_choice",
+      "options": [
+        {"value": "lt_24h", "label": "Less than 1 day"},
+        {"value": "1_3_days", "label": "1 to 3 days"},
+        {"value": "4_7_days", "label": "4 to 7 days"},
+        {"value": "gt_7_days", "label": "More than a week"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "chills_rigors",
+      "text": "Are you having chills or shaking that you can't control?",
+      "type": "single_choice",
+      "options": [
+        {"value": "chills", "label": "Chills (feeling cold)"},
+        {"value": "rigors", "label": "Shaking so hard I can't stop it"},
+        {"value": "both", "label": "Both chills and shaking"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "cough",
+      "text": "Do you have a cough?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "dry", "label": "Yes, a dry cough"},
+        {"value": "productive", "label": "Yes, I'm coughing up mucus or phlegm"},
+        {"value": "bloody", "label": "Yes, I'm coughing up blood"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "sore_throat",
+      "text": "Do you have a sore throat?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "mild", "label": "A little sore"},
+        {"value": "severe", "label": "Very sore, hard to swallow"},
+        {"value": "cannot_swallow", "label": "So bad I can barely swallow"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "urinary_symptoms",
+      "text": "Does it burn when you pee, or are you peeing more often than usual?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "burning", "label": "Yes, it burns"},
+        {"value": "frequency", "label": "Yes, going more often"},
+        {"value": "both", "label": "Both"},
+        {"value": "blood", "label": "There's blood in my pee"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "stiff_neck",
+      "text": "Is your neck stiff? Does it hurt to look down and touch your chin to your chest?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "headache",
+      "text": "Do you have a bad headache?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "mild", "label": "Mild headache"},
+        {"value": "severe", "label": "Severe headache"},
+        {"value": "worst_ever", "label": "The worst headache of my life"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "rash",
+      "text": "Do you have any new rash or spots on your skin?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes_flat", "label": "Yes, flat red spots"},
+        {"value": "yes_raised", "label": "Yes, raised bumps or blisters"},
+        {"value": "yes_spreading", "label": "Yes, and it's spreading quickly"},
+        {"value": "yes_petechiae", "label": "Yes, tiny purple or red dots that don't go away when I press on them"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "confusion",
+      "text": "Are you (or is the patient) confused, hard to wake up, or acting differently than normal?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No, thinking clearly"},
+        {"value": "mild", "label": "A little foggy or confused"},
+        {"value": "severe", "label": "Very confused or hard to wake up"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "belly_pain",
+      "text": "Do you have belly pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "mild", "label": "Mild belly pain"},
+        {"value": "severe", "label": "Bad belly pain"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "travel",
+      "text": "Have you traveled outside the country in the last month?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes_domestic", "label": "Yes, within the country"},
+        {"value": "yes_tropical", "label": "Yes, to a tropical or developing country"},
+        {"value": "yes_other", "label": "Yes, somewhere else outside the country"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "immune_status",
+      "text": "Do you have any health problems that make it harder for your body to fight infections? (For example: cancer treatment, HIV, organ transplant, or taking medicines that weaken your immune system.)",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "chemo", "label": "Yes, I'm on cancer treatment (chemotherapy)"},
+        {"value": "immunosuppressed", "label": "Yes, I take medicine that weakens my immune system"},
+        {"value": "hiv", "label": "Yes, I have HIV"},
+        {"value": "transplant", "label": "Yes, I've had an organ transplant"},
+        {"value": "other", "label": "Yes, something else"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "recent_procedure",
+      "text": "Have you had any surgery, dental work, or a medical procedure in the last 2 weeks?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes_surgery", "label": "Yes, surgery"},
+        {"value": "yes_dental", "label": "Yes, dental work"},
+        {"value": "yes_other", "label": "Yes, another procedure"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"stiff_neck": ["yes"], "headache": ["severe", "worst_ever"]},
+      "message": "Fever with a stiff neck and bad headache could be a sign of meningitis. This is an emergency."
+    },
+    {
+      "answer_pattern": {"confusion": ["mild", "severe"]},
+      "message": "Fever with confusion or change in thinking needs immediate attention. This could be a sign of a serious infection."
+    },
+    {
+      "answer_pattern": {"rash": ["yes_petechiae", "yes_spreading"]},
+      "message": "Fever with a quickly spreading rash or tiny purple dots that don't fade when pressed may be a sign of a dangerous infection."
+    },
+    {
+      "answer_pattern": {"temp_known": ["gt_104"]},
+      "message": "A temperature over 104\u00b0F (40\u00b0C) is very high and needs urgent medical care."
+    },
+    {
+      "answer_pattern": {"immune_status": ["chemo", "immunosuppressed", "transplant"], "temp_known": ["100.4_102", "102_104", "gt_104"]},
+      "message": "Fever in someone with a weakened immune system can be very dangerous and needs to be seen right away."
+    },
+    {
+      "answer_pattern": {"chills_rigors": ["rigors", "both"], "confusion": ["mild", "severe"]},
+      "message": "Uncontrollable shaking chills with confusion may be a sign of a severe bloodstream infection (sepsis)."
+    },
+    {
+      "answer_pattern": {"sore_throat": ["cannot_swallow"]},
+      "message": "Fever with severe difficulty swallowing could be a throat infection that needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"cough": ["bloody"]},
+      "message": "Fever with coughing up blood needs immediate medical evaluation."
+    },
+    {
+      "answer_pattern": {"travel": ["yes_tropical"], "duration": ["gt_7_days"]},
+      "message": "A long-lasting fever after travel to a tropical area could be a sign of a travel-related illness like malaria. This needs special testing."
+    }
+  ]
+}

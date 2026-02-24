@@ -1,0 +1,201 @@
+{
+  "symptom_id": "chest_pain",
+  "label": "Chest Pain",
+  "questions": [
+    {
+      "id": "quality",
+      "text": "What does the pain feel like?",
+      "type": "single_choice",
+      "options": [
+        {"value": "pressure", "label": "Pressure or squeezing"},
+        {"value": "sharp", "label": "Sharp or stabbing"},
+        {"value": "burning", "label": "Burning"},
+        {"value": "tightness", "label": "Tightness"},
+        {"value": "aching", "label": "Dull ache"},
+        {"value": "tearing", "label": "Ripping or tearing"},
+        {"value": "other", "label": "Something else"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "radiation",
+      "text": "Does the pain spread anywhere else, like your arm, jaw, neck, or back?",
+      "type": "single_choice",
+      "options": [
+        {"value": "left_arm", "label": "Left arm or shoulder"},
+        {"value": "right_arm", "label": "Right arm or shoulder"},
+        {"value": "jaw_neck", "label": "Jaw or neck"},
+        {"value": "back", "label": "Back (between shoulder blades)"},
+        {"value": "multiple", "label": "More than one of these"},
+        {"value": "none", "label": "It stays in one spot"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset",
+      "text": "When did the pain start?",
+      "type": "single_choice",
+      "options": [
+        {"value": "minutes", "label": "A few minutes ago"},
+        {"value": "hours_1_6", "label": "1 to 6 hours ago"},
+        {"value": "hours_6_24", "label": "6 to 24 hours ago"},
+        {"value": "days", "label": "More than a day ago"},
+        {"value": "weeks", "label": "More than a week ago"},
+        {"value": "recurring", "label": "It comes and goes over weeks or months"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset_type",
+      "text": "Did the pain come on all at once, or did it build up slowly?",
+      "type": "single_choice",
+      "options": [
+        {"value": "sudden", "label": "Came on all at once"},
+        {"value": "gradual", "label": "Built up slowly"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "severity",
+      "text": "How bad is the pain right now?",
+      "type": "severity_slider",
+      "options": [
+        {"value": "mild", "label": "Mild", "description": "Uncomfortable but I can manage"},
+        {"value": "moderate", "label": "Moderate", "description": "Hard to ignore"},
+        {"value": "severe", "label": "Severe", "description": "Really hurts"},
+        {"value": "worst", "label": "Worst ever", "description": "The worst pain of my life"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "breathing_worse",
+      "text": "Does the pain get worse when you take a deep breath?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "exertion",
+      "text": "Does the pain get worse when you walk, climb stairs, or do anything active?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "at_rest", "label": "The pain is there even when I'm resting"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "associated_sob",
+      "text": "Are you having trouble breathing or feeling short of breath?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "associated_sweating",
+      "text": "Have you been sweating more than usual (like a cold sweat)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "associated_nausea",
+      "text": "Do you feel sick to your stomach or like you might throw up?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, feeling sick to my stomach"},
+        {"value": "vomiting", "label": "Yes, I have thrown up"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "associated_lightheaded",
+      "text": "Do you feel lightheaded or dizzy?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "history_heart",
+      "text": "Have you ever been told you have a heart problem, or have you had a heart attack before?",
+      "type": "single_choice",
+      "options": [
+        {"value": "heart_attack", "label": "Yes, I've had a heart attack"},
+        {"value": "heart_disease", "label": "Yes, I have a heart problem"},
+        {"value": "stent_surgery", "label": "Yes, I've had a stent or heart surgery"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "recent_immobility",
+      "text": "Have you been on a long trip, had surgery, or been stuck in bed for a while recently?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "substance_use",
+      "text": "Have you used cocaine, methamphetamine, or any stimulant drugs recently?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "prefer_not", "label": "Prefer not to answer"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"quality": ["pressure", "tightness"], "radiation": ["left_arm", "jaw_neck", "multiple"]},
+      "message": "Chest pressure or tightness spreading to the arm, jaw, or neck can be a sign of a heart attack. This needs to be checked right away."
+    },
+    {
+      "answer_pattern": {"quality": ["pressure", "tightness"], "associated_sweating": ["yes"]},
+      "message": "Chest pressure with cold sweating can be a sign of a heart attack. This needs urgent attention."
+    },
+    {
+      "answer_pattern": {"quality": ["pressure", "tightness"], "associated_sob": ["yes"]},
+      "message": "Chest pressure with trouble breathing may point to a serious heart or lung problem."
+    },
+    {
+      "answer_pattern": {"quality": ["tearing"], "onset_type": ["sudden"], "severity": ["severe", "worst"]},
+      "message": "Sudden, severe tearing or ripping chest pain may be a sign of a torn blood vessel (aortic dissection). This is a life-threatening emergency."
+    },
+    {
+      "answer_pattern": {"associated_sob": ["yes"], "recent_immobility": ["yes"]},
+      "message": "Trouble breathing after being inactive for a while could be a sign of a blood clot in the lung. This needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"quality": ["pressure", "tightness"], "associated_nausea": ["yes", "vomiting"], "associated_sweating": ["yes"]},
+      "message": "Chest pressure with nausea and sweating is a classic pattern for a heart attack. Seek immediate care."
+    },
+    {
+      "answer_pattern": {"substance_use": ["yes"], "quality": ["pressure", "tightness"]},
+      "message": "Stimulant drug use with chest pressure raises concern for a drug-related heart problem. This needs immediate attention."
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "Diabetes": [
+    "antidiabetic",
+    "insulin",
+    "sulfonylurea",
+    "metformin",
+    "sglt2",
+    "glp-1",
+    "dpp-4",
+    "thiazolidinedione",
+    "meglitinide"
+  ],
+  "High Blood Pressure": [
+    "antihypertensive",
+    "ace inhibitor",
+    "arb\\b",
+    "angiotensin",
+    "calcium channel",
+    "beta.?blocker",
+    "beta adrenergic.*antag",
+    "alpha.*blocker",
+    "diuretic",
+    "hydrochlorothiazide"
+  ],
+  "Heart Problems": [
+    "cardiac",
+    "antiarrhythmic",
+    "nitrate",
+    "digoxin",
+    "heart failure",
+    "antianginal"
+  ],
+  "Blood Thinner / Clots": [
+    "anticoagulant",
+    "antithrombotic",
+    "antiplatelet",
+    "warfarin",
+    "thrombin inhibitor",
+    "factor xa"
+  ],
+  "High Cholesterol": [
+    "statin",
+    "hmg.?coa",
+    "antilipemic",
+    "cholesterol",
+    "fibrate"
+  ],
+  "Asthma / COPD": [
+    "asthma",
+    "copd",
+    "bronchodilat",
+    "leukotriene",
+    "inhaled cortico",
+    "beta.?2.*agonist"
+  ],
+  "Depression / Anxiety": [
+    "antidepress",
+    "ssri",
+    "snri",
+    "anxiolytic",
+    "benzodiazepine",
+    "serotonin"
+  ],
+  "Thyroid Problems": [
+    "thyroid"
+  ],
+  "Seizure Disorder": [
+    "anticonvulsant",
+    "antiepileptic",
+    "seizure"
+  ],
+  "Kidney Problems": [
+    "renal",
+    "erythropoietin",
+    "epo\\b",
+    "phosphate binder"
+  ],
+  "Liver Problems": [
+    "hepat",
+    "liver"
+  ],
+  "Stomach / Acid Reflux": [
+    "proton pump",
+    "antacid",
+    "h2.*antagonist",
+    "gerd"
+  ],
+  "Pain Condition": [
+    "opioid.*analges",
+    "narcotic",
+    "pain\\b"
+  ],
+  "Cancer": [
+    "antineoplast",
+    "chemother",
+    "oncolog"
+  ],
+  "Organ Transplant": [
+    "immunosuppress",
+    "transplant",
+    "calcineurin"
+  ],
+  "HIV / Immunocompromised": [
+    "antiretroviral",
+    "hiv"
+  ],
+  "Autoimmune Disease": [
+    "biologic.*modifier",
+    "dmard",
+    "tnf inhibitor",
+    "autoimmune"
+  ],
+  "Psychiatric Condition": [
+    "antipsychotic",
+    "lithium",
+    "mood stabiliz"
+  ],
+  "Osteoporosis": [
+    "bisphosphonate",
+    "osteopor"
+  ],
+  "Gout": [
+    "antigout",
+    "uric acid"
+  ],
+  "Dementia / Memory Problems": [
+    "cholinesterase",
+    "alzheimer",
+    "dementia",
+    "memantine"
+  ],
+  "Parkinson's Disease": [
+    "parkinson",
+    "dopamine agonist",
+    "levodopa"
+  ]
+}

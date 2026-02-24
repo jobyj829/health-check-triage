@@ -1,0 +1,68 @@
+# MIMIC data (PHI — never commit)
+mimic-iv-3.1/
+mimic-iv-ed-2.2/
+mimic-iv-ed-2.2.zip
+
+# Large outputs
+outputs/
+
+# Personal / unrelated files
+*.pdf
+*.docx
+*.zip
+logs/
+screenshots/
+sql/
+.DS_Store
+.cursor/
+
+# Study directories (not part of triage app)
+Study1_Norepinephrine/
+Study2_ED_Phenotypes/
+Study3_ED_Triage_Tool/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+.env
+venv/
+.venv/
+
+# Test artifacts
+test_output.log
+final_test_output.log
+
+# Analysis scripts not needed for the app
+analysis_*.py
+build_cellulitis_db.py
+build_data_dictionary.py
+build_ed_sofa.py
+build_sep3_evaluation.py
+build_sepsis_db.py
+build_vc_figures.py
+build_vc_figures_public.py
+compute_apache2_24h.py
+create_phenotype_*.py
+create_project_overview.py
+create_triage_summary_figure.py
+enhance_sepsis_db.py
+finalize_sepsis_csv.py
+finalize_with_demographics.py
+generate_pub_table*.py
+generate_publication_tables.py
+generate_table1*.py
+update_all_outputs.py
+add_age_dose_categories.py
+add_infection_source.py
+add_lactate_clearance.py
+add_nlr_plr_albumin.py
+add_sofa_category.py
+add_stay_categories.py
+add_vaso_map_detail.py
+setup_postgres.sh
+README_sepsis_database.md

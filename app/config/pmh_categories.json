@@ -1,0 +1,128 @@
+[
+  {
+    "id": "Asthma / COPD",
+    "label": "Asthma / COPD",
+    "count_in_training": 62555,
+    "feature_col": "pmh_asthma___copd"
+  },
+  {
+    "id": "Autoimmune Disease",
+    "label": "Autoimmune Disease",
+    "count_in_training": 12010,
+    "feature_col": "pmh_autoimmune_disease"
+  },
+  {
+    "id": "Blood Thinner / Clots",
+    "label": "Blood Thinner / Clots",
+    "count_in_training": 28545,
+    "feature_col": "pmh_blood_thinner___clots"
+  },
+  {
+    "id": "Cancer",
+    "label": "Cancer",
+    "count_in_training": 9393,
+    "feature_col": "pmh_cancer"
+  },
+  {
+    "id": "Dementia / Memory Problems",
+    "label": "Dementia / Memory Problems",
+    "count_in_training": 5597,
+    "feature_col": "pmh_dementia___memory_problems"
+  },
+  {
+    "id": "Depression / Anxiety",
+    "label": "Depression / Anxiety",
+    "count_in_training": 138480,
+    "feature_col": "pmh_depression___anxiety"
+  },
+  {
+    "id": "Diabetes",
+    "label": "Diabetes",
+    "count_in_training": 60958,
+    "feature_col": "pmh_diabetes"
+  },
+  {
+    "id": "HIV / Immunocompromised",
+    "label": "HIV / Immunocompromised",
+    "count_in_training": 6717,
+    "feature_col": "pmh_hiv___immunocompromised"
+  },
+  {
+    "id": "Heart Problems",
+    "label": "Heart Problems",
+    "count_in_training": 84974,
+    "feature_col": "pmh_heart_problems"
+  },
+  {
+    "id": "High Blood Pressure",
+    "label": "High Blood Pressure",
+    "count_in_training": 168861,
+    "feature_col": "pmh_high_blood_pressure"
+  },
+  {
+    "id": "High Cholesterol",
+    "label": "High Cholesterol",
+    "count_in_training": 102061,
+    "feature_col": "pmh_high_cholesterol"
+  },
+  {
+    "id": "Kidney Problems",
+    "label": "Kidney Problems",
+    "count_in_training": 7347,
+    "feature_col": "pmh_kidney_problems"
+  },
+  {
+    "id": "Liver Problems",
+    "label": "Liver Problems",
+    "count_in_training": 1417,
+    "feature_col": "pmh_liver_problems"
+  },
+  {
+    "id": "Organ Transplant",
+    "label": "Organ Transplant",
+    "count_in_training": 8363,
+    "feature_col": "pmh_organ_transplant"
+  },
+  {
+    "id": "Osteoporosis",
+    "label": "Osteoporosis",
+    "count_in_training": 6354,
+    "feature_col": "pmh_osteoporosis"
+  },
+  {
+    "id": "Pain Condition",
+    "label": "Pain Condition",
+    "count_in_training": 110,
+    "feature_col": "pmh_pain_condition"
+  },
+  {
+    "id": "Parkinson's Disease",
+    "label": "Parkinson's Disease",
+    "count_in_training": 7788,
+    "feature_col": "pmh_parkinson's_disease"
+  },
+  {
+    "id": "Psychiatric Condition",
+    "label": "Psychiatric Condition",
+    "count_in_training": 32954,
+    "feature_col": "pmh_psychiatric_condition"
+  },
+  {
+    "id": "Seizure Disorder",
+    "label": "Seizure Disorder",
+    "count_in_training": 75404,
+    "feature_col": "pmh_seizure_disorder"
+  },
+  {
+    "id": "Stomach / Acid Reflux",
+    "label": "Stomach / Acid Reflux",
+    "count_in_training": 110044,
+    "feature_col": "pmh_stomach___acid_reflux"
+  },
+  {
+    "id": "Thyroid Problems",
+    "label": "Thyroid Problems",
+    "count_in_training": 46110,
+    "feature_col": "pmh_thyroid_problems"
+  }
+]
