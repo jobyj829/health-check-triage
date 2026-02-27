@@ -46,7 +46,9 @@ from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 BASE_DIR   = Path(__file__).resolve().parent
-DATA_PATH  = BASE_DIR / "outputs" / "triage_app" / "triage_dataset.csv.gz"
+MIMIC_PATH = BASE_DIR / "outputs" / "triage_app" / "triage_dataset.csv.gz"
+NHAMCS_PATH = BASE_DIR / "outputs" / "triage_app" / "nhamcs_dataset.csv.gz"
+COMBINED_PATH = BASE_DIR / "outputs" / "triage_app" / "combined_dataset.csv.gz"
 MODEL_DIR  = BASE_DIR / "app" / "models"
 CFG_DIR    = BASE_DIR / "app" / "config"
 REPORT_DIR = BASE_DIR / "outputs" / "triage_app"
@@ -173,8 +175,22 @@ def main():
 
     # ── 1. LOAD DATA ──────────────────────────────────────────────────
     print("\n[1/6] Loading dataset...")
-    df = pd.read_csv(DATA_PATH)
+    if COMBINED_PATH.exists():
+        print("    Using combined MIMIC + NHAMCS dataset")
+        df = pd.read_csv(COMBINED_PATH)
+    elif MIMIC_PATH.exists():
+        print("    Using MIMIC-only dataset")
+        df = pd.read_csv(MIMIC_PATH)
+        df["source"] = "mimic"
+    else:
+        raise FileNotFoundError("No dataset found")
+
+    if "source" not in df.columns:
+        df["source"] = "mimic"
     print(f"    {len(df):,} rows, {len(df.columns)} columns")
+    for src in df["source"].unique():
+        n = (df["source"] == src).sum()
+        print(f"      {src}: {n:,}")
 
     # ── 2. FEATURE SELECTION ──────────────────────────────────────────
     print("\n[2/6] Selecting features...")
@@ -192,11 +208,18 @@ def main():
     print(f"    Target distribution: {dict(Counter(y))}")
 
     # ── 3. TRAIN/TEST SPLIT ──────────────────────────────────────────
-    print("\n[3/6] Splitting train/test (80/20, stratified)...")
+    print("\n[3/6] Splitting train/test (80/20, stratified by level + source)...")
+    strat_key = y.astype(str) + "_" + df["source"]
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42, stratify=y
+        X, y, test_size=0.2, random_state=42, stratify=strat_key
     )
+    source_train = df["source"].iloc[X_train.index]
+    source_test = df["source"].iloc[X_test.index]
     print(f"    Train: {len(X_train):,}  Test: {len(X_test):,}")
+    for src in df["source"].unique():
+        n_tr = (source_train == src).sum()
+        n_te = (source_test == src).sum()
+        print(f"      {src} — train: {n_tr:,}, test: {n_te:,}")
 
     # Scale features
     scaler = StandardScaler()
@@ -227,9 +250,9 @@ def main():
     # ── 4b. Random Forest (primary — fast, multi-threaded) ──
     print("    Training Random Forest Classifier...")
     rf_model = RandomForestClassifier(
-        n_estimators=500,
-        max_depth=20,
-        min_samples_leaf=10,
+        n_estimators=100,
+        max_depth=12,
+        min_samples_leaf=20,
         class_weight=base_weights,
         n_jobs=-1,
         random_state=42,
@@ -287,13 +310,30 @@ def main():
         print(f"\n    {name}:")
         print(f"      Accuracy={acc:.3f}, F1={f1_weighted:.3f}, Level1 Sensitivity={level1_sens:.3f}")
 
+    # ── 5b. SOURCE-STRATIFIED EVALUATION ────────────────────────────
+    print("\n    Source-stratified evaluation (Random Forest calibrated):")
+    y_pred_all = cal_gb.predict(X_test_sc)
+    for src in df["source"].unique():
+        mask = source_test.values == src
+        if mask.sum() == 0:
+            continue
+        y_t = y_test.values[mask]
+        y_p = y_pred_all[mask]
+        acc = accuracy_score(y_t, y_p)
+        f1w = f1_score(y_t, y_p, average="weighted")
+        l1_mask = y_t == 1
+        l1_sens = (y_p[l1_mask] == 1).mean() if l1_mask.sum() > 0 else 0
+        print(f"      {src:8s}: Accuracy={acc:.3f}, F1={f1w:.3f}, L1-Sens={l1_sens:.3f} (n={mask.sum():,})")
+        report_lines.append(f"\n  {src.upper()} subset: Acc={acc:.3f} F1={f1w:.3f} L1-Sens={l1_sens:.3f} (n={mask.sum():,})")
+
     # ── 6. SAVE ARTIFACTS ────────────────────────────────────────────
     print("\n[6/6] Saving model artifacts...")
 
-    joblib.dump(cal_gb, MODEL_DIR / "triage_xgb.joblib")
-    joblib.dump(lr, MODEL_DIR / "triage_lr.joblib")
-    joblib.dump(scaler, MODEL_DIR / "scaler.joblib")
-    print(f"    Saved models to {MODEL_DIR}")
+    joblib.dump(cal_gb, MODEL_DIR / "triage_xgb.joblib", compress=("zlib", 3))
+    joblib.dump(lr, MODEL_DIR / "triage_lr.joblib", compress=("zlib", 3))
+    joblib.dump(scaler, MODEL_DIR / "scaler.joblib", compress=("zlib", 3))
+    model_mb = (MODEL_DIR / "triage_xgb.joblib").stat().st_size / 1024 / 1024
+    print(f"    Saved models to {MODEL_DIR} (RF model: {model_mb:.1f} MB)")
 
     with open(MODEL_DIR / "feature_columns.json", "w") as f:
         json.dump(feature_cols, f, indent=2)

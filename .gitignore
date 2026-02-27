@@ -3,6 +3,9 @@ mimic-iv-3.1/
 mimic-iv-ed-2.2/
 mimic-iv-ed-2.2.zip
 
+# NHAMCS raw data (large fixed-width files)
+nhamcs_data/
+
 # Large outputs
 outputs/
 
