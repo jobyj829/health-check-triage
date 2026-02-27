@@ -8,6 +8,6 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ADMIN_PASSWORD
-        value: "triage-admin-2026"
+        value: "Password"
       - key: PYTHON_VERSION
         value: "3.11.6"
