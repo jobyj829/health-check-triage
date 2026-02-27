@@ -22,7 +22,7 @@ app = Flask(__name__,
             static_folder=os.path.join(os.path.dirname(__file__), "static"))
 app.secret_key = os.environ.get("SECRET_KEY", "triage-app-dev-key-change-in-prod")
 
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "Password")
+ADMIN_PASSWORD = "Password"
 
 engine = TreeInterviewEngine()
 database.init_db()
