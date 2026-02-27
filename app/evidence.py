@@ -202,6 +202,12 @@ SYMPTOM_WATCH_FOR = {
         "Numbness or weakness spreading to both legs",
         "Severe pain that wakes you from sleep or doesn't improve",
     ],
+    "neck_pain": [
+        "Numbness, tingling, or weakness spreading into your arms or hands",
+        "Severe headache that comes on suddenly with neck stiffness",
+        "Fever along with worsening neck pain",
+        "Difficulty walking or problems with balance",
+    ],
     "weakness": [
         "Sudden weakness or numbness on one side of your body",
         "Weakness with trouble speaking, confusion, or vision changes",
@@ -320,6 +326,14 @@ SYMPTOM_ESCALATION = {
          "then_action": "Go to the Emergency Department immediately", "severity": "critical"},
         {"if_sign": "numbness or weakness spreads to both legs",
          "then_action": "Go to the Emergency Department now", "severity": "critical"},
+    ],
+    "neck_pain": [
+        {"if_sign": "you develop weakness or numbness spreading into both arms or hands",
+         "then_action": "Go to the Emergency Department now \u2014 this could be spinal cord compression", "severity": "critical"},
+        {"if_sign": "you develop a sudden severe headache with a stiff neck and fever",
+         "then_action": "Go to the Emergency Department immediately \u2014 this could be meningitis", "severity": "critical"},
+        {"if_sign": "you have trouble walking or lose your balance",
+         "then_action": "Go to the Emergency Department", "severity": "critical"},
     ],
     "weakness": [
         {"if_sign": "you develop sudden weakness or numbness on one side of your body",
@@ -473,6 +487,13 @@ SYMPTOM_HOME_REMEDIES = {
         {"remedy": "Over-the-counter anti-inflammatory", "detail": "Ibuprofen (Advil) or naproxen (Aleve) as directed on the label."},
         {"remedy": "Avoid heavy lifting", "detail": "Don\u2019t lift anything heavy until the pain improves."},
         {"remedy": "Good posture", "detail": "Sit and stand straight \u2014 slouching puts extra strain on your back."},
+    ],
+    "neck_pain": [
+        {"remedy": "Gentle neck stretches", "detail": "Slowly tilt your head side to side and forward. Hold each stretch 15\u201330 seconds. Don\u2019t force it."},
+        {"remedy": "Heat or ice", "detail": "Apply a warm towel or heating pad for 15\u201320 minutes. If it just started, try ice first."},
+        {"remedy": "Over-the-counter anti-inflammatory", "detail": "Ibuprofen (Advil) or naproxen (Aleve) as directed on the label."},
+        {"remedy": "Check your posture", "detail": "Keep your screen at eye level. Avoid looking down at your phone for long periods."},
+        {"remedy": "Supportive pillow", "detail": "Use a pillow that keeps your neck aligned with your spine while sleeping."},
     ],
     "extremity_pain": [
         {"remedy": "RICE method", "detail": "Rest, Ice (20 min on/off), Compression (wrap), Elevation (raise it up)."},
@@ -698,6 +719,16 @@ SYMPTOM_DIFFERENTIALS = {
         {"diagnosis": "Anemia", "likelihood": "Less common", "notes": "Gradual onset; fatigue, pallor, shortness of breath"},
         {"diagnosis": "Cardiac arrhythmia", "likelihood": "Less common", "notes": "Intermittent lightheadedness with palpitations"},
         {"diagnosis": "Stroke / TIA", "likelihood": "Uncommon", "notes": "Dizziness with focal weakness, speech difficulty, vision changes; emergency"},
+    ],
+    "neck_pain": [
+        {"diagnosis": "Muscle strain / Cervical sprain", "likelihood": "Very common", "notes": "Related to posture, sleeping position, or minor injury; improves with rest"},
+        {"diagnosis": "Cervical degenerative disc disease", "likelihood": "Common", "notes": "Chronic neck stiffness; worsens with activity; common in older adults"},
+        {"diagnosis": "Whiplash injury", "likelihood": "Common", "notes": "Pain after car accident or sudden head movement; may take hours to develop"},
+        {"diagnosis": "Cervical radiculopathy (pinched nerve)", "likelihood": "Less common", "notes": "Pain radiating into shoulder/arm; numbness or tingling in hand"},
+        {"diagnosis": "Cervical spinal stenosis", "likelihood": "Less common", "notes": "Neck pain with arm weakness or clumsiness; older adults"},
+        {"diagnosis": "Torticollis", "likelihood": "Less common", "notes": "Head tilted to one side; neck muscles in spasm; often from sleeping wrong"},
+        {"diagnosis": "Meningitis", "likelihood": "Rare", "notes": "Severe headache, stiff neck, fever, photophobia; medical emergency"},
+        {"diagnosis": "Cervical fracture", "likelihood": "Rare", "notes": "Severe pain after trauma; potential spinal cord injury; emergency"},
     ],
     "back_pain": [
         {"diagnosis": "Muscle strain / Mechanical back pain", "likelihood": "Very common", "notes": "Related to lifting, activity, or posture; improves with rest"},

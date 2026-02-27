@@ -108,18 +108,16 @@ LEVEL_URGENCY = {
     5: "Your symptoms are likely not serious, but watch for changes.",
 }
 
-_model = None
-_scaler = None
-_feature_cols = None
+import logging as _logging
 
+_log = _logging.getLogger(__name__)
 
-def _load():
-    global _model, _scaler, _feature_cols
-    if _model is None:
-        _model = joblib.load(MODEL_DIR / "triage_xgb.joblib")
-        _scaler = joblib.load(MODEL_DIR / "scaler.joblib")
-        with open(MODEL_DIR / "feature_columns.json") as f:
-            _feature_cols = json.load(f)
+_log.info("Loading triage model into memory...")
+_model = joblib.load(MODEL_DIR / "triage_xgb.joblib")
+_scaler = joblib.load(MODEL_DIR / "scaler.joblib")
+with open(MODEL_DIR / "feature_columns.json") as f:
+    _feature_cols = json.load(f)
+_log.info("Triage model loaded.")
 
 
 def predict(patient_state):
@@ -128,8 +126,6 @@ def predict(patient_state):
     Returns a dict with: level, label, color, urgency, probabilities,
     risk_factors, red_flag (if any).
     """
-    _load()
-
     # Check red flags first
     if patient_state.red_flag_triggered:
         rule = patient_state.red_flag_triggered

@@ -1,13 +1,12 @@
 {
   "symptom_id": "back_pain",
-  "label": "Back or Neck Pain",
+  "label": "Back Pain",
   "questions": [
     {
       "id": "location",
       "text": "Where does it hurt the most?",
       "type": "single_choice",
       "options": [
-        {"value": "neck", "label": "Neck"},
         {"value": "upper", "label": "Upper back (between the shoulder blades)"},
         {"value": "mid", "label": "Middle of the back"},
         {"value": "lower", "label": "Lower back"},

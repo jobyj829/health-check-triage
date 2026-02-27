@@ -89,11 +89,11 @@ def start():
 def interview():
     state = _get_state()
     if state.red_flag_triggered:
-        return redirect(url_for("results"))
+        return redirect(url_for("processing"))
 
     question = engine.get_next_question(state)
     if question is None:
-        return redirect(url_for("results"))
+        return redirect(url_for("processing"))
 
     return render_template(
         "interview.html",
@@ -228,6 +228,12 @@ def back():
 
     _save_state(state)
     return redirect(url_for("interview"))
+
+
+@app.route("/processing")
+def processing():
+    state = _get_state()
+    return render_template("processing.html", patient_name=state.name or "")
 
 
 @app.route("/results")

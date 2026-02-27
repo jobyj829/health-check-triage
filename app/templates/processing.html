@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Check — Analyzing Your Responses</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .pulse-ring {
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+        .dot-typing {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .dot-typing span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            animation: dot-bounce 1.4s ease-in-out infinite;
+        }
+        .dot-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .dot-typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dot-bounce {
+            0%, 80%, 100% { transform: scale(0.4); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        .step-item { opacity: 0; transform: translateY(8px); animation: fadeUp 0.4s ease forwards; }
+        .step-item:nth-child(1) { animation-delay: 0.5s; }
+        .step-item:nth-child(2) { animation-delay: 1.5s; }
+        .step-item:nth-child(3) { animation-delay: 2.5s; }
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-white border-b border-gray-200 px-4 py-3">
+        <div class="max-w-2xl mx-auto flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+            </div>
+            <span class="font-bold text-gray-800 text-lg">Health Check</span>
+        </div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto px-4 py-12 flex flex-col items-center justify-center" style="min-height: 70vh;">
+        <div class="text-center">
+            <!-- Animated icon -->
+            <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 pulse-ring">
+                <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+            </div>
+
+            <h1 class="text-2xl font-bold text-gray-900 mb-2">
+                Compiling Your Recommendations
+                <span class="dot-typing"><span></span><span></span><span></span></span>
+            </h1>
+            <p class="text-gray-500 mb-8">
+                {% if patient_name %}
+                Hang tight, {{ patient_name }}. We're analyzing your responses.
+                {% else %}
+                Hang tight. We're analyzing your responses.
+                {% endif %}
+            </p>
+
+            <!-- Progress steps -->
+            <div class="space-y-3 text-left max-w-xs mx-auto">
+                <div class="step-item flex items-center gap-3">
+                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm text-gray-600">Reviewing your symptoms</span>
+                </div>
+                <div class="step-item flex items-center gap-3">
+                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm text-gray-600">Comparing with published medical data</span>
+                </div>
+                <div class="step-item flex items-center gap-3">
+                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm text-gray-600">Preparing your personalized recommendation</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        setTimeout(function() {
+            window.location.href = "/results";
+        }, 3500);
+    </script>
+</body>
+</html>

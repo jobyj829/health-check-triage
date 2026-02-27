@@ -1,0 +1,142 @@
+{
+  "symptom_id": "neck_pain",
+  "label": "Neck Pain",
+  "questions": [
+    {
+      "id": "location",
+      "text": "Where in your neck does it hurt the most?",
+      "type": "single_choice",
+      "options": [
+        {"value": "back_neck", "label": "Back of my neck"},
+        {"value": "side_neck", "label": "Side of my neck"},
+        {"value": "front_throat", "label": "Front of my neck / throat area"},
+        {"value": "base_skull", "label": "Where my neck meets the base of my skull"},
+        {"value": "shoulder_area", "label": "Where my neck meets my shoulder"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset",
+      "text": "When did the neck pain start?",
+      "type": "single_choice",
+      "options": [
+        {"value": "today", "label": "Today"},
+        {"value": "days", "label": "A few days ago"},
+        {"value": "weeks", "label": "A few weeks ago"},
+        {"value": "months", "label": "Months ago or longer"},
+        {"value": "woke_up", "label": "I woke up with it"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "cause",
+      "text": "Did anything happen that might have caused the pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "car_accident", "label": "Car accident"},
+        {"value": "fall", "label": "I fell or hit my head"},
+        {"value": "slept_wrong", "label": "I think I slept in a bad position"},
+        {"value": "sports", "label": "Sports or exercise injury"},
+        {"value": "nothing", "label": "Nothing that I know of \u2013 it just started"},
+        {"value": "other", "label": "Something else"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "severity",
+      "text": "How bad is the pain right now? (0 = no pain, 10 = worst ever)",
+      "type": "single_choice",
+      "options": [
+        {"value": "mild", "label": "1\u20133 (Mild)"},
+        {"value": "moderate", "label": "4\u20136 (Medium)"},
+        {"value": "severe", "label": "7\u20139 (Bad)"},
+        {"value": "worst", "label": "10 (Worst ever)"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "radiation_arms",
+      "text": "Does the pain travel into your shoulders, arms, or hands?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No, it stays in my neck"},
+        {"value": "one_shoulder", "label": "Yes, into one shoulder"},
+        {"value": "one_arm", "label": "Yes, down one arm"},
+        {"value": "both_arms", "label": "Yes, into both arms"},
+        {"value": "hands_fingers", "label": "Yes, all the way to my hand or fingers"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "numbness_arms",
+      "text": "Do you have any numbness, tingling, or weakness in your arms or hands?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "numbness", "label": "Yes, numbness or tingling"},
+        {"value": "weakness", "label": "Yes, weakness \u2013 I'm dropping things or can't grip well"},
+        {"value": "both", "label": "Both numbness and weakness"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "headache",
+      "text": "Do you have a headache along with the neck pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "mild", "label": "Yes, a mild headache"},
+        {"value": "severe", "label": "Yes, a severe headache \u2013 the worst I've ever had"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "movement",
+      "text": "Can you turn your head from side to side?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes_normal", "label": "Yes, normally"},
+        {"value": "limited", "label": "Somewhat, but it's painful or limited"},
+        {"value": "cannot", "label": "No, I can barely move my neck"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "fever",
+      "text": "Do you have a fever or feel feverish?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"cause": ["car_accident", "fall"], "numbness_arms": ["weakness", "both"]},
+      "message": "Neck pain with arm weakness after a trauma could mean a spinal cord injury. Keep your neck still and get emergency help immediately."
+    },
+    {
+      "answer_pattern": {"headache": ["severe"], "fever": ["yes"]},
+      "message": "Severe headache with neck pain and fever could be a sign of meningitis. This needs emergency evaluation right away."
+    },
+    {
+      "answer_pattern": {"headache": ["severe"], "movement": ["cannot"]},
+      "message": "Severe headache with an inability to move your neck (neck stiffness) needs emergency evaluation to rule out meningitis or bleeding."
+    },
+    {
+      "answer_pattern": {"numbness_arms": ["weakness", "both"], "radiation_arms": ["both_arms", "hands_fingers"]},
+      "message": "Arm weakness with pain radiating into both arms may indicate significant spinal cord compression. This needs urgent evaluation."
+    },
+    {
+      "answer_pattern": {"fever": ["yes"], "severity": ["severe", "worst"]},
+      "message": "Severe neck pain with fever could be a spinal infection or abscess. This needs urgent medical attention."
+    },
+    {
+      "answer_pattern": {"cause": ["car_accident", "fall"], "severity": ["severe", "worst"]},
+      "message": "Severe neck pain after trauma needs imaging to rule out a fracture. Do not move your neck unnecessarily and seek emergency care."
+    }
+  ]
+}

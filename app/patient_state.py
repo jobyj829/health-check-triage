@@ -75,8 +75,12 @@ SYMPTOM_KEYWORDS = {
     ],
     "back_pain": [
         r"back\s*pain", r"back\s*hurt", r"lower\s*back",
-        r"spine", r"sciatica", r"neck\s*(pain|hurt|ache|stiff)",
+        r"spine", r"sciatica",
+    ],
+    "neck_pain": [
+        r"neck\s*(pain|hurt|ache|stiff|sore)",
         r"neck\s*is\s*hurt", r"\bneck\b",
+        r"whiplash", r"stiff\s*neck",
     ],
     "injury_fall": [
         r"\bfall\b", r"\bfell\b", r"injur", r"accident",
@@ -367,10 +371,17 @@ class PatientState:
         """Convert current state to a dict matching model feature columns."""
         features = {}
 
+        # neck_pain uses the same model feature as back_pain
+        SYMPTOM_ALIASES = {"neck_pain": "back_pain"}
+
         with open(CFG_DIR / "symptom_categories.json") as f:
             sym_cats = json.load(f)
+        resolved = set(self.selected_symptoms)
+        for s in self.selected_symptoms:
+            if s in SYMPTOM_ALIASES:
+                resolved.add(SYMPTOM_ALIASES[s])
         for cat in sym_cats:
-            features[cat["feature_col"]] = 1 if cat["id"] in self.selected_symptoms else 0
+            features[cat["feature_col"]] = 1 if cat["id"] in resolved else 0
 
         with open(CFG_DIR / "pmh_categories.json") as f:
             pmh_cats = json.load(f)
