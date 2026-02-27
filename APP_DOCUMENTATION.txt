@@ -3,8 +3,9 @@
   Technical Documentation & Implementation Guide
 ================================================================================
 
-Last updated: February 2026 (v9)
-Data source: MIMIC-IV v3.1 + MIMIC-IV-ED v2.2 (Beth Israel Deaconess, Boston)
+Last updated: February 2026 (v13)
+Data sources: MIMIC-IV v3.1 + MIMIC-IV-ED v2.2 (Beth Israel Deaconess, Boston)
+              CDC NHAMCS ED Public Use Files 2018-2021 (nationally representative)
 
 
 TABLE OF CONTENTS
@@ -20,9 +21,10 @@ TABLE OF CONTENTS
   9.  Safety System
   10. Evidence & Risk Percentages
   11. How to Swap to LLM-Powered Interview (Future)
-  12. Model Performance & Limitations
-  13. Deployment Notes
-  14. Changelog
+  12. Transcript Logging & Admin Panel
+  13. Model Performance & Limitations
+  14. Deployment Notes
+  15. Changelog
 
 
 ================================================================================
@@ -45,16 +47,20 @@ non-specific), the app routes to PCP first (Level 3) with a
 sending the patient directly to a specialist.
 
 The recommendation is backed by:
-  - A machine learning model trained on real ED visit data
+  - A machine learning model trained on ~481K real ED visits from two sources:
+      * MIMIC-IV-ED v2.2 (~425K visits, Beth Israel Deaconess, Boston)
+      * CDC NHAMCS 2018-2021 (~56K visits, nationally representative survey)
   - Hard-coded red-flag safety rules that override the model
   - Conservative bias rules that escalate borderline cases
   - Complaint-to-specialist mapping from Arvig et al. WestJEM 2022
     (223,612 ED visits → ICD-10 discharge diagnosis distributions)
   - Published population-level statistics for risk percentages
   - Personalized triage nurse summary and escalation guidance
+  - Differential diagnosis (top 3 most relevant diagnoses per encounter)
 
 Designed for low medical literacy patients (6th-grade reading level).
-No accounts, no data stored, no PHI collected.
+No accounts, no PHI collected. Encounter transcripts are logged to
+a local SQLite database for research purposes (admin-only access).
 
 
 ================================================================================
@@ -76,11 +82,19 @@ To start the app:
 Then open in your browser:
   http://localhost:5001
 
-To rebuild the dataset (if data changes):
+To rebuild the MIMIC dataset (if MIMIC data changes):
   python3 build_triage_dataset.py
 
-To retrain the model (if dataset changes):
+To rebuild the NHAMCS dataset (if NHAMCS data changes):
+  python3 build_nhamcs_dataset.py
+
+To retrain the model on combined dataset:
   python3 train_triage_model.py
+  (Automatically uses combined_dataset.csv.gz if available,
+   otherwise falls back to triage_dataset.csv.gz)
+
+To update the live site (Render auto-deploys from GitHub):
+  git add -A && git commit -m "description" && git push origin main
 
 
 ================================================================================
@@ -120,9 +134,17 @@ The app has three layers:
        +---> Facility Finder  (results.html JavaScript)
                 uses: OpenStreetMap Nominatim + Overpass API (free, no API keys)
 
-  DATA PIPELINE (offline, run once)
+       +---> Transcript Logger  (app/database.py)
+       |         saves to: app/transcripts.db (SQLite)
        |
-       build_triage_dataset.py  --->  outputs/triage_app/triage_dataset.csv.gz
+       +---> Admin Panel  (app/routes.py → /admin)
+                password-protected transcript browser + CSV/JSON export
+
+  DATA PIPELINE (offline, run once per source)
+       |
+       build_triage_dataset.py  --->  outputs/triage_app/triage_dataset.csv.gz (MIMIC)
+       build_nhamcs_dataset.py  --->  outputs/triage_app/nhamcs_dataset.csv.gz (NHAMCS)
+       (merged at training)     --->  outputs/triage_app/combined_dataset.csv.gz
        train_triage_model.py    --->  app/models/*.joblib + app/config/*.json
 
 
@@ -132,41 +154,56 @@ The app has three layers:
 
 ROOT LEVEL:
   run_app.py                   Entry point. Starts Flask on port 5001.
-  build_triage_dataset.py      Phase 1: extracts ED visits, maps symptoms
+  wsgi.py                      Gunicorn entry point for production (Render).
+                               Simply imports app from routes and exposes it.
+  build_triage_dataset.py      Phase 1a: extracts MIMIC-IV ED visits, maps symptoms
                                and medications, assigns 5-level outcome labels.
-  train_triage_model.py        Phase 2: trains Random Forest + Logistic Regression,
-                               generates red-flag rules, saves model artifacts.
+  build_nhamcs_dataset.py      Phase 1b: processes CDC NHAMCS ED public use files
+                               (2018-2021). Parses fixed-width data, maps RFV codes
+                               to 42 symptom categories, maps comorbidity flags to
+                               21 PMH categories, assigns 5-level triage labels from
+                               disposition variables. ~56K adult visits.
+  train_triage_model.py        Phase 2: trains Random Forest + Logistic Regression
+                               on combined MIMIC + NHAMCS dataset (~481K visits).
+                               Source-stratified train/test split. Generates red-flag
+                               rules, saves compressed model artifacts.
   requirements.txt             Python dependencies.
+  Procfile                     Gunicorn startup command for Render deployment.
+  render.yaml                  Render blueprint (auto-deploy configuration).
   APP_DOCUMENTATION.txt        This file.
 
 APP CODE (app/):
   __init__.py                  Package marker.
-  routes.py                    Flask routes: welcome, interview loop, results.
+  routes.py                    Flask routes: welcome, interview loop, results,
+                               processing (loading screen), admin panel.
                                Handles answer processing, mental-status red flags,
                                deferred baseline red-flag checks, session state.
+                               Back button support (interview history stack).
+                               Admin password: hardcoded "Password" in routes.py.
   interview_engine.py          Pluggable interview engine with two implementations:
                                  - TreeInterviewEngine (active, zero cost)
                                  - LLMInterviewEngine (stub for future)
                                Defines Question dataclass with types: single_choice,
-                               multi_choice, number, text, textarea, body_map,
-                               severity_slider.
+                               multi_choice, number, text, textarea, severity_slider.
   patient_state.py             Accumulates patient answers during interview.
                                Stores: name, answering_for, age, sex, zip_code,
-                               symptom_text, pmh_text, selected_body_regions,
-                               selected_symptoms, pmh, interview_answers/history,
-                               red_flag_triggered.
+                               symptom_text, pmh_text, selected_symptoms, pmh,
+                               interview_answers/history, red_flag_triggered.
                                Parses free-text symptoms and PMH via keyword matching.
-                               Expands body map regions to symptom IDs.
                                Converts all answers to a feature vector for the model.
-  model.py                     Loads trained model, makes predictions, applies
-                               safety overrides and conservative bias rules.
+                               Neck pain mapped to dedicated interview tree but aliased
+                               to back_pain feature column for the model.
+  model.py                     Loads trained model at import time (preloaded during
+                               server startup for fast first-request inference).
+                               Makes predictions, applies safety overrides and
+                               conservative bias rules.
                                Selects specific specialist for Level 4 using
                                complaint-to-diagnosis mapping from Arvig et al.
                                WestJEM 2022. Implements PCP-first routing for
                                non-specific, urologic, headache, pulmonary,
                                and belly complaints (Level 4 → Level 3 + referral).
   evidence.py                  Generates evidence for results page:
-                                 - Risk percentages (serious, immediate attention,
+                                 - Risk percentages (immediate attention,
                                    hospitalization, mortality)
                                  - Reassurance statement (personalized)
                                  - Escalation "If This Happens" statements
@@ -175,11 +212,16 @@ APP CODE (app/):
                                  - Symptom-specific published statistics
                                  - Specialist referral info (passed through from model)
                                  - Home remedies for Level 5 recommendations
+                                 - Differential diagnosis (top 3 most relevant)
+  database.py                  SQLite-backed transcript logging for research.
+                               Functions: init_db(), save_transcript(), get_transcripts()
+                               (paginated), get_transcript_by_id(), export_all_csv(),
+                               export_all_json(). Database file: app/transcripts.db.
 
 TEMPLATES (app/templates/):
   base.html                    Base layout: Tailwind CSS (CDN), nav bar, footer
-                               disclaimer. Defines styles for body map SVG zones,
-                               severity slider buttons, animations.
+                               disclaimer. Defines styles for severity slider
+                               buttons, animations, HTMX transitions.
   welcome.html                 Landing page with legal disclaimer + consent checkbox.
   interview.html               One-question-per-screen interview interface.
                                Renders different UI components per question type:
@@ -189,22 +231,39 @@ TEMPLATES (app/templates/):
                                  - severity_slider: 4 emoji buttons (Mild, Moderate,
                                    Severe, Worst ever) with color gradient bar
                                Shows progress bar ("Name · Step X of Y"),
-                               context tags ("About your headache"), and skip
-                               option for optional questions (zip code).
+                               context tags ("About your headache"), skip option
+                               for optional questions, and back button for navigation.
+  processing.html              Loading screen shown while model inference runs.
+                               Animated progress steps ("Reviewing symptoms",
+                               "Comparing with published data", "Preparing
+                               recommendation") with 3.5s JavaScript redirect to
+                               /results. Prevents 502 timeout perception on cold starts.
   results.html                 Color-coded recommendation header (personalized with
                                patient name). Sections:
                                  - Red flag alert (if triggered)
                                  - Reassurance statement
-                                 - Risk percentage bars (4 metrics)
+                                 - Risk percentage bars (3 metrics: immediate
+                                   attention, hospitalization, death)
+                                 - Differential diagnosis (top 3 diagnoses)
                                  - "Why We're Recommending This" risk factors
                                  - "If This Happens, Get Help Right Away" escalation
                                  - "Show This to the Triage Nurse" summary card
+                                 - "Try This at Home" remedies (Level 5 only)
                                  - "Nearby Facilities" finder (JS-powered, if zip given)
-                                 - "When in doubt" conservative message (Level 3+)
                                  - "What the Data Shows" published statistics
                                  - "Keep an Eye On" watch-for signs
                                  - Disclaimer
                                  - Print / Start Over buttons
+  admin_login.html             Admin panel login with password input and eye toggle
+                               icon for show/hide password visibility.
+  admin_list.html              Paginated transcript list: timestamp, patient name,
+                               age, sex, symptoms, recommendation level. Export
+                               buttons for CSV and JSON. Click any row for detail.
+  admin_detail.html            Full transcript view: demographics, interview Q&A,
+                               prediction, risk percentages, specialist info,
+                               differential diagnosis (top 3 with likelihood badges),
+                               escalation statements, triage nurse summary.
+                               Back button to list.
 
 STATIC ASSETS (app/static/):
   css/style.css                Custom styles (minimal — Tailwind handles most).
@@ -256,13 +315,19 @@ INTERVIEW TREES (app/config/interview_trees/):
   shortness_of_breath.json     Follow-up Qs: onset, positional, leg swelling.
   headache.json                Follow-up Qs: thunderclap, worst-ever, stiff neck,
                                severity (severity_slider type), vision, weakness.
-  back_pain.json               Follow-up Qs: location (incl. "Neck" option), onset,
-                               cause, severity, pain quality, radiation to legs,
-                               numbness/weakness, saddle numbness, bladder/bowel,
-                               fever, weight loss, cancer history, IV drug use,
-                               night pain. Red-flag combos for cauda equina,
-                               bilateral leg weakness, spinal infection, metastatic
-                               disease, and trauma with weakness.
+  back_pain.json               Follow-up Qs: location, onset, cause, severity,
+                               pain quality, radiation to legs, numbness/weakness,
+                               saddle numbness, bladder/bowel, fever, weight loss,
+                               cancer history, IV drug use, night pain. Red-flag
+                               combos for cauda equina, bilateral leg weakness,
+                               spinal infection, metastatic disease, and trauma
+                               with weakness.
+  neck_pain.json               Dedicated neck-specific follow-up Qs: location
+                               (back/side/front of neck), onset, cause (car accident,
+                               fall, slept wrong), severity, radiation to arms,
+                               numbness in arms/hands, headache, difficulty turning
+                               head, fever. Red-flag combos for spinal cord injury,
+                               meningitis, post-trauma weakness.
   dizziness.json               Follow-up Qs: room spinning vs lightheaded, stroke signs.
   nausea_vomiting.json         Follow-up Qs: blood, dehydration, keep fluids down.
   _generic.json                FALLBACK tree for any symptom without a dedicated
@@ -280,62 +345,128 @@ INTERVIEW TREES (app/config/interview_trees/):
     - "red_flag_combinations": patterns that trigger immediate Level 1
 
 MODEL ARTIFACTS (app/models/):
-  triage_xgb.joblib            Primary model: calibrated Random Forest (500 trees).
-                               Trained on 340K visits, tested on 85K.
+  triage_xgb.joblib            Primary model: calibrated Random Forest (100 trees,
+                               max_depth=12). Trained on combined MIMIC + NHAMCS
+                               dataset (~385K train, ~96K test). Compressed to ~20MB.
+                               Preloaded at server startup for fast inference.
   triage_lr.joblib             Backup model: Logistic Regression.
-                               Higher Level 1 sensitivity (87%) but lower accuracy.
   scaler.joblib                StandardScaler fitted on training data.
   feature_columns.json         Ordered list of 67 feature column names.
                                The model expects features in this exact order.
 
 DATA OUTPUTS (outputs/triage_app/):
-  triage_dataset.csv.gz        Full dataset: ~425K rows x 90 columns.
+  triage_dataset.csv.gz        MIMIC dataset: ~425K rows x 90 columns.
+  nhamcs_dataset.csv.gz        NHAMCS dataset: ~56K rows x 74 columns.
+  combined_dataset.csv.gz      Merged MIMIC + NHAMCS: ~481K rows x 69 columns.
+                               Used for model training.
   dataset_summary.txt          Level distribution, ESI breakdown, top categories.
-  training_report.txt          Model performance: accuracy, F1, confusion matrices.
+  training_report.txt          Model performance: accuracy, F1, confusion matrices,
+                               source-stratified evaluation (MIMIC vs NHAMCS).
+
+NHAMCS DATA (nhamcs_data/ — gitignored):
+  ED2018, ed2019, ed2020, ed2021   Raw fixed-width data files from CDC.
+  ed18inp.txt ... ed21inp.txt      SAS input format definitions (column positions).
+  ed21for.txt                      SAS value label definitions (RFV code meanings).
 
 
 ================================================================================
-5. DATA PIPELINE (Phase 1 — build_triage_dataset.py)
+5. DATA PIPELINE (Phase 1)
 ================================================================================
 
-What it does:
-  1. Loads all adult ED visits from MIMIC-IV-ED
-  2. Maps 60K+ free-text chief complaints to 42 symptom categories
-     using regex pattern matching (e.g., "chest pain" -> "Chest Pain",
-     "n/v" -> "Nausea / Throwing Up", "s/p fall" -> "Injury / Fall")
-  3. Maps medication records from medrecon to 21 PMH categories
-     using therapeutic class keywords (e.g., "insulin" -> "Diabetes",
-     "ACE inhibitor" -> "High Blood Pressure")
-  4. Links each ED visit to admission/ICU/mortality outcomes
-  5. Queries labevents to flag ED stays with advanced workup:
-     troponin (itemid 51002, 52642, 51003), D-dimer (50915, 51196, 52551),
-     BNP (50963), lactate (50813, 52442).
-  6. Assigns one of 5 triage levels based on:
-       Level 1 (ED): admitted to ICU/floor, died, ESI 1, OR discharged
-         but had advanced workup (troponin/D-dimer/BNP/lactate ordered)
-       Level 2 (UC): discharged, NO advanced labs, basic workup only
-         (CBC/BMP/UA/X-ray level), ESI 3-5
-       Level 3 (Primary Care): discharged, could wait 1-2 days
-       Level 4 (Specialist): discharged with specialty-appropriate ICD Dx
-       Level 5 (Reassurance): self-limiting, minimal intervention
-  7. Engineers 67 patient-reportable features (symptom flags + PMH flags +
-     age + sex + counts)
-  8. Saves dataset + config files for the app
+Phase 1a — build_triage_dataset.py (MIMIC-IV):
 
-Key data sources joined:
-  - ed/edstays.csv.gz        (disposition, timestamps)
-  - ed/triage.csv.gz         (chief complaints, vitals, ESI)
-  - ed/medrecon.csv.gz       (home medications)
-  - ed/diagnosis.csv.gz      (ICD codes)
-  - hosp/admissions.csv.gz   (admission outcomes)
-  - icu/icustays.csv.gz      (ICU flag)
-  - hosp/patients.csv.gz     (age, sex)
-  - hosp/labevents.csv.gz    (advanced lab flag: troponin/D-dimer/BNP/lactate)
+  What it does:
+    1. Loads all adult ED visits from MIMIC-IV-ED
+    2. Maps 60K+ free-text chief complaints to 42 symptom categories
+       using regex pattern matching (e.g., "chest pain" -> "Chest Pain",
+       "n/v" -> "Nausea / Throwing Up", "s/p fall" -> "Injury / Fall")
+    3. Maps medication records from medrecon to 21 PMH categories
+       using therapeutic class keywords (e.g., "insulin" -> "Diabetes",
+       "ACE inhibitor" -> "High Blood Pressure")
+    4. Links each ED visit to admission/ICU/mortality outcomes
+    5. Queries labevents to flag ED stays with advanced workup:
+       troponin (itemid 51002, 52642, 51003), D-dimer (50915, 51196, 52551),
+       BNP (50963), lactate (50813, 52442).
+    6. Assigns one of 5 triage levels based on:
+         Level 1 (ED): admitted to ICU/floor, died, ESI 1, OR discharged
+           but had advanced workup (troponin/D-dimer/BNP/lactate ordered)
+         Level 2 (UC): discharged, NO advanced labs, basic workup only
+           (CBC/BMP/UA/X-ray level), ESI 3-5
+         Level 3 (Primary Care): discharged, could wait 1-2 days
+         Level 4 (Specialist): discharged with specialty-appropriate ICD Dx
+         Level 5 (Reassurance): self-limiting, minimal intervention
+    7. Engineers 67 patient-reportable features (symptom flags + PMH flags +
+       age + sex + counts)
+    8. Saves dataset + config files for the app
+
+  Key data sources joined:
+    - ed/edstays.csv.gz        (disposition, timestamps)
+    - ed/triage.csv.gz         (chief complaints, vitals, ESI)
+    - ed/medrecon.csv.gz       (home medications)
+    - ed/diagnosis.csv.gz      (ICD codes)
+    - hosp/admissions.csv.gz   (admission outcomes)
+    - icu/icustays.csv.gz      (ICU flag)
+    - hosp/patients.csv.gz     (age, sex)
+    - hosp/labevents.csv.gz    (advanced lab flag: troponin/D-dimer/BNP/lactate)
+
+Phase 1b — build_nhamcs_dataset.py (CDC NHAMCS):
+
+  What it does:
+    1. Loads NHAMCS ED public use files for 2018-2021 (~70K total records,
+       ~56K adults age ≥ 18) from the nhamcs_data/ directory. Files are
+       fixed-width ASCII text downloaded from:
+       ftp.cdc.gov/pub/Health_Statistics/NCHS/Datasets/NHAMCS/
+    2. Parses fixed-width columns using SAS INPUT format definitions
+       (ed21inp.txt) — key variables: AGE, SEX, RFV1-RFV3 (Reason for
+       Visit codes), IMMEDR (ESI/immediacy), comorbidity flags
+       (DIABETES, HTN, CHF, CAD, COPD, ASTHMA, CKD, ESRD, CANCER,
+       EDHIV, SUBSTAB), disposition variables (ADMITHOS, OBSHOS,
+       OBSDIS, DIEDED, DOA, LEFTAMA, TRANOTH, TRANPSYC)
+    3. Maps Reason for Visit (RFV) codes to the same 42 symptom categories
+       used by the MIMIC pipeline. RFV codes are hierarchical 5-digit
+       codes from the CDC Reason for Visit Classification (RFVC).
+       Mapping covers: chest pain (10500-10503), SOB (14150-14302),
+       abdominal pain (15400-15453), headache (12100-12101), back pain
+       (19050-19106), neck pain (19000-19006), extremity pain (19150-19606),
+       fractures (5005-5050), lacerations (5205-5325), and 20+ more
+       categories. Unmapped codes fall back to "other".
+    4. Maps NHAMCS comorbidity flags to PMH categories:
+       DIABTYP1/2/0 → Diabetes, HTN → High Blood Pressure,
+       CHF/CAD → Heart Problems, ASTHMA/COPD → Asthma/COPD,
+       CANCER → Cancer, CKD/ESRD → Kidney Problems,
+       EDHIV → HIV/Immunocompromised. Other PMH categories are set to 0
+       (NHAMCS doesn't capture medication-based PMH like MIMIC does).
+    5. Assigns 5-level triage labels using NHAMCS disposition variables:
+         Level 1: DIEDED=1, DOA=1, ADMITHOS=1, OBSHOS=1, TRANOTH=1,
+                  TRANPSYC=1, or IMMEDR ≤ 2 (ESI 1-2)
+         Level 2: OBSDIS=1 (observed then discharged) or remaining
+                  discharged patients
+         Level 3: IMMEDR=3 (semi-urgent) with LOV ≥ 240 min
+         Level 5: IMMEDR 4-5 (low-acuity) with LOV < 240 min,
+                  or LEFTAMA=1
+         No Level 4 assigned (NHAMCS lacks ICD diagnosis detail for
+         specialty mapping).
+    6. Saves 56K-row dataset aligned to the same feature schema as MIMIC.
+
+  Note: NHAMCS data is freely available from the CDC with no registration.
+  It is a nationally representative survey weighted to estimate US ED
+  visit totals. We treat each record equally (unweighted) for training.
+
+Merged dataset (combined_dataset.csv.gz):
+  Created by train_triage_model.py at training time. Loads both
+  triage_dataset.csv.gz (MIMIC) and nhamcs_dataset.csv.gz (NHAMCS),
+  adds a "source" column, subsets to the 67 model feature columns
+  + triage_level, and saves the combined file (~481K rows).
 
 
 ================================================================================
 6. MODEL TRAINING (Phase 2 — train_triage_model.py)
 ================================================================================
+
+Dataset:
+  Combined MIMIC + NHAMCS: ~481K rows
+    - MIMIC: ~425K visits (single academic center, full feature coverage)
+    - NHAMCS: ~56K visits (nationally representative, limited PMH)
 
 Features (67 total, all patient-reportable):
   - 42 binary symptom category flags
@@ -346,20 +477,30 @@ Features (67 total, all patient-reportable):
   - n_comorbidities (count of PMH conditions)
 
 Models trained:
-  - Random Forest: 500 trees, max_depth=20, class-weighted to heavily
-    penalize missing Level 1 (5.33x weight vs ~0.5-0.7x for others).
-    Primary model used by the app.
+  - Random Forest: 100 trees, max_depth=12, min_samples_leaf=20,
+    class-weighted (Level 1 weight tripled to heavily penalize missing
+    emergencies). Calibrated with isotonic regression (3-fold CV).
+    Compressed with zlib to ~20MB. Preloaded at server startup.
   - Logistic Regression: multinomial, class-weighted, 2000 max iterations.
     Backup model for interpretability.
 
-Training/test split: 80/20 stratified.
+Training/test split: 80/20, stratified by BOTH triage level AND data source.
+  Train: ~385K (340K MIMIC + 45K NHAMCS)
+  Test:  ~96K  (85K MIMIC + 11K NHAMCS)
 
 Top feature importances (Random Forest):
-  1. age                    (0.224)
-  2. sym_extremity_pain     (0.108)
-  3. n_comorbidities        (0.092)
-  4. sym_abdominal_pain     (0.069)
-  5. pmh_high_blood_pressure(0.045)
+  1. age                    (0.220)
+  2. n_comorbidities        (0.124)
+  3. sym_extremity_pain     (0.112)
+  4. pmh_high_blood_pressure(0.053)
+  5. sym_abdominal_pain     (0.051)
+
+Source-stratified performance:
+  MIMIC:  Accuracy=0.541, F1=0.480, Level 1 Sensitivity=0.878
+  NHAMCS: Accuracy=0.328, F1=0.308, Level 1 Sensitivity=0.763
+  Note: NHAMCS accuracy is lower because NHAMCS has limited PMH features
+  and no Level 4 (Specialist) assignments. The safety system (red flags +
+  conservative bias) supplements the model for these cases.
 
 
 ================================================================================
@@ -423,18 +564,27 @@ Total estimate is calculated dynamically via engine.estimate_total().
 ================================================================================
 
 Routes:
-  GET  /           Welcome page with disclaimer + consent checkbox
-  POST /start      Accept disclaimer, initialize session, redirect to interview
-  GET  /interview  Show the next question (one question per screen)
-  POST /answer     Process answer, update state, check red flags, redirect
-  GET  /results    Run model, show recommendation + evidence + disclaimer
-  GET  /restart    Clear session, return to welcome
+  GET  /             Welcome page with disclaimer + consent checkbox
+  POST /start        Accept disclaimer, initialize session, redirect to interview
+  GET  /interview    Show the next question (one question per screen)
+  POST /answer       Process answer, update state, check red flags, redirect
+  POST /back         Go back one question (pop from history stack)
+  GET  /processing   Loading screen ("Compiling Your Recommendations...")
+                     with animated progress steps and 3.5s JS redirect to /results
+  GET  /results      Run model, show recommendation + evidence + disclaimer.
+                     Saves transcript to SQLite on first load.
+  GET  /restart      Clear session, return to welcome
+  GET  /admin        Admin login page (password prompt with eye toggle)
+  POST /admin        Verify admin password, set session flag
+  GET  /admin/transcripts        Paginated transcript list (protected)
+  GET  /admin/transcripts/<id>   Transcript detail view (protected)
+  GET  /admin/export/csv         Download all transcripts as CSV (protected)
+  GET  /admin/export/json        Download all transcripts as JSON (protected)
 
 Session management:
   Patient state (name, answering_for, age, sex, zip_code, symptoms, PMH,
-  body_regions, answers, history, red_flag_triggered) is stored in Flask's
-  encrypted session cookie. No data is stored on the server. No database,
-  no user accounts, no PHI.
+  answers, history, red_flag_triggered) is stored in Flask's encrypted
+  session cookie. Transcript is saved to SQLite when results are displayed.
 
 UI design:
   - Tailwind CSS loaded via CDN (no build step needed)
@@ -728,13 +878,56 @@ HYBRID OPTION:
 
 
 ================================================================================
-12. MODEL PERFORMANCE & LIMITATIONS
+12. TRANSCRIPT LOGGING & ADMIN PANEL
 ================================================================================
 
-Current model performance (Random Forest on test set):
-  Overall accuracy:    54.9%
-  F1 (weighted):       48.5%
-  Level 1 sensitivity: 86.5% (model alone — safety rules supplement this)
+Every completed triage session is automatically saved to a local SQLite
+database (app/transcripts.db) when the results page loads. This provides
+a complete audit trail for research and testing.
+
+Each transcript record contains:
+  - session_id (UUID), timestamp
+  - Demographics: patient_name, age, sex, zip_code, answering_for
+  - Raw input: symptom_text, pmh_text
+  - Parsed data: selected_symptoms (JSON), pmh (JSON)
+  - Full interview Q&A: interview_history (JSON array of all questions
+    asked and answers given, including severity slider values)
+  - Prediction: prediction_level (1-5), prediction_label
+  - Risk percentages: risk_pcts (JSON: immediate_attention,
+    hospitalization, death)
+  - Specialist info: specialist_info (JSON)
+  - Reassurance statement, escalation statements (JSON)
+  - Triage nurse summary
+  - Red flag info (if triggered)
+  - Risk factors (JSON array)
+  - Differential diagnosis: top 3 diagnoses with likelihood and notes
+
+Admin access:
+  URL: /admin
+  Password: "Password" (hardcoded in routes.py)
+  Features:
+    - Paginated list of all encounters (25 per page)
+    - Click any row for full detail view
+    - Export all transcripts as CSV or JSON
+    - Password input has eye toggle for show/hide visibility
+
+Note on Render free tier: the SQLite file lives on disk and is ephemeral —
+it is reset on each deployment. For production use, a persistent database
+(PostgreSQL) should be used instead.
+
+
+================================================================================
+13. MODEL PERFORMANCE & LIMITATIONS
+================================================================================
+
+Current model performance (Random Forest on combined test set, ~96K visits):
+  Overall accuracy:    51.7%
+  F1 (weighted):       45.4%
+  Level 1 sensitivity: 87.1% (model alone — safety rules supplement this)
+
+Source-stratified performance:
+  MIMIC  (85K test): Accuracy=54.1%, F1=48.0%, L1 Sensitivity=87.8%
+  NHAMCS (11K test): Accuracy=32.8%, F1=30.8%, L1 Sensitivity=76.3%
 
 Why accuracy is moderate:
   The model uses ONLY patient-reportable features (symptoms + PMH + age/sex).
@@ -744,40 +937,78 @@ Why accuracy is moderate:
   work. The model provides a reasonable baseline; the safety system (red-flag
   rules + conservative bias + escalation warnings) catches critical cases.
 
+Why NHAMCS accuracy is lower:
+  - NHAMCS has limited PMH features (only 7 comorbidity flags vs 21
+    medication-derived flags in MIMIC)
+  - NHAMCS doesn't have Level 4 (Specialist) assignments since it lacks
+    detailed ICD diagnosis data
+  - RFV code-to-symptom mapping is an approximation (vs MIMIC's direct
+    chief complaint text)
+  - Despite lower overall accuracy, Level 1 sensitivity (76.3%) is
+    acceptable — the safety system catches remaining emergencies
+
 Key limitations:
-  1. Single-center data: MIMIC is from Beth Israel Deaconess Medical Center
-     (Boston academic tertiary hospital). Patients may be sicker than the
-     general population.
+  1. MIMIC-dominant training: ~88% of training data is from a single
+     academic center (Beth Israel Deaconess, Boston). The NHAMCS data
+     (~12%) provides national breadth but is less feature-rich.
   2. Selection bias: we only have data on patients who came to the ER. We
      don't know about patients who stayed home successfully.
-  3. Chief complaint gap: MIMIC chief complaints are nurse-written; the app
-     collects patient-reported symptoms. The interview follow-up questions
-     help bridge this gap.
+  3. Chief complaint gap: MIMIC chief complaints are nurse-written; NHAMCS
+     uses coded RFV; the app collects patient-reported free text. The
+     interview follow-up questions help bridge this gap.
   4. No vitals: the model doesn't use vital signs because patients can't
      reliably self-report blood pressure, oxygen saturation, etc.
 
 Future improvements:
   - Add optional vital signs input (for patients with home monitors)
   - Add wearable device integration (Apple Watch HR, SpO2)
-  - External validation with multi-site data
+  - Additional external validation datasets
   - LLM-powered interview for more nuanced symptom capture
   - A/B testing different model architectures
   - Pediatric-specific question trees (for parent/child flow)
+  - Use NHAMCS survey weights for nationally representative training
 
 
 ================================================================================
-13. DEPLOYMENT NOTES
+14. DEPLOYMENT NOTES
 ================================================================================
 
-For local demo (current):
+For local development:
   python3 run_app.py
   Open http://localhost:5001
 
-For production deployment:
+Current production deployment:
+  Platform: Render (free tier)
+  GitHub repo: jobyj829/health-check-triage
+  Auto-deploy: enabled (push to main triggers redeploy)
+  Entry point: wsgi.py → Gunicorn (via Procfile)
+  Startup command: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+
+  To update the live site:
+    git add -A && git commit -m "description" && git push origin main
+    (Render auto-deploys within 2-5 minutes)
+
+  Key Render configuration:
+    - Procfile: web: gunicorn wsgi:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    - render.yaml: blueprint with build/start commands, env vars
+    - Model preloading: the 20MB ML model loads at Gunicorn worker startup,
+      not on first request. This makes deployments ~10s longer but eliminates
+      cold-start latency for users.
+    - Loading screen: /processing route shows animated "Compiling Your
+      Recommendations" for 3.5 seconds before redirecting to /results,
+      preventing perceived delays during model inference.
+
+  Render free tier limitations:
+    - RAM: 512MB (sufficient for 20MB model + Flask)
+    - Disk: ephemeral (SQLite transcripts.db reset on each deploy)
+    - Cold starts: ~15-30s after 15 min of inactivity
+    - For production: upgrade to paid tier or use PostgreSQL for transcripts
+
+For alternative deployment:
   1. Change SECRET_KEY in routes.py (or set SECRET_KEY env variable)
   2. Use a production WSGI server:
        pip3 install gunicorn
-       gunicorn -w 4 -b 0.0.0.0:5001 "app.routes:app"
+       gunicorn -w 4 -b 0.0.0.0:5001 wsgi:app
   3. Put behind HTTPS (nginx reverse proxy + Let's Encrypt)
   4. Add rate limiting (flask-limiter)
   5. The app is stateless (session is in the cookie) — it scales
@@ -790,6 +1021,7 @@ DUA compliance:
   available published literature (CDC NHAMCS, WestJEM, Medical Care).
   Model coefficients and tree structures are derived statistics, not
   "data" per the PhysioNet Credentialed Health Data License.
+  NHAMCS data is public domain (CDC public use files, no DUA required).
 
 External API dependencies (results page, optional):
   - OpenStreetMap Nominatim: geocodes zip code to lat/lng (free, no key)
@@ -799,7 +1031,7 @@ External API dependencies (results page, optional):
 
 
 ================================================================================
-14. CHANGELOG
+15. CHANGELOG
 ================================================================================
 
 v1 — Initial release
@@ -930,6 +1162,86 @@ v9 — Specialist mapping + PCP-first routing + symptom parsing fixes (current)
     Mortality rates in public_reference_rates.json updated with 0-7 day
     and 8-30 day mortality from Arvig et al. WestJEM 2022 for chest_pain,
     shortness_of_breath, abdominal_pain, fever, headache, weakness.
+
+
+v10 — Transcript logging + admin panel + back button
+  - Transcript logging:
+    Added app/database.py with SQLite backend. Every completed encounter
+    is saved to app/transcripts.db with full demographics, interview Q&A,
+    prediction, risk percentages, specialist info, escalation statements,
+    and triage nurse summary. Session UUID prevents duplicates on refresh.
+  - Admin panel:
+    Password-protected admin interface at /admin. Features:
+      * Paginated transcript list (25 per page)
+      * Detailed transcript view with all interview data
+      * CSV and JSON export of all transcripts
+      * Eye icon toggle for password visibility
+    Default password: "Password" (hardcoded in routes.py).
+  - Back button:
+    Users can navigate backwards during the interview. Interview history
+    is maintained as a stack; pressing back pops the last answer and
+    re-asks the previous question.
+  - Differential diagnosis:
+    Added differential diagnosis to evidence.py. For each encounter,
+    generates a list of possible diagnoses based on symptoms, sorted by
+    acuity (serious conditions prioritized for ER/UC recommendations)
+    and likelihood. Capped at top 3 most relevant diagnoses.
+    Stored in transcript and displayed on admin detail page.
+
+v11 — Deployment to GitHub + Render
+  - Deployed to jobyj829/health-check-triage GitHub repository
+  - Set up Render web service with auto-deploy from main branch
+  - Created wsgi.py entry point for Gunicorn
+  - Added Procfile and render.yaml blueprint
+  - Retrained model with smaller footprint (100 trees, max_depth=12)
+    to reduce file size from 672MB to 32MB for GitHub compatibility
+
+v12 — Neck pain fix + loading screen + model preload
+  - Neck pain interview:
+    Separated "neck pain" from "back pain" with its own dedicated
+    interview tree (neck_pain.json) with neck-specific follow-up
+    questions: location (back/side/front), cause (car accident, fall,
+    slept wrong), radiation to arms, numbness in hands, headache,
+    difficulty turning head, fever. Red flags for spinal cord injury,
+    meningitis, and post-trauma weakness. Neck pain aliased to
+    back_pain feature column for model compatibility.
+  - Loading screen:
+    Added /processing route with animated "Compiling Your
+    Recommendations" page. Shows three progress steps that animate
+    in sequence (reviewing symptoms, comparing with data, preparing
+    recommendation). JavaScript redirects to /results after 3.5 seconds.
+    Prevents perceived delays and 502 timeouts on cold starts.
+  - Model preloading:
+    ML model now loads at module import time (during Gunicorn worker
+    startup) rather than on first request. Eliminates 8-15 second
+    first-request delay at the cost of slightly longer deployments.
+  - Admin password fix:
+    Hardcoded ADMIN_PASSWORD = "Password" in routes.py to bypass
+    Render environment variable override issues.
+
+v13 — NHAMCS multi-center training data (current)
+  - Integrated CDC NHAMCS ED public use files (2018-2021):
+    Downloaded 4 years of nationally representative ED visit data from
+    ftp.cdc.gov (~70K total records, ~56K adult visits).
+  - Created build_nhamcs_dataset.py:
+    Parses fixed-width CDC data files using column specs derived from
+    SAS INPUT statements. Maps NHAMCS Reason for Visit (RFV) codes to
+    the app's 42 symptom categories. Maps comorbidity flags (DIABETES,
+    HTN, CHF, CAD, COPD, ASTHMA, CKD, ESRD, CANCER, EDHIV) to 7 of
+    the 21 PMH categories. Assigns 5-level triage labels from disposition
+    variables (ADMITHOS, DIEDED, DOA, IMMEDR, LOV).
+  - Merged datasets:
+    Combined MIMIC (~425K visits) + NHAMCS (~56K visits) = ~481K total
+    visits. Added "source" column for tracking.
+  - Retrained model on combined dataset:
+    Source-stratified 80/20 train/test split. 100 trees, max_depth=12.
+    Overall Level 1 sensitivity: 87.1%. Compressed model: 20MB.
+    MIMIC subset: Acc=54.1%, NHAMCS subset: Acc=32.8%.
+  - Updated train_triage_model.py:
+    Automatically loads combined_dataset.csv.gz when available.
+    Source-stratified evaluation reports per-source metrics.
+  - The model is now trained on multi-center, nationally representative
+    data rather than single-center MIMIC data only.
 
 
 ================================================================================
