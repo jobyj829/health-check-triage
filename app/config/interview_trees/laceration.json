@@ -1,0 +1,142 @@
+{
+  "symptom_id": "laceration",
+  "label": "Cut or Wound",
+  "questions": [
+    {
+      "id": "location",
+      "text": "Where is the cut or wound?",
+      "type": "single_choice",
+      "options": [
+        {"value": "face", "label": "Face"},
+        {"value": "scalp", "label": "Head or scalp"},
+        {"value": "hand_fingers", "label": "Hand or fingers"},
+        {"value": "arm", "label": "Arm"},
+        {"value": "leg", "label": "Leg"},
+        {"value": "foot_toes", "label": "Foot or toes"},
+        {"value": "chest_abdomen", "label": "Chest or belly"},
+        {"value": "neck", "label": "Neck"},
+        {"value": "other", "label": "Somewhere else"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "cause",
+      "text": "What caused the cut?",
+      "type": "single_choice",
+      "options": [
+        {"value": "knife", "label": "Knife or sharp object"},
+        {"value": "glass", "label": "Broken glass"},
+        {"value": "metal", "label": "Metal or sharp edge"},
+        {"value": "fall", "label": "A fall"},
+        {"value": "animal_bite", "label": "An animal bite"},
+        {"value": "human_bite", "label": "A human bite"},
+        {"value": "power_tool", "label": "Power tool or machinery"},
+        {"value": "other", "label": "Something else"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "depth",
+      "text": "How deep does the cut look?",
+      "type": "single_choice",
+      "options": [
+        {"value": "surface", "label": "Just a scratch on the surface"},
+        {"value": "skin_deep", "label": "Through the skin — I can see a gap in the skin"},
+        {"value": "deep", "label": "Deep — I can see fat, muscle, or bone"},
+        {"value": "unsure", "label": "I'm not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "bleeding",
+      "text": "Is the wound still bleeding?",
+      "type": "single_choice",
+      "options": [
+        {"value": "stopped", "label": "No, it stopped"},
+        {"value": "slow_oozing", "label": "Yes, it's slowly oozing"},
+        {"value": "steady", "label": "Yes, it's bleeding steadily"},
+        {"value": "spurting", "label": "Yes, blood is squirting or pulsing out"},
+        {"value": "soaking", "label": "Yes, it's soaking through bandages quickly"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "length",
+      "text": "About how long is the cut?",
+      "type": "single_choice",
+      "options": [
+        {"value": "small", "label": "Less than 1 inch (about the size of a fingernail)"},
+        {"value": "medium", "label": "1 to 3 inches"},
+        {"value": "large", "label": "More than 3 inches"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "sensation_movement",
+      "text": "Can you feel and move everything normally past the wound?",
+      "type": "single_choice",
+      "options": [
+        {"value": "normal", "label": "Yes, everything feels and moves normally"},
+        {"value": "numb", "label": "No, it's numb past the cut"},
+        {"value": "cant_move", "label": "No, I can't move my fingers or toes normally"},
+        {"value": "both", "label": "Both numb and can't move normally"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "contamination",
+      "text": "Is the wound dirty or was it caused by something rusty, dirty, or contaminated?",
+      "type": "single_choice",
+      "options": [
+        {"value": "clean", "label": "No, it's clean"},
+        {"value": "dirty", "label": "Yes, there's dirt or debris in it"},
+        {"value": "rusty", "label": "Yes, it was from something rusty or dirty"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "tetanus",
+      "text": "When was your last tetanus shot?",
+      "type": "single_choice",
+      "options": [
+        {"value": "lt_5_years", "label": "Less than 5 years ago"},
+        {"value": "5_10_years", "label": "5 to 10 years ago"},
+        {"value": "gt_10_years", "label": "More than 10 years ago"},
+        {"value": "never_unsure", "label": "Never or I'm not sure"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"bleeding": ["spurting", "soaking"]},
+      "message": "Blood that is squirting or pulsing from a wound may mean an artery is cut. Apply firm pressure and call 911 immediately."
+    },
+    {
+      "answer_pattern": {"sensation_movement": ["cant_move", "both"]},
+      "message": "Not being able to move past the wound may mean a tendon is cut. This needs surgical repair — go to the ER."
+    },
+    {
+      "answer_pattern": {"sensation_movement": ["numb", "both"]},
+      "message": "Numbness past the wound may mean a nerve is damaged. This needs evaluation in the ER."
+    },
+    {
+      "answer_pattern": {"location": ["neck"], "bleeding": ["steady", "spurting", "soaking"]},
+      "message": "A bleeding wound on the neck can be very dangerous. Apply pressure and go to the ER or call 911 immediately."
+    },
+    {
+      "answer_pattern": {"location": ["chest_abdomen"], "depth": ["deep"]},
+      "message": "A deep wound on the chest or belly could reach internal organs. This is an emergency — go to the ER immediately."
+    },
+    {
+      "answer_pattern": {"depth": ["deep"], "location": ["hand_fingers"]},
+      "message": "A deep cut on the hand or fingers may involve tendons or nerves. This needs surgical evaluation in the ER."
+    },
+    {
+      "answer_pattern": {"cause": ["animal_bite", "human_bite"]},
+      "message": "Bites from animals or humans have a high risk of infection and may need antibiotics and wound care. Go to an Urgent Care or ER."
+    }
+  ]
+}

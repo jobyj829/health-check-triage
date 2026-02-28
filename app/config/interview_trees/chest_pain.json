@@ -166,6 +166,39 @@
         {"value": "prefer_not", "label": "Prefer not to answer"}
       ],
       "condition": null
+    },
+    {
+      "id": "reproducible",
+      "text": "When you press on your chest wall, does it reproduce the exact same pain?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes, pressing on my chest reproduces the pain"},
+        {"value": "no", "label": "No, pressing doesn't change the pain"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "position_change",
+      "text": "Does the pain change when you lean forward, lie flat, or change position?",
+      "type": "single_choice",
+      "options": [
+        {"value": "better_leaning_forward", "label": "It feels better when I lean forward"},
+        {"value": "worse_lying_flat", "label": "It gets worse when I lie flat"},
+        {"value": "no_change", "label": "Position doesn't change the pain"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "recent_illness",
+      "text": "Have you been sick with a cold, flu, or other illness in the past 2 weeks?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
     }
   ],
   "red_flag_combinations": [
@@ -196,6 +229,10 @@
     {
       "answer_pattern": {"substance_use": ["yes"], "quality": ["pressure", "tightness"]},
       "message": "Stimulant drug use with chest pressure raises concern for a drug-related heart problem. This needs immediate attention."
+    },
+    {
+      "answer_pattern": {"quality": ["tearing"], "radiation": ["back"], "onset_type": ["sudden"]},
+      "message": "Sudden tearing pain that radiates to your back is the classic pattern for an aortic dissection — a torn blood vessel. This is a life-threatening emergency. Call 911."
     }
   ]
 }

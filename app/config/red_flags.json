@@ -124,5 +124,51 @@
     },
     "override_level": 1,
     "message": "You have belly pain and you take blood thinners. This combination could indicate internal bleeding. Please go to the Emergency Department."
+  },
+  {
+    "id": "fever_immunocompromised",
+    "name": "Fever + Immunocompromised",
+    "description": "Neutropenic fever is an emergency. Any fever in an immunocompromised patient requires immediate evaluation.",
+    "conditions": {
+      "sym_fever": 1,
+      "pmh_hiv___immunocompromised": 1
+    },
+    "override_level": 1,
+    "message": "You have a fever and a weakened immune system. Even a mild fever can be dangerous in your situation. Please go to the Emergency Department right away."
+  },
+  {
+    "id": "abd_pain_elderly_dizzy",
+    "name": "Abdominal Pain + Elderly + Dizziness",
+    "description": "Abdominal pain with dizziness in patients over 60 raises concern for AAA or internal bleeding.",
+    "conditions": {
+      "sym_abdominal_pain": 1,
+      "sym_dizziness": 1
+    },
+    "age_min": 60,
+    "override_level": 1,
+    "message": "You have belly pain with dizziness. In patients over 60, this combination could indicate a serious vascular problem. Please go to the Emergency Department."
+  },
+  {
+    "id": "headache_pregnancy",
+    "name": "Headache + Pregnancy",
+    "description": "Severe headache during pregnancy may indicate preeclampsia/eclampsia.",
+    "conditions": {
+      "sym_headache": 1,
+      "sym_pregnancy_related": 1
+    },
+    "override_level": 1,
+    "message": "You have a headache and you are pregnant. This could be a sign of a serious pregnancy complication (preeclampsia). Please go to the Emergency Department."
+  },
+  {
+    "id": "eye_pain_headache_nausea",
+    "name": "Eye Problem + Headache + Nausea",
+    "description": "Eye pain with headache and nausea suggests acute angle-closure glaucoma \u2014 an ophthalmic emergency.",
+    "conditions": {
+      "sym_eye_problem": 1,
+      "sym_headache": 1,
+      "sym_nausea_vomiting": 1
+    },
+    "override_level": 1,
+    "message": "Eye pain with headache and nausea could be acute glaucoma \u2014 an emergency that can cause permanent vision loss. Please go to the Emergency Department immediately."
   }
 ]

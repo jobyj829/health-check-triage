@@ -111,6 +111,29 @@
         {"value": "unsure", "label": "Not sure"}
       ],
       "condition": null
+    },
+    {
+      "id": "swallowing",
+      "text": "Are you having trouble swallowing or opening your mouth?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No trouble"},
+        {"value": "painful", "label": "Yes, it hurts to swallow"},
+        {"value": "difficult", "label": "Yes, I can barely swallow or open my mouth"},
+        {"value": "drooling", "label": "I'm drooling because I can't swallow"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "voice_changes",
+      "text": "Has your voice changed (muffled, hoarse, or hard to talk)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "hoarse", "label": "Yes, my voice is hoarse"},
+        {"value": "muffled", "label": "Yes, my voice sounds muffled (like I have a hot potato in my mouth)"}
+      ],
+      "condition": null
     }
   ],
   "red_flag_combinations": [
@@ -137,6 +160,14 @@
     {
       "answer_pattern": {"cause": ["car_accident", "fall"], "severity": ["severe", "worst"]},
       "message": "Severe neck pain after trauma needs imaging to rule out a fracture. Do not move your neck unnecessarily and seek emergency care."
+    },
+    {
+      "answer_pattern": {"fever": ["yes"], "swallowing": ["difficult", "drooling"]},
+      "message": "Neck pain with fever and trouble swallowing could be a deep neck infection (like a retropharyngeal abscess). This is an emergency that can block your airway."
+    },
+    {
+      "answer_pattern": {"voice_changes": ["muffled"], "fever": ["yes"]},
+      "message": "Fever with a muffled voice and neck pain may indicate a serious throat or neck infection. This needs emergency evaluation."
     }
   ]
 }

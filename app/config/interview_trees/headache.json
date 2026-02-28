@@ -178,6 +178,29 @@
         {"value": "unsure", "label": "Not sure"}
       ],
       "condition": null
+    },
+    {
+      "id": "positional",
+      "text": "Does the headache change with position (standing up or lying down)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "worse_standing", "label": "Worse when I stand up, better lying down"},
+        {"value": "worse_lying", "label": "Worse when I lie down or in the morning"},
+        {"value": "no_change", "label": "No change with position"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "jaw_pain_scalp",
+      "text": "Do you have pain when you chew, or is your scalp tender to touch?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "jaw_pain", "label": "Yes, it hurts when I chew"},
+        {"value": "scalp_tender", "label": "Yes, my scalp is very tender"},
+        {"value": "both", "label": "Both jaw pain when chewing and tender scalp"}
+      ],
+      "condition": null
     }
   ],
   "red_flag_combinations": [
@@ -216,6 +239,14 @@
     {
       "answer_pattern": {"history_similar": ["never", "different"], "worst_ever": ["yes"]},
       "message": "A new type of headache that's the worst you've ever had is a red flag that needs emergency evaluation."
+    },
+    {
+      "answer_pattern": {"jaw_pain_scalp": ["jaw_pain", "scalp_tender", "both"], "history_similar": ["never", "different"]},
+      "message": "A new headache with jaw pain when chewing or scalp tenderness could be giant cell arteritis (GCA) — especially if you are over 50. This needs urgent evaluation because it can cause permanent vision loss."
+    },
+    {
+      "answer_pattern": {"positional": ["worse_lying"], "nausea_vomiting": ["vomiting", "projectile"]},
+      "message": "A headache that's worse lying down with vomiting could indicate increased pressure in the brain. This needs urgent evaluation."
     }
   ]
 }

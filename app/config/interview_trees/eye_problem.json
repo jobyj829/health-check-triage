@@ -1,0 +1,145 @@
+{
+  "symptom_id": "eye_problem",
+  "label": "Eye Problem",
+  "questions": [
+    {
+      "id": "main_symptom",
+      "text": "What is bothering you the most about your eye(s)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "pain", "label": "Eye pain"},
+        {"value": "vision_loss", "label": "I can't see as well as usual"},
+        {"value": "redness", "label": "My eye is red"},
+        {"value": "discharge", "label": "My eye is watery or has gunk coming out"},
+        {"value": "swelling", "label": "My eye or eyelid is swollen"},
+        {"value": "flashes_floaters", "label": "I see flashes of light or floating spots"},
+        {"value": "foreign_body", "label": "It feels like something is in my eye"},
+        {"value": "injury", "label": "My eye was hit or something splashed in it"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "vision_change",
+      "text": "Has your vision changed?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no_change", "label": "No, I can see the same as usual"},
+        {"value": "blurry", "label": "Things are blurry"},
+        {"value": "partial_loss", "label": "I've lost vision in part of my view (like a curtain)"},
+        {"value": "complete_loss", "label": "I can't see out of one eye at all"},
+        {"value": "double", "label": "I'm seeing double"},
+        {"value": "halos", "label": "I see halos or rainbows around lights"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "onset",
+      "text": "How quickly did this start?",
+      "type": "single_choice",
+      "options": [
+        {"value": "sudden_seconds", "label": "All at once, within seconds"},
+        {"value": "sudden_hours", "label": "Over a few hours"},
+        {"value": "gradual_days", "label": "Slowly over a few days"},
+        {"value": "gradual_weeks", "label": "Slowly over weeks or longer"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "one_or_both",
+      "text": "Which eye is affected?",
+      "type": "single_choice",
+      "options": [
+        {"value": "one", "label": "Just one eye"},
+        {"value": "both", "label": "Both eyes"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "pain_severity",
+      "text": "If you have eye pain, how bad is it?",
+      "type": "severity_slider",
+      "options": [
+        {"value": "none", "label": "No pain", "description": "My eye doesn't hurt"},
+        {"value": "mild", "label": "Mild", "description": "A little uncomfortable"},
+        {"value": "moderate", "label": "Moderate", "description": "Hard to ignore"},
+        {"value": "severe", "label": "Severe", "description": "Very painful"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "light_sensitivity",
+      "text": "Does light bother your eye(s)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "mild", "label": "A little"},
+        {"value": "severe", "label": "Yes, light really hurts my eye(s)"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "nausea_headache",
+      "text": "Do you have a headache or feel sick to your stomach?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "headache", "label": "Yes, a headache"},
+        {"value": "nausea", "label": "Yes, I feel sick to my stomach"},
+        {"value": "both", "label": "Both headache and feeling sick"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "contact_lenses",
+      "text": "Do you wear contact lenses?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes_wearing", "label": "Yes, and I'm wearing them now"},
+        {"value": "yes_removed", "label": "Yes, but I took them out"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "chemical_splash",
+      "text": "Did any chemical, cleaning product, or other substance splash into your eye?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
+    }
+  ],
+  "red_flag_combinations": [
+    {
+      "answer_pattern": {"vision_change": ["complete_loss"], "onset": ["sudden_seconds"]},
+      "message": "Sudden complete vision loss in one eye could be a blocked blood vessel to the eye. This is an emergency — go to the ER immediately."
+    },
+    {
+      "answer_pattern": {"vision_change": ["partial_loss"]},
+      "message": "Loss of part of your vision (like a curtain coming down) could be a retinal detachment. This needs emergency eye care right away."
+    },
+    {
+      "answer_pattern": {"vision_change": ["halos"], "pain_severity": ["moderate", "severe"], "nausea_headache": ["nausea", "both"]},
+      "message": "Eye pain with halos around lights and nausea could be acute glaucoma. This is an emergency that can cause permanent vision loss if not treated quickly."
+    },
+    {
+      "answer_pattern": {"chemical_splash": ["yes"]},
+      "message": "A chemical splash in the eye is an emergency. Immediately flush your eye with clean water for at least 15 minutes and go to the ER."
+    },
+    {
+      "answer_pattern": {"main_symptom": ["flashes_floaters"], "vision_change": ["partial_loss", "complete_loss"]},
+      "message": "Flashes and floaters with vision loss could be a retinal detachment. This is an emergency — see an eye doctor or go to the ER right away."
+    },
+    {
+      "answer_pattern": {"main_symptom": ["swelling"], "pain_severity": ["severe"], "vision_change": ["blurry", "double", "complete_loss"]},
+      "message": "Severe eye swelling with pain and vision changes could be orbital cellulitis — a serious infection. This needs emergency evaluation."
+    },
+    {
+      "answer_pattern": {"main_symptom": ["injury"], "vision_change": ["blurry", "partial_loss", "complete_loss", "double"]},
+      "message": "Vision changes after an eye injury need emergency evaluation to check for damage inside the eye."
+    }
+  ]
+}

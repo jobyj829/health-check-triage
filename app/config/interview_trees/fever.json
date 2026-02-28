@@ -172,6 +172,29 @@
         {"value": "yes_other", "label": "Yes, another procedure"}
       ],
       "condition": null
+    },
+    {
+      "id": "joint_pain",
+      "text": "Do you have pain, redness, or swelling in any joint (knee, hip, wrist, etc.)?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "one_joint", "label": "Yes, one joint is red, swollen, or very painful"},
+        {"value": "multiple", "label": "Yes, several joints hurt"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "recent_hospitalization",
+      "text": "Have you been in the hospital or on antibiotics in the last month?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "hospitalized", "label": "Yes, I was in the hospital"},
+        {"value": "antibiotics", "label": "Yes, I was on antibiotics"},
+        {"value": "both", "label": "Both"}
+      ],
+      "condition": null
     }
   ],
   "red_flag_combinations": [
@@ -210,6 +233,14 @@
     {
       "answer_pattern": {"travel": ["yes_tropical"], "duration": ["gt_7_days"]},
       "message": "A long-lasting fever after travel to a tropical area could be a sign of a travel-related illness like malaria. This needs special testing."
+    },
+    {
+      "answer_pattern": {"joint_pain": ["one_joint"], "temp_known": ["102_104", "gt_104"]},
+      "message": "High fever with a single red, swollen, painful joint could be a joint infection (septic arthritis). This is an emergency that needs immediate treatment."
+    },
+    {
+      "answer_pattern": {"immune_status": ["chemo", "immunosuppressed", "transplant", "hiv"], "temp_known": ["not_measured", "lt_100.4", "100.4_102", "102_104", "gt_104"]},
+      "message": "Any fever in someone with a weakened immune system can be dangerous. Even a low fever needs to be checked right away."
     }
   ]
 }

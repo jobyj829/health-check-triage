@@ -164,6 +164,16 @@
         {"value": "no", "label": "No"}
       ],
       "condition": {"question_id": "allergic_exposure", "values": ["yes"]}
+    },
+    {
+      "id": "waking_at_night",
+      "text": "Have you been waking up at night gasping for air?",
+      "type": "single_choice",
+      "options": [
+        {"value": "yes", "label": "Yes"},
+        {"value": "no", "label": "No"}
+      ],
+      "condition": null
     }
   ],
   "red_flag_combinations": [
@@ -202,6 +212,10 @@
     {
       "answer_pattern": {"at_rest_or_activity": ["at_rest"], "onset": ["sudden_minutes"]},
       "message": "Sudden trouble breathing at rest is a medical emergency."
+    },
+    {
+      "answer_pattern": {"position": ["yes"], "waking_at_night": ["yes"], "leg_swelling": ["both"]},
+      "message": "Trouble breathing when lying flat, waking at night gasping, and swollen legs are signs of worsening heart failure. This needs emergency care."
     }
   ]
 }

@@ -189,6 +189,28 @@
         {"value": "no", "label": "No"}
       ],
       "condition": null
+    },
+    {
+      "id": "lightheaded",
+      "text": "Do you feel lightheaded, dizzy, or like you might pass out?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes", "label": "Yes"},
+        {"value": "almost_fainted", "label": "Yes, and I almost fainted"}
+      ],
+      "condition": null
+    },
+    {
+      "id": "jaundice",
+      "text": "Have your eyes or skin turned yellow?",
+      "type": "single_choice",
+      "options": [
+        {"value": "no", "label": "No"},
+        {"value": "yes", "label": "Yes"},
+        {"value": "unsure", "label": "Not sure"}
+      ],
+      "condition": null
     }
   ],
   "red_flag_combinations": [
@@ -227,6 +249,14 @@
     {
       "answer_pattern": {"severity": ["severe", "worst"], "fever": ["yes"], "eating_drinking": ["nothing"]},
       "message": "Severe belly pain with fever and inability to keep food or drinks down needs urgent care."
+    },
+    {
+      "answer_pattern": {"severity": ["severe", "worst"], "onset_type": ["sudden"], "lightheaded": ["yes", "almost_fainted"]},
+      "message": "Sudden severe belly pain with lightheadedness or near-fainting could be a ruptured blood vessel (abdominal aortic aneurysm) or internal bleeding. This is a life-threatening emergency — call 911."
+    },
+    {
+      "answer_pattern": {"jaundice": ["yes"], "location": ["upper_right"], "fever": ["yes"]},
+      "message": "Belly pain with yellowing of your skin/eyes and fever could be a serious bile duct infection (cholangitis). This needs emergency care."
     }
   ]
 }
